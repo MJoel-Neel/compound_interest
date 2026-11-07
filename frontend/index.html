@@ -19,6 +19,14 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"
+        integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+
     <script src="./js/script.js" defer></script>
     <title>Document</title>
 </head>
@@ -30,15 +38,146 @@ flex-col justify-between relative">
         fixed w-8/10 max-w-75 h-full gap-1 flex">
             <aside class="sidebar hide border-r-stone-100 border-r-2 w-full flex-col
             bg-white pb-10 flex  justify-between">
-               
+                <div>
+                    <div class="logo flex gap-1 pt-4 pb-2 pl-3 items-center">
+                        <img src="./assets/growth.svg" class="w-5 h-5" loading="lazy" alt="">
+                        <p class=""> <a href="./index.html" class="raleway-600 text-sm">
+                                Compound interest
+                            </a> </p>
+                    </div>
+                    <hr class="m-auto w-7/10 border-stone-200">
+                </div>
+
+                <div class="sidebar-tags grid gap-3 mt-5 pl-1 w-9/10 m-auto">
+                    <div class="flex gap-3 items-center justify-start sidebar-tag 
+                btn">
+                        <div class="icon">
+                            <img src="./assets/home.svg" loading="lazy" class="w-5 h-5" alt="">
+                        </div>
+                        <p class="capitalize raleway-400"> home </p>
+                    </div>
+
+                    <div class="flex gap-3 items-center justify-start sidebar-tag 
+                btn">
+                        <div class="icon">
+                            <img src="./assets/save.svg" loading="lazy" class="w-5 h-5" alt="">
+                        </div>
+                        <p class="capitalize raleway-400"> saved scenarios </p>
+                    </div>
+
+                    <div class="flex gap-3 items-center justify-start sidebar-tag 
+                btn">
+                        <div class="icon">
+                            <img src="./assets/graph.svg" loading="lazy" class="w-5 h-5" alt="">
+                        </div>
+                        <p class="capitalize raleway-400"> insights </p>
+                    </div>
+
+                    <div class="flex gap-3 items-center justify-start sidebar-tag 
+                btn">
+                        <div class="icon">
+                            <img src="./assets/setting.svg" loading="lazy" class="w-5 h-5" alt="">
+                        </div>
+                        <p class="capitalize raleway-400"> settings </p>
+                    </div>
+                </div>
+
+                <div class="w-full mt-5 pl-1">
+                    <div class="w-8/10 m-auto px-3 py-5
+                bg-stone-100
+                 rounded-sm ">
+                        <div>
+                            <img src="./assets/flower.svg" loading="lazy" class="w-7 h-7" alt="">
+                        </div>
+                        <p class="raleway-200">Best decisions today, a stronger tommorrow</p>
+                    </div>
+                </div>
 
             </aside>
 
-           
+            <div class="hamburger_menu cursor-pointer h-fit pl-2 mt-3">
+                <img src="./assets/chart.svg" class="w-5 h-5" loading="lazy" alt="">
+            </div>
         </div>
 
         <section class="content bg-white w-full relative z-20">
-           
+            <div class="content_head grid gap-0.5 py-3 pl-2 ">
+                <div class="items-center flex gap-2 pl-10">
+                    <img src="./assets/coin.svg" class="w-5 h-5" alt="" loading="lazy">
+                    <p class="capitalize raleway-500 text-lg"> What if i invest ?</p>
+                </div>
+                <p class="raleway-400 text-stone-600">Plan your future, similate your investments.</p>
+            </div>
+
+            <div class="content_input_fields_part w-9/10 m-auto mt-3 shadow-2 grid grid-cols-1
+                gap-3 rounded-sm ">
+                <div class="flex items-center justify-center gap-2">
+                    <div class="input_field grid gap-2">
+                        <label for="initial" class="raleway-500 capitalize">
+                            initial (€)
+                        </label>
+                        <div class="input">
+                            <input type="text" id="initial" placeholder="1000" class="raleway-400">
+                            <span class="text-stone-400 ">€</span>
+                        </div>
+                    </div>
+                    <div class="input_field grid gap-2">
+                        <label for="monthly" class="raleway-500 capitalize">
+                            Monthly (€)
+                        </label>
+                        <div class="input">
+                            <input type="text" id="monthly" placeholder="200" class="raleway-400">
+                            <span class="text-stone-400 ">€</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2">
+                    <div class="input_field grid gap-2">
+                        <label for="annual_rate" class="raleway-500 capitalize">
+                            annual rate (%)
+                        </label>
+                        <div class="input">
+                            <input type="text" id="annual_rate" placeholder="7" class="raleway-400">
+                            <span class="text-stone-400 ">%</span>
+                        </div>
+                    </div>
+                    <div class="input_field grid gap-2">
+                        <label for="years" class="raleway-500 capitalize">
+                            Years
+                        </label>
+                        <div class="input">
+                            <input type="text" id="years" placeholder="20" class="raleway-400">
+                            <span class="text-stone-400 "><i class="fa-regular fa-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 mt-3 justify-center">
+                    <div class="">
+                        <button class="btn btn-soft btn-success flex 
+                            gap-1 items-center">
+                            <i class="fa-solid fa-play"></i>
+                            <p class="capitalize raleway-500">simulate</p>
+                        </button>
+                    </div>
+                    <div class="">
+                        <button class="btn btn-soft btn-primary flex 
+                            gap-1 items-center">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <p class="capitalize raleway-500">save scenario</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content_bilan">
+
+            </div>
+
+            <div class="content_chart">
+
+            </div>
         </section>
     </main>
 </body>
