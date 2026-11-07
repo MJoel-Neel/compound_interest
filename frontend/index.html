@@ -14,34 +14,33 @@
 
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/base.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/4.3.3/lib.min.js"
+        integrity="sha512-HMfUF5iktyQ3xusD7qh8awgwpPpWRsvhiv2qOzwqRZykfvkO1bcp/q42HpnOrfzPVl5DwcfTeg62Pzj0SPDasA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <script src="./js/script.js" defer></script>
     <title>Document</title>
 </head>
 
-<body>
-    <header>
-        <div class="logo">
-            <img src="./assets/chart.svg" loading="lazy" alt="">
-            <p>Compound interest</p>
+<body class="w-screen min-h-dvh flex
+flex-col justify-between relative">
+    <main class="container flex-1 grid grid-cols-1 text-sm">
+        <div class="side-part w-fit z-40
+        fixed w-8/10 max-w-75 h-full gap-1 flex">
+            <aside class="sidebar hide border-r-stone-100 border-r-2 w-full flex-col
+            bg-white pb-10 flex  justify-between">
+               
+
+            </aside>
+
+           
         </div>
 
-        <div class="hamburger_menu">
-            <img src="./assets/growth.svg" loading="lazy" alt="">
-        </div>
-    </header>
-
-    <main class="container">
-        <aside class="sidebar">
-
-        </aside>
-
-        <section class="content">
-
+        <section class="content bg-white w-full relative z-20">
+           
         </section>
     </main>
-
-    <footer class="page_foot">
-
-    </footer>
 </body>
 
 </html>
