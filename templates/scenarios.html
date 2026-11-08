@@ -34,24 +34,26 @@
 
 <!-- Scenarios Grid -->
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 px-4 pb-10">
-
-    <!-- ---------------------------------------------------------
-         CARD 1: Active Scenario (Green Theme) 
-         Note: In a real app, this is where your Jinja2 `for` loop starts
-         {% for scenario in scenarios %}
-    --------------------------------------------------------- -->
-    <div class="card bg-base-100 shadow-sm border border-base-200">
+    {% for scenario in scenarios %}
+    
+    <div class="card bg-base-100 shadow-sm border border-base-200 {% if scenario.status == 'Archived' %}opacity-90{% endif %}">
         <div class="card-body p-5">
             <!-- Card Header -->
             <div class="flex justify-between items-start mb-4">
                 <div class="flex gap-3">
-                    <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    <!-- Notice how we use scenario.theme for the background and text color -->
+                    <div class="w-10 h-10 rounded-full bg-{{ scenario.theme }}/10 text-{{ scenario.theme }} flex items-center justify-center">
+                        <i class="fa-solid {{ scenario.icon }}"></i>
                     </div>
                     <div>
-                        <h3 class="raleway-600 text-base-content">Long Term Growth</h3>
+                        <h3 class="raleway-600 text-base-content">{{ scenario.name }}</h3>
                         <p class="raleway-400 text-xs text-base-content/60">
-                            Created on Oct 12, 2026 &bull; <span class="text-success font-bold">Active</span>
+                            Created on {{ scenario.created }} &bull; 
+                            {% if scenario.status == 'Active' %}
+                                <span class="text-success font-bold">Active</span>
+                            {% else %}
+                                <span class="text-base-content/50 font-bold">Archived</span>
+                            {% endif %}
                         </p>
                     </div>
                 </div>
@@ -61,18 +63,20 @@
             <!-- Card Data & Chart -->
             <div class="flex justify-between items-end mb-4">
                 <div>
-                    <h2 class="text-2xl raleway-700 text-success">+€28,450</h2>
-                    <p class="text-sm raleway-600 text-success/80">(+56.9%)</p>
+                    <!-- Use scenario.theme for text colors -->
+                    <h2 class="text-2xl raleway-700 text-{{ scenario.theme }}">{{ scenario.gain }}</h2>
+                    <p class="text-sm raleway-600 text-{{ scenario.theme }}/80">({{ scenario.percent }})</p>
                     <div class="mt-4">
                         <p class="raleway-400 text-xs text-base-content/60">Final Value</p>
-                        <p class="raleway-600 text-sm">€78,450</p>
+                        <p class="raleway-600 text-sm">{{ scenario.final_value }}</p>
                     </div>
                 </div>
-                <!-- Sparkline Placeholder (SVG) -->
+                
+                <!-- Sparkline Placeholder (SVG) using scenario.chart_path -->
                 <div class="w-32 h-16 opacity-80">
-                    <svg viewBox="0 0 100 50" class="w-full h-full stroke-success fill-success/10" preserveAspectRatio="none">
-                        <path d="M0,40 Q10,45 20,30 T40,25 T60,15 T80,10 T100,5 L100,50 L0,50 Z" stroke="none" />
-                        <path d="M0,40 Q10,45 20,30 T40,25 T60,15 T80,10 T100,5" fill="none" stroke-width="2" />
+                    <svg viewBox="0 0 100 50" class="w-full h-full stroke-{{ scenario.theme }} fill-{{ scenario.theme }}/10" preserveAspectRatio="none">
+                        <path d="{{ scenario.chart_path }} L100,50 L0,50 Z" stroke="none" />
+                        <path d="{{ scenario.chart_path }}" fill="none" stroke-width="2" />
                     </svg>
                 </div>
             </div>
@@ -85,170 +89,22 @@
                 <button class="btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
                     <i class="fa-regular fa-copy"></i> Duplicate
                 </button>
+                
+                <!-- Show Load for Active, Restore for Archived -->
+                {% if scenario.status == 'Active' %}
                 <button class="btn btn-sm btn-success text-white flex-1 raleway-500 text-xs">
                     <i class="fa-solid fa-play"></i> Load
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ---------------------------------------------------------
-         CARD 2: Active Scenario (Blue Theme)
-    --------------------------------------------------------- -->
-    <div class="card bg-base-100 shadow-sm border border-base-200">
-        <div class="card-body p-5">
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex gap-3">
-                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <h3 class="raleway-600 text-base-content">Conservative Plan</h3>
-                        <p class="raleway-400 text-xs text-base-content/60">
-                            Created on Sep 28, 2026 &bull; <span class="text-success font-bold">Active</span>
-                        </p>
-                    </div>
-                </div>
-                <button class="btn btn-ghost btn-xs btn-circle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-            </div>
-
-            <div class="flex justify-between items-end mb-4">
-                <div>
-                    <h2 class="text-2xl raleway-700 text-primary">+€8,230</h2>
-                    <p class="text-sm raleway-600 text-primary/80">(+16.4%)</p>
-                    <div class="mt-4">
-                        <p class="raleway-400 text-xs text-base-content/60">Final Value</p>
-                        <p class="raleway-600 text-sm">€58,230</p>
-                    </div>
-                </div>
-                <!-- Sparkline Placeholder (SVG) -->
-                <div class="w-32 h-16 opacity-80">
-                    <svg viewBox="0 0 100 50" class="w-full h-full stroke-primary fill-primary/10" preserveAspectRatio="none">
-                        <path d="M0,40 L20,35 L40,30 L60,20 L80,15 L100,10 L100,50 L0,50 Z" stroke="none" />
-                        <path d="M0,40 L20,35 L40,30 L60,20 L80,15 L100,10" fill="none" stroke-width="2" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="flex gap-2 mt-2">
-                <button class="btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
-                    <i class="fa-solid fa-chart-simple"></i> View Details
-                </button>
-                <button class="btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
-                    <i class="fa-regular fa-copy"></i> Duplicate
-                </button>
-                <button class="btn btn-sm btn-success text-white flex-1 raleway-500 text-xs">
-                    <i class="fa-solid fa-play"></i> Load
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ---------------------------------------------------------
-         CARD 3: Archived Scenario (Purple Theme)
-    --------------------------------------------------------- -->
-    <div class="card bg-base-100 shadow-sm border border-base-200 opacity-90">
-        <div class="card-body p-5">
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex gap-3">
-                    <div class="w-10 h-10 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center">
-                        <i class="fa-solid fa-briefcase"></i>
-                    </div>
-                    <div>
-                        <h3 class="raleway-600 text-base-content">Retirement Plan</h3>
-                        <p class="raleway-400 text-xs text-base-content/60">
-                            Created on Aug 15, 2026 &bull; <span class="text-base-content/50 font-bold">Archived</span>
-                        </p>
-                    </div>
-                </div>
-                <button class="btn btn-ghost btn-xs btn-circle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-            </div>
-
-            <div class="flex justify-between items-end mb-4">
-                <div>
-                    <h2 class="text-2xl raleway-700 text-purple-600">+€92,120</h2>
-                    <p class="text-sm raleway-600 text-purple-500/80">(+184.2%)</p>
-                    <div class="mt-4">
-                        <p class="raleway-400 text-xs text-base-content/60">Final Value</p>
-                        <p class="raleway-600 text-sm">€142,120</p>
-                    </div>
-                </div>
-                <!-- Sparkline Placeholder (SVG) -->
-                <div class="w-32 h-16 opacity-80">
-                    <svg viewBox="0 0 100 50" class="w-full h-full stroke-purple-500 fill-purple-500/10" preserveAspectRatio="none">
-                        <path d="M0,45 Q20,40 30,35 T50,25 T70,15 T90,10 L100,5 L100,50 L0,50 Z" stroke="none" />
-                        <path d="M0,45 Q20,40 30,35 T50,25 T70,15 T90,10 L100,5" fill="none" stroke-width="2" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="flex gap-2 mt-2">
-                <button class="btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
-                    <i class="fa-solid fa-chart-simple"></i> View Details
-                </button>
-                <button class="btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
-                    <i class="fa-regular fa-copy"></i> Duplicate
-                </button>
-                <!-- Restore Button instead of Load for Archived -->
+                {% else %}
                 <button class="btn btn-sm btn-outline btn-primary flex-1 raleway-500 text-xs bg-primary/5">
                     <i class="fa-solid fa-rotate-left"></i> Restore
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
-
-    <!-- ---------------------------------------------------------
-         CARD 4: Active Scenario (Green Theme)
-    --------------------------------------------------------- -->
-    <div class="card bg-base-100 shadow-sm border border-base-200">
-        <div class="card-body p-5">
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex gap-3">
-                    <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center">
-                        <i class="fa-solid fa-star"></i>
-                    </div>
-                    <div>
-                        <h3 class="raleway-600 text-base-content">Dream Portfolio</h3>
-                        <p class="raleway-400 text-xs text-base-content/60">
-                            Created on Jul 20, 2026 &bull; <span class="text-success font-bold">Active</span>
-                        </p>
-                    </div>
-                </div>
-                <button class="btn btn-ghost btn-xs btn-circle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-            </div>
-
-            <div class="flex justify-between items-end mb-4">
-                <div>
-                    <h2 class="text-2xl raleway-700 text-success">+€15,760</h2>
-                    <p class="text-sm raleway-600 text-success/80">(+37.6%)</p>
-                    <div class="mt-4">
-                        <p class="raleway-400 text-xs text-base-content/60">Final Value</p>
-                        <p class="raleway-600 text-sm">€72,760</p>
-                    </div>
-                </div>
-                <!-- Sparkline Placeholder (SVG) -->
-                <div class="w-32 h-16 opacity-80">
-                    <svg viewBox="0 0 100 50" class="w-full h-full stroke-success fill-success/10" preserveAspectRatio="none">
-                        <path d="M0,35 L15,38 L30,30 L45,32 L60,20 L75,15 L90,18 L100,10 L100,50 L0,50 Z" stroke="none" />
-                        <path d="M0,35 L15,38 L30,30 L45,32 L60,20 L75,15 L90,18 L100,10" fill="none" stroke-width="2" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="flex gap-2 mt-2">
-                <button class="btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
-                    <i class="fa-solid fa-chart-simple"></i> View Details
-                </button>
-                <button class="btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
-                    <i class="fa-regular fa-copy"></i> Duplicate
-                </button>
-                <button class="btn btn-sm btn-success text-white flex-1 raleway-500 text-xs">
-                    <i class="fa-solid fa-play"></i> Load
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- End of loop {% endfor %} -->
+    
+    {% endfor %}   
 
 </div>
 {% endblock %}c
