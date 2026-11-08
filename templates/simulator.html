@@ -3,13 +3,18 @@
 {% block title %}Simulator - What If I Invest?{% endblock %}
 
 {% block content %}
-<div class="content_head grid gap-0.5 py-3 pl-2">
-    <div class="items-center flex gap-2 pl-10">
-        <img src="/static/assets/svg/coin.svg" class="w-5 h-5" alt="" loading="lazy">
-        <p class="capitalize raleway-500 text-lg">What if I invest?</p>
+<div class="py-6 pl-4">
+    <div>
+        <div class="items-center flex gap-2">
+            <div class="p-2 bg-primary/10 rounded-lg text-primary">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <h1 class="capitalize raleway-600 text-2xl text-base-content">What if I invest?</h1>
+        </div>
+        <p class="raleway-400 text-stone-500 mt-1 ml-11">Plan your future, simulate your investments.</p>
     </div>
-    <p class="raleway-400 text-stone-600">Plan your future, simulate your investments.</p>
 </div>
+
 
 <!-- Wrap inputs in a form so FastAPI can receive them -->
 <form action="/" method="GET"
@@ -117,7 +122,7 @@
 
 
 <div class="saved_scenatios max-w-[1000px] m-auto border-2 p-3
-            border-stone-100 pb-3 mt-7">
+            border-stone-100 pb-3 mt-7 mb-10">
     <div class="flex justify-between items-center px-2 py-3">
         <div class="raleway-700 flex gap-1 capitalize items-center">
             <img src="/static/assets/svg/save.svg" class="w-7 h-7" loading="lazy" alt="">
