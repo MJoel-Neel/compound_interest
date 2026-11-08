@@ -100,7 +100,7 @@ flex-col justify-between relative">
             </div>
         </div>
 
-        <section class="content bg-white w-full relative z-20">
+        <section class="content bg-white w-1full px-2 relative z-20">
             <div class="content_head grid gap-0.5 py-3 pl-2 ">
                 <div class="items-center flex gap-2 pl-10">
                     <img src="./assets/coin.svg" class="w-5 h-5" alt="" loading="lazy">
@@ -109,8 +109,8 @@ flex-col justify-between relative">
                 <p class="raleway-400 text-stone-600">Plan your future, similate your investments.</p>
             </div>
 
-            <div class="content_input_fields_part w-9/10 m-auto mt-3 shadow-2 grid grid-cols-1
-                gap-3 rounded-sm ">
+            <div class="content_input_fields_part w-full m-auto mt-3 shadow-2 grid grid-cols-1
+                gap-3 rounded-sm border-2 py-4 px-2 border-stone-100 ">
                 <div class="flex items-center justify-center gap-2">
                     <div class="input_field grid gap-2">
                         <label for="initial" class="raleway-500 capitalize">
@@ -171,11 +171,41 @@ flex-col justify-between relative">
                 </div>
             </div>
 
-            <div class="content_bilan">
+            <div class="content_bilan rounded-sm grid grid-cols-3 py-3
+            w-full m-auto mt-10 shadow-sm border-2 border-stone-100">
+                <div class="grid grid-cols-[1fr_9fr] gap-x-2 px-1 items-center">
+                    <div class="rounded-full p-1 bg-slate-50">
+                        <i class="fa-solid fa-coins text-success text-sm"></i>
+                    </div>
+                    <p class="text-stone-500 raleway-400 capitalize">final balance:
+                    <p>
+                    <p class="raleway-600 text-success text-lg">€112,12</p>
+                </div>
 
+
+                <div class="grid grid-cols-[1fr_9fr] gap-x-2 items-center
+                border-stone-300 border-x-1 px-1">
+                    <div class="rounded-full p-1 bg-slate-50">
+                        <i class="fa-solid fa-layer-group text-primary text-sm"></i>
+                    </div>
+                    <p class="text-stone-500 raleway-400 capitalize">total invested:
+                    <p>
+                    <p class="raleway-600 text-primary text-lg">€43,69</p>
+                </div>
+
+
+                <div class="grid grid-cols-[1fr_9fr] gap-x-2 items-center
+                border-stone-100 px-1">
+                    <div class="rounded-full p-1 bg-slate-50">
+                        <i class="fa-solid fa-arrow-trend-up text-success text-sm"></i>
+                    </div>
+                    <p class="text-stone-500 raleway-400 capitalize">gains:
+                    <p>
+                    <p class="raleway-600 text-success text-lg">€63,102</p>
+                </div>
             </div>
 
-            <div class="content_chart">
+            <div class="content_chart rounded-sm">
 
             </div>
         </section>
