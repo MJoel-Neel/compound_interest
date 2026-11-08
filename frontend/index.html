@@ -31,12 +31,12 @@
     <title>Document</title>
 </head>
 
-<body class="w-screen min-h-dvh flex
-flex-col justify-between relative">
-    <main class="container flex-1 grid grid-cols-1 text-sm">
-        <div class="side-part w-fit z-40
-        fixed w-8/10 max-w-75 h-full gap-1 flex">
-            <aside class="sidebar hide border-r-stone-100 border-r-2 w-full flex-col
+<body class="w-screen min-h-dvh relative overflow-x-hidden">
+    <main class="w-full grid grid-cols-1
+    md:flex md:gap-10 text-sm max-h-lvh">
+        <div class="side-part w-fit z-40 md:relative
+            fixed w-8/10 max-w-75 h-full min-h-dvh gap-1 flex">
+            <aside class="sidebar border-r-stone-100 border-r-2 w-full flex-col
             bg-white pb-10 flex  justify-between">
                 <div>
                     <div class="logo flex gap-1 pt-4 pb-2 pl-3 items-center">
@@ -95,12 +95,12 @@ flex-col justify-between relative">
 
             </aside>
 
-            <div class="hamburger_menu cursor-pointer h-fit pl-2 mt-3">
+            <div class="hamburger_menu cursor-pointer md:hidden h-fit pl-2 mt-3">
                 <img src="./assets/chart.svg" class="w-5 h-5" loading="lazy" alt="">
             </div>
         </div>
 
-        <section class="content bg-white w-1full px-2 relative pb-10 z-20">
+        <section class="content w-full md:w-9/10  overflow-y-auto px-2 relative pb-10 z-20">
             <div class="content_head grid gap-0.5 py-3 pl-2 ">
                 <div class="items-center flex gap-2 pl-10">
                     <img src="./assets/coin.svg" class="w-5 h-5" alt="" loading="lazy">
@@ -109,7 +109,9 @@ flex-col justify-between relative">
                 <p class="raleway-400 text-stone-600">Plan your future, similate your investments.</p>
             </div>
 
-            <div class="content_input_fields_part w-full m-auto mt-3 shadow-2 grid grid-cols-1
+            <div class="content_input_fields_part w-full m-auto
+            items-end mt-3 shadow-2 grid
+            2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1
                 gap-3 rounded-sm border-2 py-4 px-2 border-stone-100 ">
                 <div class="flex items-center justify-center gap-2">
                     <div class="input_field grid gap-2">
@@ -171,7 +173,7 @@ flex-col justify-between relative">
                 </div>
             </div>
 
-            <div class="content_bilan rounded-sm grid grid-cols-3 py-3
+            <div class="content_bilan max-w-[1000px] rounded-sm grid grid-cols-3 py-3
             w-full m-auto mt-10 shadow-sm border-2 border-stone-100">
                 <div class="grid grid-cols-[1fr_9fr] gap-x-2 px-1 items-center">
                     <div class="rounded-full p-1 bg-slate-50">
@@ -205,8 +207,8 @@ flex-col justify-between relative">
                 </div>
             </div>
 
-            <div class="content_chart px-2 rounded-sm py-3
-            border-2 border-stone-100 mt-5">
+            <div class="content_chart max-w-[1100px] m-auto px-2 rounded-sm py-3
+            border-2 border-stone-100 mt-10">
 
                 <div class="content_chart_head flex justify-between">
                     <p class="capitalize raleway-700">Balance over time</p>
@@ -234,7 +236,7 @@ flex-col justify-between relative">
             </div>
 
 
-            <div class="saved_scenatios border-2
+            <div class="saved_scenatios max-w-[1000px] m-auto border-2 p-3
             border-stone-100 pb-3 mt-7">
                 <div class="flex justify-between items-center px-2 py-3">
                     <div class="raleway-700 flex gap-1 capitalize items-center">

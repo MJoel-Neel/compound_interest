@@ -1,3 +1,6 @@
 .hide {
-    display: none !important;
+    display: none;
+}
+.unhide {
+    display: flex !important;
 }
