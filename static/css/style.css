@@ -1,6 +1,11 @@
-.hide {
-    display: none;
+@media (max-width: 768px) {
+    .sidebar.hide {
+        display: none;
+    }
 }
-.unhide {
-    display: flex !important;
+
+@media (min-width: 769px) {
+    .sidebar {
+        display: flex !important;
+    }
 }
