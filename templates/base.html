@@ -1,0 +1,100 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <!-- Your Custom CSS (Make sure to move these to static/css/) -->
+    <link rel="stylesheet" href="/static/css/font.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+
+    <!-- Tailwind & DaisyUI -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
+
+    <!-- Global JS -->
+    <script src="/static/js/script.js" defer></script>
+
+    <title>{% block title %}What If I Invest?{% endblock %}</title>
+</head>
+
+<body class="w-screen min-h-dvh relative overflow-x-hidden">
+    <main class="w-full grid grid-cols-1 md:flex md:gap-10 text-sm max-h-lvh">
+
+        <!-- SIDEBAR -->
+        <div class="side-part w-fit z-40 md:relative fixed w-8/10 max-w-75 h-full min-h-dvh gap-1 flex">
+            <aside class="sidebar border-r-stone-100 border-r-2 w-full flex-col bg-white pb-10 flex justify-between">
+                <div>
+                    <div class="logo flex gap-1 pt-4 pb-2 pl-3 items-center">
+                        <img src="/static/assets/svg/growth.svg" class="w-5 h-5" loading="lazy" alt="">
+                        <p><a href="/" class="raleway-600 text-sm">Compound interest</a></p>
+                    </div>
+                    <hr class="m-auto w-7/10 border-stone-200">
+                </div>
+
+                <!-- SIDEBAR TABS -->
+                <div class="sidebar-tags grid gap-3 mt-5 pl-1 w-9/10 m-auto">
+                    <!-- Simulator -->
+                    <a href="/"
+                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/' %}btn-success btn-soft{% endif %}">
+                        <div class="icon"><img src="/static/assets/svg/home.svg" class="w-5 h-5" alt=""></div>
+                        <p class="capitalize raleway-400">home</p>
+                    </a>
+
+                    <!-- Saved Scenarios -->
+                    <a href="/scenarios"
+                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/scenarios' %}btn-success btn-soft{% endif %}">
+                        <div class="icon"><img src="/static/assets/svg/save.svg" class="w-5 h-5" alt=""></div>
+                        <p class="capitalize raleway-400">saved scenarios</p>
+                    </a>
+
+                    <!-- Insights -->
+                    <a href="/insights"
+                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/insights' %}btn-success btn-soft{% endif %}">
+                        <div class="icon"><img src="/static/assets/svg/graph.svg" class="w-5 h-5" alt=""></div>
+                        <p class="capitalize raleway-400">insights</p>
+                    </a>
+
+                    <!-- Settings -->
+                    <a href="/settings"
+                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/settings' %}btn-success btn-soft{% endif %}">
+                        <div class="icon"><img src="/static/assets/svg/setting.svg" class="w-5 h-5" alt=""></div>
+                        <p class="capitalize raleway-400">settings</p>
+                    </a>
+                </div>
+
+                <div class="w-full mt-5 pl-1">
+                    <div class="w-8/10 m-auto px-3 py-5 bg-stone-100 rounded-sm">
+                        <div><img src="/static/assets/svg/flower.svg" loading="lazy" class="w-7 h-7" alt=""></div>
+                        <p class="raleway-200">Best decisions today, a stronger tomorrow</p>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="hamburger_menu cursor-pointer md:hidden h-fit pl-2 mt-3">
+                <img src="/static/assets/svg/chart.svg" class="w-5 h-5" loading="lazy" alt="">
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <section class="content w-full md:w-9/10 overflow-y-auto px-2 relative pb-10 z-20">
+            {% block content %}{% endblock %}
+        </section>
+
+    </main>
+</body>
+
+</html>
