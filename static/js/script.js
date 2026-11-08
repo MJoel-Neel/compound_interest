@@ -1,14 +1,10 @@
-const handleMenuClick = () => {
-        const sidebar = document.querySelector('.sidebar')
-        if(sidebar) {
-            sidebar.classList.contains('hide') ?
-            sidebar.classList.remove('hide') :
-            sidebar.classList.add('hide')
-        }
-    }
-    
+document.addEventListener("DOMContentLoaded", () => {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const appSidebar = document.getElementById('app-sidebar');
 
-const hamburgerMenu = document.querySelector('.hamburger_menu')
-if (hamburgerMenu) {
-    hamburgerMenu.addEventListener('click', handleMenuClick)
-}
+    if (mobileMenuBtn && appSidebar) {     
+        mobileMenuBtn.addEventListener('click', () => {
+            appSidebar.classList.toggle('-translate-x-full');
+        });
+    }
+});
