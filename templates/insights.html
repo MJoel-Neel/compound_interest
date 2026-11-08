@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Insights - What If I Invest?{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center py-6 px-4 gap-4">
+    <div>
+        <div class="items-center flex gap-2">
+            <div class="p-2 bg-primary/10 rounded-lg text-primary">
+                <i class="fa-solid fa-chart-simple text-xl"></i>
+            </div>
+            <h1 class="capitalize raleway-600 text-2xl text-base-content">Insights</h1>
+        </div>
+        <p class="raleway-400 text-stone-500 mt-1 ml-11">Explore your portfolio performance and key metrics.</p>
+    </div>
+    
+    <!-- Dropdown -->
+    <select class="select select-bordered select-sm w-full md:w-auto raleway-400 bg-base-100">
+        <option>Last 12 months</option>
+        <option>Last 6 months</option>
+        <option>Last 30 days</option>
+        <option>All time</option>
+    </select>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 px-4 mb-6">
+    <!-- Total Gain -->
+    <div class="card bg-base-100 shadow-sm border border-base-200">
+        <div class="card-body p-5">
+            <div class="flex items-center gap-2 text-base-content/70 mb-2">
+                <i class="fa-solid fa-arrow-trend-up text-success"></i>
+                <span class="raleway-500 text-sm">Total Gain</span>
+            </div>
+            <div class="text-2xl raleway-700 text-success">+€{{ total_gain|default('12,410') }}</div>
+            <div class="text-xs text-success/80 raleway-400 mt-1"><i class="fa-solid fa-arrow-up"></i> +{{ gain_percent|default('11.2') }}%</div>
+            <!-- Mini Sparkline placeholder -->
+            <div class="h-8 mt-2 w-full bg-success/5 rounded"></div>
+        </div>
+    </div>
+
+    <!-- Total Invested -->
+    <div class="card bg-base-100 shadow-sm border border-base-200">
+        <div class="card-body p-5">
+            <div class="flex items-center gap-2 text-base-content/70 mb-2">
+                <i class="fa-solid fa-layer-group text-primary"></i>
+                <span class="raleway-500 text-sm">Total Invested</span>
+            </div>
+            <div class="text-2xl raleway-700 text-primary">€{{ total_invested|default('49,000') }}</div>
+            <!-- Mini Sparkline placeholder -->
+            <div class="h-8 mt-2 w-full bg-primary/5 rounded"></div>
+        </div>
+    </div>
+
+    <!-- Average Return -->
+    <div class="card bg-base-100 shadow-sm border border-base-200">
+        <div class="card-body p-5">
+            <div class="flex items-center gap-2 text-base-content/70 mb-2">
+                <i class="fa-solid fa-percent text-purple-500"></i>
+                <span class="raleway-500 text-sm">Average Return</span>
+            </div>
+            <div class="text-2xl raleway-700 text-purple-600">+{{ avg_return|default('11.2') }}%</div>
+            <!-- Mini Sparkline placeholder -->
+            <div class="h-8 mt-2 w-full bg-purple-500/5 rounded"></div>
+        </div>
+    </div>
+
+    <!-- Best Year -->
+    <div class="card bg-base-100 shadow-sm border border-base-200">
+        <div class="card-body p-5">
+            <div class="flex items-center gap-2 text-base-content/70 mb-2">
+                <i class="fa-solid fa-trophy text-warning"></i>
+                <span class="raleway-500 text-sm">Best Year</span>
+            </div>
+            <div class="text-2xl raleway-700 text-warning">+{{ best_year|default('20.5') }}%</div>
+            <!-- Mini Sparkline placeholder -->
+            <div class="h-8 mt-2 w-full bg-warning/5 rounded"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Grid: Charts & Lists -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 pb-10">
+    
+    <!-- LEFT COLUMN (Charts) -->
+    <div class="lg:col-span-2 flex flex-col gap-6">
+        
+        <!-- Portfolio Performance Chart -->
+        <div class="card bg-base-100 shadow-sm border border-base-200">
+            <div class="card-body">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                    <h2 class="card-title raleway-600 text-base-content">
+                        <i class="fa-solid fa-chart-line text-primary"></i>
+                        Portfolio Performance
+                    </h2>
+                    <!-- Timeframe Toggles -->
+                    <div class="join border border-base-200">
+                        <button class="join-item btn btn-xs raleway-400">1M</button>
+                        <button class="join-item btn btn-xs raleway-400">3M</button>
+                        <button class="join-item btn btn-xs raleway-400">6M</button>
+                        <button class="join-item btn btn-xs btn-active btn-primary text-white raleway-400">1Y</button>
+                        <button class="join-item btn btn-xs raleway-400">All</button>
+                    </div>
+                </div>
+                
+                <!-- Chart Legend -->
+                <div class="flex justify-center gap-6 mb-2 text-xs raleway-400">
+                    <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success"></span> Your Portfolio</div>
+                    <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span> Initial Investment</div>
+                </div>
+
+                <!-- Chart.js Canvas -->
+                <div class="w-full h-72 relative">
+                    <!-- Note: You will initialize this ID in your JS file -->
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset Allocation -->
+        <div class="card bg-base-100 shadow-sm border border-base-200">
+            <div class="card-body">
+                <h2 class="card-title raleway-600 text-base-content mb-4">Asset Allocation</h2>
+                <div class="flex flex-col md:flex-row items-center justify-around gap-6">
+                    <!-- Donut Chart Canvas -->
+                    <div class="w-48 h-48 relative">
+                        <canvas id="allocationChart"></canvas>
+                        <!-- Center Text -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span class="raleway-700 text-xl">100%</span>
+                            <span class="raleway-400 text-xs text-base-content/60">Total</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Legend -->
+                    <div class="flex flex-col gap-4 w-full md:w-auto">
+                        <div class="flex items-center justify-between gap-8">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-primary"></span>
+                                <span class="raleway-500 text-sm">Stocks</span>
+                            </div>
+                            <span class="raleway-600">60%</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-8">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-success"></span>
+                                <span class="raleway-500 text-sm">Bonds</span>
+                            </div>
+                            <span class="raleway-600">25%</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-8">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+                                <span class="raleway-500 text-sm">Crypto</span>
+                            </div>
+                            <span class="raleway-600">15%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN (Lists) -->
+    <div class="lg:col-span-1 flex flex-col gap-6">
+        
+        <!-- Key Insights -->
+        <div class="card bg-base-100 shadow-sm border border-base-200">
+            <div class="card-body p-5">
+                <h2 class="card-title raleway-600 text-base-content mb-4">
+                    <i class="fa-regular fa-lightbulb text-primary"></i> Key Insights
+                </h2>
+                
+                <div class="flex flex-col gap-5">
+                    <!-- Insight 1 -->
+                    <div class="flex gap-4 items-start">
+                        <div class="p-2 bg-success/10 text-success rounded-full mt-1"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div>
+                            <p class="raleway-400 text-sm text-base-content/70">Your portfolio is up</p>
+                            <p class="raleway-600 text-success text-lg">+11.2%</p>
+                            <p class="raleway-400 text-xs text-base-content/50">over the last 12 months.</p>
+                        </div>
+                    </div>
+                    <!-- Insight 2 -->
+                    <div class="flex gap-4 items-start">
+                        <div class="p-2 bg-primary/10 text-primary rounded-full mt-1"><i class="fa-solid fa-chart-pie"></i></div>
+                        <div>
+                            <p class="raleway-400 text-sm text-base-content/70">You've gained</p>
+                            <p class="raleway-600 text-primary text-lg">€12,410</p>
+                            <p class="raleway-400 text-xs text-base-content/50">in total.</p>
+                        </div>
+                    </div>
+                    <!-- Insight 3 -->
+                    <div class="flex gap-4 items-start">
+                        <div class="p-2 bg-purple-500/10 text-purple-500 rounded-full mt-1"><i class="fa-solid fa-star"></i></div>
+                        <div>
+                            <p class="raleway-400 text-sm text-base-content/70">Your best performance</p>
+                            <p class="raleway-400 text-sm text-base-content/70">was in November</p>
+                            <p class="raleway-600 text-purple-500 text-lg">+20.5%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Performing Assets -->
+        <div class="card bg-base-100 shadow-sm border border-base-200">
+            <div class="card-body p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="card-title raleway-600 text-base-content">
+                        <i class="fa-solid fa-star text-warning"></i> Top Performing
+                    </h2>
+                    <a href="#" class="text-primary text-xs raleway-500 hover:underline">See all <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <!-- Asset 1 -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-brands fa-apple text-xl text-base-content"></i>
+                            <div>
+                                <p class="raleway-500 text-sm">Apple (AAPL)</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="raleway-600 text-success text-sm">+24.8%</p>
+                            <div class="h-6 w-16 bg-success/10 rounded mt-1"></div> <!-- Sparkline placeholder -->
+                        </div>
+                    </div>
+                    <hr class="border-base-200">
+                    <!-- Asset 2 -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-microchip text-xl text-success"></i> <!-- Placeholder for NVIDIA -->
+                            <div>
+                                <p class="raleway-500 text-sm">NVIDIA (NVDA)</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="raleway-600 text-success text-sm">+22.3%</p>
+                            <div class="h-6 w-16 bg-success/10 rounded mt-1"></div>
+                        </div>
+                    </div>
+                    <hr class="border-base-200">
+                    <!-- Asset 3 -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-brands fa-microsoft text-xl text-primary"></i>
+                            <div>
+                                <p class="raleway-500 text-sm">Microsoft (MSFT)</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="raleway-600 text-success text-sm">+18.7%</p>
+                            <div class="h-6 w-16 bg-success/10 rounded mt-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
