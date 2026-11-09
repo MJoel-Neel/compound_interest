@@ -92,3 +92,62 @@ async def scenarios_page(request: Request):
         name="scenarios.html", 
         context={"scenarios": mock_scenarios} # Pass the data here!
     )
+
+
+@app.delete("/api/scenarios/{scenario_id}")
+async def delete_scenario(scenario_id: int):
+    # Here you will eventually do: db.query(Scenario).filter(Scenario.id == scenario_id).delete()
+    # For now, just return success
+    return {"message": "Deleted successfully"}
+
+
+
+"""
+from pydantic import BaseModel
+
+class ScenarioCreate(BaseModel):
+    name: str
+    initial: float
+    monthly: float
+    annual_rate: float
+    years: int
+
+@app.post("/api/scenarios")
+async def create_scenario(scenario: ScenarioCreate):
+    # Here you will save to SQLAlchemy database later
+    # db.add(Scenario(**scenario.dict()))
+    # db.commit()
+    return {"message": "Saved successfully", "data": scenario}
+
+    """
+
+"""
+@app.post("/api/settings")
+async def save_setting(request: Request):
+    data = await request.json()
+    # Here, you would save this to your SQLAlchemy User model
+    # user.portfolio_alerts = data['value']
+    return {"status": "success"}
+
+
+    from fastapi.responses import StreamingResponse
+import io
+import csv
+
+@app.get("/api/export-data")
+async def export_data():
+    # Generate CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Scenario Name", "Initial", "Monthly", "Rate", "Years"])
+    writer.writerow(["Long Term Growth", 1000, 200, 7, 20])
+    
+    output.seek(0)
+    
+    # Return as a downloadable file
+    return StreamingResponse(
+        iter([output.getvalue()]), 
+        media_type="text/csv", 
+        headers={"Content-Disposition": "attachment; filename=my_financial_data.csv"}
+    )
+    """
