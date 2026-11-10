@@ -277,11 +277,24 @@ async def get_scenario_details(scenario_id: int):
         "chart": math_results["chart"]
     }
 
-@app.post("/api/settings")
-async def save_setting(request: Request):
-    data = await request.json()
-    print(f"Settings saved: {data}")
-    return {"status": "success"}
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    daily_quote, daily_plant = get_daily_sidebar_data()
+    
+    # 1. PRO WAY: Protect the route
+    if GLOBAL_MOCK_USER is None:
+        # Redirect to login if not authenticated
+        return RedirectResponse(url="/login", status_code=303)
+        
+    return templates.TemplateResponse(
+        request=request, 
+        name="settings.html",
+        context={
+            "daily_quote": daily_quote, 
+            "daily_plant": daily_plant,
+            "user": GLOBAL_MOCK_USER 
+        } 
+    )
 
 @app.get("/api/export-data")
 async def export_data(scenario_id: Optional[int] = None):
@@ -359,3 +372,10 @@ async def logout():
     # In a real app, you would do: request.session.clear()
     # For now, we just redirect back to the home page
     return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/api/settings")
+async def save_setting(request: Request):
+    data = await request.json()
+    print(f"Settings saved: {data}")
+    return {"status": "success"}

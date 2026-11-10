@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
     // 1. On page load, check what theme is saved and highlight the correct box
     syncThemeUI();
+
+    // 2. Load Select Preferences (Currency & Time Range)
+    loadPreferences();
 });
 
 // ==========================================
@@ -63,9 +66,32 @@ function syncThemeUI() {
 }
 
 // ==========================================
-// 2. API SETTINGS LOGIC (Toggles & Backend Sync)
+// 2. PREFERENCE SELECTORS (Currency & Time)
+// ==========================================
+function loadPreferences() {
+    // Load Currency
+    const savedCurrency = localStorage.getItem('pref-currency') || 'EUR';
+    const currencySelect = document.getElementById('pref-currency');
+    if (currencySelect) currencySelect.value = savedCurrency;
+
+    // Load Time Range
+    const savedTimeRange = localStorage.getItem('pref-time-range') || '20';
+    const timeSelect = document.getElementById('pref-time-range');
+    if (timeSelect) timeSelect.value = savedTimeRange;
+}
+
+// ==========================================
+// 3. API SETTINGS LOGIC (Toggles & Backend Sync)
 // ==========================================
 async function updateSetting(settingName, value) {
+    // 1. Save select preferences to localStorage for instant UI persistence
+    if (settingName === 'currency') {
+        localStorage.setItem('pref-currency', value);
+    } else if (settingName === 'time_range') {
+        localStorage.setItem('pref-time-range', value);
+    }
+
+    // 2. Send to backend
     try {
         const response = await fetch('/api/settings', {
             method: 'POST',
@@ -75,6 +101,10 @@ async function updateSetting(settingName, value) {
         
         if (response.ok) {
             console.log(`Saved to backend: ${settingName} = ${value}`);
+            // Optional: Show a toast if you have the global function available
+            if (typeof showToast === 'function') {
+                showToast("Preference saved!");
+            }
         }
     } catch (error) {
         console.error("Failed to save setting", error);
