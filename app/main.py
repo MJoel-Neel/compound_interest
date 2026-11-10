@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -352,3 +352,10 @@ async def forgot_password(email: str = Form(...)):
     # We always return success for security reasons 
     # (so hackers can't guess which emails are registered)
     return {"status": "success", "message": "If an account exists, a reset link has been sent."}
+
+
+@app.get("/api/logout")
+async def logout():
+    # In a real app, you would do: request.session.clear()
+    # For now, we just redirect back to the home page
+    return RedirectResponse(url="/", status_code=303)
