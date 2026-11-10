@@ -64,7 +64,7 @@ MOCK_DB = [
 # ==========================================
 # Change this to None to test the "Sign In" button
 # Change this to a dictionary to test the "Log out" button
-GLOBAL_MOCK_USER = {"name": "Marie-Joel", "email": "mj@example.com"} 
+GLOBAL_MOCK_USER = {"name": "Marie-Joel", "email": "mj@example.com", "initials" : "MJ" } 
 
 # ==========================================
 # HTML ROUTES

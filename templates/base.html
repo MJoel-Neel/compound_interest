@@ -65,6 +65,47 @@
                 </a>
             </div>
 
+            <hr class="m-auto w-9/10 border-base-200 mb-4 shrink-0">
+
+            <!-- USER PROFILE DROPDOWN (Only if logged in) -->
+            {% if user %}
+            <div class="px-3 mb-6 shrink-0">
+                <div class="dropdown dropdown-bottom w-full">
+                    <!-- Trigger Button -->
+                    <div tabindex="0" role="button"
+                        class="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-base-200 
+                        transition-colors cursor-pointer">
+                        <!-- Avatar -->
+                        <div
+                            class="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center raleway-700 text-sm shrink-0 dark:bg-primary/20 dark:text-primary">
+                            {{ user.initials|default('AN') }}
+                        </div>
+                        <!-- Name -->
+                        <div class="flex-1 min-w-0 text-left">
+                            <p class="raleway-600 text-sm text-base-content truncate">{{ user.name }}</p>
+                        </div>
+                        <!-- Chevron Icon -->
+                        <i class="fa-solid fa-chevron-down text-xs text-base-content/40"></i>
+                    </div>
+
+                    <!-- Dropdown Menu -->
+                    <ul tabindex="0"
+                        class="dropdown-content z-[50] menu p-2 shadow-lg bg-base-100 rounded-box w-full border border-base-200 mt-1">
+                        <li>
+                            <a href="/settings" class="text-sm raleway-500 hover:bg-base-200">
+                                <i class="fa-solid fa-user text-xs w-4"></i> Profile Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/api/logout" class="text-sm raleway-500 text-error hover:bg-error/10">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-xs w-4"></i> Log out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- NAVIGATION TABS -->
             <div class="sidebar-tags flex flex-col gap-2 px-3 w-full shrink-0 mt-4">
 
