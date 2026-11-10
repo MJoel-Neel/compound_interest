@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse, StreamingResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -8,6 +8,12 @@ import csv
 import copy
 import datetime
 from typing import Optional
+import zipfile
+import os
+import shutil
+
+
+
 
 app = FastAPI()
 
@@ -64,7 +70,15 @@ MOCK_DB = [
 # ==========================================
 # Change this to None to test the "Sign In" button
 # Change this to a dictionary to test the "Log out" button
-GLOBAL_MOCK_USER = {"name": "Marie-Joel", "email": "mj@example.com", "initials" : "MJ" } 
+
+GLOBAL_MOCK_USER = {
+    "name": "Marie-Joel ALLOHAN", 
+    "email": "mjoel.allohan@gmail.com", 
+    "initials": "MJ",
+    "password": "password123",
+    "avatar": None  
+}
+
 
 # ==========================================
 # HTML ROUTES
@@ -109,17 +123,6 @@ async def insights_page(request: Request):
         context={"daily_quote": daily_quote, "daily_plant": daily_plant,
             "user": GLOBAL_MOCK_USER } 
     )
-
-@app.get("/settings", response_class=HTMLResponse)
-async def settings_page(request: Request):
-    daily_quote, daily_plant = get_daily_sidebar_data()
-    return templates.TemplateResponse(
-        request=request, 
-        name="settings.html",
-        context={"daily_quote": daily_quote, "daily_plant": daily_plant,
-            "user": GLOBAL_MOCK_USER } 
-    )
-
 
 
 
@@ -301,23 +304,55 @@ async def export_data(scenario_id: Optional[int] = None):
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status", "Final Value"])
-    filename = "all_scenarios.csv"
     
+    filename = "all_scenarios.csv"
+
+    # 1. DEFENSIVE PROGRAMMING: Safe Currency Dictionary
+    CURRENCY_SYMBOLS = {
+        "EUR": "€",
+        "USD": "$",
+        "GBP": "£"
+    }
+    
+    # 2. GET USER PREFERENCE (Simulated here)
+    # In a real app, this would come from the database (e.g., user.currency)
+    # If a hacker sends "RUEE", `.get()` will safely fall back to "€"
+    user_currency = "RUEE" # Try changing this to "USD" to see the magic
+    symbol = CURRENCY_SYMBOLS.get(user_currency, "€")
+
+    # Helper function to clean the hardcoded strings and apply the new symbol
+    def format_currency(value_str):
+        # Removes the existing "€" or any non-numeric characters (except commas/decimals)
+        clean_num = str(value_str).replace("€", "").replace("$", "").replace("£", "").strip()
+        return f"{symbol}{clean_num}"
+
     if scenario_id:
         scenario = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
         if scenario:
             writer.writerow([
-                scenario["id"], scenario["name"], scenario["initial"], 
-                scenario["monthly"], scenario["annual_rate"], scenario["years"], 
-                scenario["status"], scenario["final_value"]
+                scenario["id"], 
+                scenario["name"], 
+                format_currency(scenario["initial"]), 
+                format_currency(scenario["monthly"]), 
+                f"{scenario['annual_rate']}%", 
+                scenario["years"], 
+                scenario["status"], 
+                format_currency(scenario["final_value"])
             ])
-            filename = f"scenario_{scenario_id}.csv"
+            # Safe filename generation
+            safe_name = str(scenario['name']).replace(' ', '_').replace('/', '_')
+            filename = f"scenario_{scenario_id}_{safe_name}.csv"
     else:
         for s in MOCK_DB:
             writer.writerow([
-                s["id"], s["name"], s["initial"], 
-                s["monthly"], s["annual_rate"], s["years"], 
-                s["status"], s["final_value"]
+                s["id"], 
+                s["name"], 
+                format_currency(s["initial"]), 
+                format_currency(s["monthly"]), 
+                f"{s['annual_rate']}%", 
+                s["years"], 
+                s["status"], 
+                format_currency(s["final_value"])
             ])
     
     output.seek(0)
@@ -328,6 +363,68 @@ async def export_data(scenario_id: Optional[int] = None):
     )
 
 
+@app.get("/api/export-full-data")
+async def export_full_data():
+    # Create an in-memory ZIP file
+    zip_buffer = io.BytesIO()
+    
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        
+        # --- 1. USER INFO CSV ---
+        user_csv = io.StringIO()
+        w = csv.writer(user_csv)
+        w.writerow(["Field", "Value"])
+        if GLOBAL_MOCK_USER:
+            w.writerow(["Name", GLOBAL_MOCK_USER.get("name", "")])
+            w.writerow(["Email", GLOBAL_MOCK_USER.get("email", "")])
+            w.writerow(["Initials", GLOBAL_MOCK_USER.get("initials", "")])
+        else:
+            w.writerow(["Status", "No active user"])
+        zip_file.writestr("user_info.csv", user_csv.getvalue())
+
+        # --- 2. SETTINGS CSV ---
+        # Note: Since settings are stored in localStorage (frontend), we mock them here. 
+        # In a real app, you would fetch these from the database.
+        settings_csv = io.StringIO()
+        w = csv.writer(settings_csv)
+        w.writerow(["Setting", "Value"])
+        w.writerow(["Currency", "EUR"])
+        w.writerow(["Time Range", "20 years"])
+        w.writerow(["Theme", "System"])
+        w.writerow(["Portfolio Alerts", "True"])
+        w.writerow(["Market Updates", "True"])
+        w.writerow(["Product Updates", "True"])
+        zip_file.writestr("settings.csv", settings_csv.getvalue())
+
+        # --- 3. PORTFOLIO SUMMARY CSV ---
+        portfolio_csv = io.StringIO()
+        w = csv.writer(portfolio_csv)
+        w.writerow(["Metric", "Value"])
+        w.writerow(["Total Invested", "€49,000"])
+        w.writerow(["Total Gain", "€12,410"])
+        w.writerow(["Average Return", "11.2%"])
+        w.writerow(["Best Year", "20.5%"])
+        zip_file.writestr("portfolio_summary.csv", portfolio_csv.getvalue())
+
+        # --- 4. SCENARIOS CSV ---
+        scenarios_csv = io.StringIO()
+        w = csv.writer(scenarios_csv)
+        w.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status"])
+        for s in MOCK_DB:
+            w.writerow([
+                s["id"], s["name"], s["initial"], 
+                s["monthly"], s["annual_rate"], s["years"], s["status"]
+            ])
+        zip_file.writestr("all_scenarios.csv", scenarios_csv.getvalue())
+
+    zip_buffer.seek(0)
+    
+    # Return the ZIP file as a download
+    return StreamingResponse(
+        iter([zip_buffer.getvalue()]), 
+        media_type="application/zip", 
+        headers={"Content-Disposition": "attachment; filename=WhatIfIInvest_FullExport.zip"}
+    )
 
 
 # 5 Financial Quotes
@@ -374,10 +471,24 @@ async def logout():
     return RedirectResponse(url="/", status_code=303)
 
 
+from typing import Literal
+from pydantic import BaseModel
+from fastapi import HTTPException
+
+# Create a strict validation model
+class UserSettingsUpdate(BaseModel):
+    # Only allow these exact values for the setting name
+    setting: Literal['currency', 'time_range', 'theme', 'portfolio_alerts', 'market_updates', 'product_updates']
+    # The value can be a string or a boolean
+    value: str | bool 
+
 @app.post("/api/settings")
-async def save_setting(request: Request):
-    data = await request.json()
-    print(f"Settings saved: {data}")
+async def save_setting(data: UserSettingsUpdate):
+    # Extra security check: If it's currency, make sure it's a valid currency
+    if data.setting == 'currency' and data.value not in ['EUR', 'USD', 'GBP']:
+        raise HTTPException(status_code=400, detail="Invalid currency code.")
+        
+    print(f"Settings saved: {data.setting} = {data.value}")
     return {"status": "success"}
 
 
@@ -392,3 +503,52 @@ async def delete_account():
     GLOBAL_MOCK_USER = None
     
     return {"status": "success", "message": "Account deleted successfully"}
+
+
+
+
+
+@app.post("/api/update-profile")
+async def update_profile(
+    name: str = Form(...),
+    email: str = Form(...),
+    current_password: str = Form(None),
+    new_password: str = Form(None),
+    avatar: UploadFile = File(None)
+):
+    global GLOBAL_MOCK_USER
+    if GLOBAL_MOCK_USER is None:
+        return {"status": "error", "message": "Not logged in"}
+        
+    # 1. Handle Password
+    if new_password:
+        if current_password != GLOBAL_MOCK_USER.get("password"):
+            return {"status": "error", "message": "Incorrect current password."}
+        GLOBAL_MOCK_USER["password"] = new_password
+        
+    # 2. Update basic info
+    GLOBAL_MOCK_USER["name"] = name
+    GLOBAL_MOCK_USER["email"] = email
+    name_parts = name.split()
+    GLOBAL_MOCK_USER["initials"] = "".join([n[0] for n in name_parts[:2]]).upper() if name_parts else "U"
+    
+    # 3. Handle Avatar Upload
+    if avatar and avatar.filename:
+        # Validate file type
+        allowed_types = ["image/jpeg", "image/png", "image/webp"]
+        if avatar.content_type not in allowed_types:
+            return {"status": "error", "message": "Only JPG, PNG, and WEBP are allowed."}
+
+        # Create a unique filename to prevent caching issues
+        file_extension = avatar.filename.split(".")[-1]
+        filename = f"avatar_{GLOBAL_MOCK_USER['initials']}_{int(datetime.datetime.now().timestamp())}.{file_extension}"
+        filepath = f"static/uploads/{filename}"
+        
+        # Save the file to the server
+        with open(filepath, "wb") as buffer:
+            shutil.copyfileobj(avatar.file, buffer)
+            
+        # Save the URL path to the user dictionary
+        GLOBAL_MOCK_USER["avatar"] = f"/{filepath}"
+
+    return {"status": "success", "message": "Profile updated successfully"}
