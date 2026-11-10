@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initActionButtons();
     initDeleteModal();
     initRenameModal();
+    initExportButtons();
 });
 
 // ==========================================
@@ -265,4 +266,25 @@ function initFilters() {
             }
         });
     });
+}
+
+
+// ==========================================
+// 6. EXPORT BUTTONS (Toast Notifications)
+// ==========================================
+function initExportButtons() {
+    // Individual Export
+    document.querySelectorAll('.export-single-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            showToast("Preparing your CSV download...", "info");
+        });
+    });
+
+    // Export All
+    const exportAllBtn = document.querySelector('.export-all-btn');
+    if (exportAllBtn) {
+        exportAllBtn.addEventListener('click', () => {
+            showToast("Preparing all scenarios for download...", "info");
+        });
+    }
 }

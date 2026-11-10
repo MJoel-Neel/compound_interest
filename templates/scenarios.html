@@ -15,9 +15,17 @@
         <p class="raleway-400 text-stone-500 mt-1 ml-11">Manage your saved scenarios and compare their performance.</p>
     </div>
 
-    <a href="/" class="btn btn-success btn-sm rounded-md text-white raleway-500 gap-2">
-        <i class="fa-solid fa-plus"></i> New Scenario
-    </a>
+    <div class="flex gap-2">
+        <!-- Export All Button -->
+        <a href="/api/export-data" class="export-all-btn btn btn-outline btn-sm rounded-md raleway-500 gap-2">
+            <i class="fa-solid fa-download"></i> Export All
+        </a>
+
+        <!-- New Scenario Button -->
+        <a href="/" class="btn btn-success btn-sm rounded-md text-white raleway-500 gap-2">
+            <i class="fa-solid fa-plus"></i> New Scenario
+        </a>
+    </div>
 </div>
 
 <!-- Filter Tabs -->
@@ -89,7 +97,12 @@
                                 {% if scenario.status == 'Active' %}Archive{% else %}Unarchive{% endif %}
                             </button>
                         </li>
-                        <li><a class="text-sm"><i class="fa-solid fa-download text-xs w-4"></i> Export</a></li>
+                        <li>
+                            <!-- Single Export Link -->
+                            <a href="/api/export-data?scenario_id={{ scenario.id }}" class="text-sm export-single-btn">
+                                <i class="fa-solid fa-download text-xs w-4"></i> Export
+                            </a>
+                        </li>
                         <li class="border-t border-base-200 mt-1 pt-1">
                             <!-- Trigger the delete modal -->
                             <button class="delete-trigger text-sm text-error hover:bg-error/10"
@@ -180,20 +193,22 @@
         <h3 class="font-bold text-lg text-primary flex items-center gap-2 mb-4">
             <i class="fa-solid fa-pen"></i> Rename Scenario
         </h3>
-        
+
         <form id="rename-form" class="flex flex-col gap-4">
             <div class="flex flex-col gap-2">
                 <label for="rename-input" class="text-sm font-semibold text-base-content/80 raleway-500">
                     Scenario Name
                 </label>
-                <input type="text" id="rename-input" class="input input-bordered w-full raleway-400 focus:outline-primary" required />
+                <input type="text" id="rename-input"
+                    class="input input-bordered w-full raleway-400 focus:outline-primary" required />
                 <span id="rename-error" class="text-sm text-error hidden raleway-500 mt-1">
                     <i class="fa-solid fa-circle-exclamation"></i> Name cannot be empty.
                 </span>
             </div>
-            
+
             <div class="modal-action mt-2">
-                <button type="button" class="btn btn-ghost raleway-500" onclick="document.getElementById('rename_modal').close()">Cancel</button>
+                <button type="button" class="btn btn-ghost raleway-500"
+                    onclick="document.getElementById('rename_modal').close()">Cancel</button>
                 <button type="submit" id="confirm-rename-btn" class="btn btn-primary text-white raleway-500 px-8">
                     Save Changes
                 </button>

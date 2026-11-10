@@ -7,6 +7,9 @@ import io
 import csv
 import copy
 
+from typing import Optional
+
+
 app = FastAPI()
 
 # 1. Serve static files
@@ -188,22 +191,42 @@ async def save_setting(request: Request):
     print(f"User updated setting: {data}")
     return {"status": "success"}
 
+
 @app.get("/api/export-data")
-async def export_data():
+async def export_data(scenario_id: Optional[int] = None):
     output = io.StringIO()
     writer = csv.writer(output)
     
-    # Write headers
-    writer.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status"])
+    # 1. Write Headers
+    writer.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status", "Final Value"])
     
-    # Write data from our mock DB
-    for s in MOCK_DB:
-        writer.writerow([s["id"], s["name"], s["initial"], s["monthly"], s["annual_rate"], s["years"], s["status"]])
+    filename = "all_scenarios.csv"
+    
+    # 2. Write Data
+    if scenario_id:
+        # Export just one specific scenario
+        scenario = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
+        if scenario:
+            writer.writerow([
+                scenario["id"], scenario["name"], scenario["initial"], 
+                scenario["monthly"], scenario["annual_rate"], scenario["years"], 
+                scenario["status"], scenario["final_value"]
+            ])
+            filename = f"scenario_{scenario_id}_{scenario['name'].replace(' ', '_')}.csv"
+    else:
+        # Export all scenarios
+        for s in MOCK_DB:
+            writer.writerow([
+                s["id"], s["name"], s["initial"], 
+                s["monthly"], s["annual_rate"], s["years"], 
+                s["status"], s["final_value"]
+            ])
     
     output.seek(0)
     
     return StreamingResponse(
         iter([output.getvalue()]), 
         media_type="text/csv", 
-        headers={"Content-Disposition": "attachment; filename=my_financial_data.csv"}
+        # The attachment header tells the browser to download the file instead of opening it
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
