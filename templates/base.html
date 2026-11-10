@@ -52,109 +52,41 @@
                 </div>
                 <hr class="m-auto w-9/10 border-stone-200 mb-4 shrink-0">
 
-                <!-- USER PROFILE SECTION (LOGGED IN VS LOGGED OUT) -->
-                {% if user %}
-                <!-- Logged In Profile -->
-                <div class="px-3 mb-6 shrink-0">
-                    <div class="dropdown dropdown-bottom w-full">
-                        <div tabindex="0" role="button"
-                            class="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-base-200 transition-colors cursor-pointer">
-                            <div
-                                class="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center raleway-700 text-lg shrink-0">
-                                {{ user.initials }}
-                            </div>
-                            <div class="flex-1 min-w-0 text-left">
-                                <p class="raleway-600 text-sm truncate">{{ user.name }}</p>
-                                <p class="raleway-400 text-xs text-base-content/60 truncate">{{ user.email }}</p>
-                            </div>
-                            <i class="fa-solid fa-chevron-down text-xs text-base-content/40"></i>
-                        </div>
-                        <ul tabindex="0"
-                            class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-full border border-base-200 mt-1">
-                            <li><a href="/settings"><i class="fa-solid fa-user text-xs"></i> Profile Settings</a></li>
-                            <li><a href="/api/logout" class="text-error hover:bg-error/10"><i
-                                        class="fa-solid fa-arrow-right-from-bracket text-xs"></i> Log out</a></li>
-                        </ul>
-                    </div>
-                </div>
-                {% else %}
-                <!-- Logged Out (Show Sign In Button) -->
-                <div class="px-3 mb-6 shrink-0">
-                    <button onclick="document.getElementById('auth_modal').showModal()"
-                        class="btn btn-primary w-full rounded-xl text-white raleway-500 shadow-md">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Sign Up
-                    </button>
-                </div>
-                {% endif %}
-
-                <!-- ========================================== -->
-                <!-- NAVIGATION TABS (RESTORED) -->
-                <!-- ========================================== -->
-                <div class="sidebar-tags grid gap-2 px-3 w-full shrink-0">
+                <!-- NAVIGATION TABS -->
+                <div class="sidebar-tags grid gap-2 px-3 w-full shrink-0 mt-4">
                     <!-- Home -->
-                    <a href="/"
-                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/' %}btn-success btn-soft{% endif %}">
+                    <a href="/" class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/' %}btn-success btn-soft{% endif %}">
                         <div class="icon"><img src="/static/assets/svg/home.svg" class="w-5 h-5" alt=""></div>
                         <p class="capitalize raleway-400">home</p>
                     </a>
 
                     <!-- Saved Scenarios -->
-                    <a href="/scenarios"
-                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/scenarios' %}btn-success btn-soft{% endif %}">
+                    <a href="/scenarios" class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/scenarios' %}btn-success btn-soft{% endif %}">
                         <div class="icon"><img src="/static/assets/svg/save.svg" class="w-5 h-5" alt=""></div>
                         <p class="capitalize raleway-400">saved scenarios</p>
                     </a>
 
                     <!-- Insights -->
-                    <a href="/insights"
-                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/insights' %}btn-success btn-soft{% endif %}">
+                    <a href="/insights" class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/insights' %}btn-success btn-soft{% endif %}">
                         <div class="icon"><img src="/static/assets/svg/graph.svg" class="w-5 h-5" alt=""></div>
                         <p class="capitalize raleway-400">insights</p>
                     </a>
 
                     <!-- Settings -->
-                    <a href="/settings"
-                        class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/settings' %}btn-success btn-soft{% endif %}">
+                    <a href="/settings" class="flex gap-3 items-center justify-start sidebar-tag btn {% if request.url.path == '/settings' %}btn-success btn-soft{% endif %}">
                         <div class="icon"><img src="/static/assets/svg/setting.svg" class="w-5 h-5" alt=""></div>
                         <p class="capitalize raleway-400">settings</p>
                     </a>
                 </div>
 
-                <!-- Spacer to push bottom elements down -->
+                <!-- Spacer -->
                 <div class="flex-1"></div>
 
-                <!-- Premium Card (Only if logged in) -->
-                {% if user %}
-                <div class="px-3 mb-4 shrink-0">
-                    <div
-                        class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-2 opacity-10">
-                            <i class="fa-solid fa-crown text-4xl text-yellow-600"></i>
-                        </div>
-                        <h4 class="raleway-700 text-yellow-800 text-sm mb-1"><i
-                                class="fa-solid fa-crown text-yellow-500 mr-1"></i> Premium</h4>
-                        <p class="raleway-400 text-xs text-yellow-700/80 mb-3">Unlock more features and advanced
-                            analytics.</p>
-                        <button class="btn btn-xs btn-success w-full text-white raleway-500 shadow-sm border-0">
-                            <i class="fa-solid fa-bolt"></i> Upgrade
-                        </button>
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Bottom Footer / Logout -->
+                <!-- Bottom Message -->
                 <div class="px-3 mt-auto shrink-0">
-                    {% if user %}
-                    <a href="/api/logout"
-                        class="flex items-center gap-2 p-2 rounded-lg text-error hover:bg-error/10 raleway-500 text-sm transition-colors">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-                    </a>
-                    {% else %}
                     <div class="w-full px-2 py-4 bg-stone-100 rounded-lg text-center">
-                        <img src="/static/assets/svg/plant1.svg" loading="lazy" class="w-5 h-5" alt="">
                         <p class="raleway-400 text-xs text-base-content/60">Plan. Simulate.<br>Grow your wealth.</p>
                     </div>
-                    {% endif %}
                 </div>
             </div>
         </aside>
@@ -184,105 +116,6 @@
             </div>
         </section>
     </main>
-
-
-    <!-- AUTHENTICATION MODAL -->
-    <dialog id="auth_modal" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box p-8 max-w-md bg-base-100">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
-            </form>
-
-            <div class="text-center mb-6">
-                <img src="/static/assets/svg/growth.svg" class="w-8 h-8 mx-auto mb-2" alt="Logo">
-                <h3 class="font-bold text-2xl raleway-700" id="auth-title">Welcome back!</h3>
-                <p class="text-sm text-base-content/60 raleway-400" id="auth-subtitle">Sign in to continue to What If I
-                    Invest?</p>
-            </div>
-
-            <!-- LOGIN FORM -->
-            <form id="login-form" class="flex flex-col gap-4">
-                <div class="relative">
-                    <i class="fa-regular fa-envelope absolute left-3 top-3 text-base-content/40"></i>
-                    <input type="email" name="email" placeholder="you@example.com"
-                        class="input input-bordered w-full pl-10 raleway-400" required>
-                </div>
-                <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-3 top-3 text-base-content/40"></i>
-                    <input type="password" name="password" placeholder="Enter your password"
-                        class="input input-bordered w-full pl-10 raleway-400" required>
-                </div>
-                <div class="flex justify-between items-center text-xs raleway-400">
-                    <label class="cursor-pointer flex items-center gap-2">
-                        <input type="checkbox" class="checkbox checkbox-xs"> Remember me
-                    </label>
-                    <!-- CHANGE THIS LINK -->
-                    <a href="#" onclick="toggleAuthMode('forgot')" class="text-primary hover:underline">Forgot
-                        password?</a>
-                </div>
-
-                <button type="submit" class="btn btn-success w-full text-white raleway-500 mt-2">Sign In</button>
-
-                <p class="text-center text-sm mt-4 raleway-400">
-                    Don't have an account?
-                    <a href="#" onclick="toggleAuthMode('signup')" class="text-primary font-bold hover:underline">Sign
-                        up</a>
-                </p>
-            </form>
-
-            <!-- FORGOT PASSWORD FORM (Hidden by default) -->
-            <form id="forgot-form" class="flex flex-col gap-4 hidden">
-                <p class="text-sm text-base-content/70 raleway-400 text-center mb-2">
-                    Enter your email address and we'll send you a link to reset your password.
-                </p>
-                <div class="relative">
-                    <i class="fa-regular fa-envelope absolute left-3 top-3 text-base-content/40"></i>
-                    <input type="email" name="email" placeholder="you@example.com"
-                        class="input input-bordered w-full pl-10 raleway-400" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-full text-white raleway-500 mt-2">Send Reset
-                    Link</button>
-
-                <p class="text-center text-sm mt-4 raleway-400">
-                    Remember your password?
-                    <a href="#" onclick="toggleAuthMode('login')" class="text-primary font-bold hover:underline">Back to
-                        Sign in</a>
-                </p>
-            </form>
-
-            <!-- SIGNUP FORM (Hidden by default) -->
-            <form id="signup-form" class="flex flex-col gap-4 hidden">
-                <div class="relative">
-                    <i class="fa-regular fa-user absolute left-3 top-3 text-base-content/40"></i>
-                    <input type="text" name="name" placeholder="Full name"
-                        class="input input-bordered w-full pl-10 raleway-400" required>
-                </div>
-                <div class="relative">
-                    <i class="fa-regular fa-envelope absolute left-3 top-3 text-base-content/40"></i>
-                    <input type="email" name="email" placeholder="Email address"
-                        class="input input-bordered w-full pl-10 raleway-400" required>
-                </div>
-                <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-3 top-3 text-base-content/40"></i>
-                    <input type="password" name="password" placeholder="Create a password"
-                        class="input input-bordered w-full pl-10 raleway-400" required>
-                </div>
-                <label class="cursor-pointer flex items-center gap-2 text-xs raleway-400 mt-2">
-                    <input type="checkbox" class="checkbox checkbox-xs" required>
-                    I agree to the Terms and Privacy Policy.
-                </label>
-
-                <button type="submit" class="btn btn-success w-full text-white raleway-500 mt-2">Create Account</button>
-
-                <p class="text-center text-sm mt-4 raleway-400">
-                    Already have an account?
-                    <a href="#" onclick="toggleAuthMode('login')" class="text-primary font-bold hover:underline">Sign
-                        in</a>
-                </p>
-            </form>
-        </div>
-    </dialog>
 
 
     <!-- Toast Notification Container -->
