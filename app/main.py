@@ -1,16 +1,19 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse, StreamingResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from starlette.middleware.sessions import SessionMiddleware
+
 import io
 import csv
 import copy
 
 from typing import Optional
 
-
 app = FastAPI()
+
+app.add_middleware(SessionMiddleware, secret_key="super-secret-school-project-key")
 
 # 1. Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -60,35 +63,50 @@ MOCK_DB = [
     }
 ]
 
+# Mock Database for Users
+MOCK_USERS = [
+    {"id": 1, "name": "Marie-Joel ALLOHAN", "email": "mjoel.allohan@gmail.com", "password": "password123", "initials": "MJ"}
+]
+
 # ==========================================
 # HTML ROUTES (SSR)
 # ==========================================
 
 @app.get("/", response_class=HTMLResponse)
 async def simulator_page(request: Request):
-    # Pass the first 5 scenarios to the simulator page widget
+    user = request.session.get("user") # <-- Get user
     return templates.TemplateResponse(
         request=request, 
         name="simulator.html", 
-        context={"scenarios": MOCK_DB}
+        context={"scenarios": MOCK_DB, "user": user} # <-- Pass user
     )
 
 @app.get("/scenarios", response_class=HTMLResponse)
 async def scenarios_page(request: Request):
-    # Pass the full list to the main scenarios page
+    user = request.session.get("user") # <-- Get user
     return templates.TemplateResponse(
         request=request, 
         name="scenarios.html", 
-        context={"scenarios": MOCK_DB} 
+        context={"scenarios": MOCK_DB, "user": user} # <-- Pass user
     )
 
 @app.get("/insights", response_class=HTMLResponse)
 async def insights_page(request: Request):
-    return templates.TemplateResponse(request=request, name="insights.html")
+    user = request.session.get("user") # <-- Get user
+    return templates.TemplateResponse(
+        request=request, 
+        name="insights.html",
+        context={"user": user} # <-- Pass user
+    )
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
-    return templates.TemplateResponse(request=request, name="settings.html")
+    user = request.session.get("user") # <-- Get user
+    return templates.TemplateResponse(
+        request=request, 
+        name="settings.html",
+        context={"user": user} # <-- Pass user
+    )
 
 # ==========================================
 # API ENDPOINTS (AJAX/JS)
@@ -105,10 +123,8 @@ class ScenarioCreate(BaseModel):
 
 @app.post("/api/scenarios")
 async def create_scenario(scenario: ScenarioCreate):
-    # Generate a new ID
     new_id = max([s["id"] for s in MOCK_DB], default=0) + 1
     
-    # Create the new dictionary (Adding fake calculated data for the UI)
     new_scenario = {
         "id": new_id,
         "name": scenario.name,
@@ -118,15 +134,14 @@ async def create_scenario(scenario: ScenarioCreate):
         "monthly": scenario.monthly,
         "annual_rate": scenario.annual_rate,
         "years": scenario.years,
-        "created": "Nov 08, 2026", # In a real app, use datetime.now()
+        "created": "Nov 08, 2026",
         "status": "Active",
-        "gain": "+€0", # You would run your math logic here
+        "gain": "+€0",
         "percent": "(+0.0%)",
         "final_value": f"€{(scenario.initial + scenario.monthly * 12 * scenario.years):,.0f}",
-        "chart_path": "M0,40 L20,35 L40,30 L60,25 L80,20 L100,15" # Default chart
+        "chart_path": "M0,40 L20,35 L40,30 L60,25 L80,20 L100,15"
     }
     
-    # Add to our mock DB
     MOCK_DB.insert(0, new_scenario)
     return {"status": "success", "message": "Saved to database"}
 
@@ -139,11 +154,9 @@ async def delete_scenario(scenario_id: int):
 @app.post("/api/scenarios/{scenario_id}/duplicate")
 async def duplicate_scenario(scenario_id: int):
     global MOCK_DB
-    # Find the original scenario
     original = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
     
     if original:
-        # Create a copy, change the ID and Name
         new_copy = copy.deepcopy(original)
         new_copy["id"] = max([s["id"] for s in MOCK_DB], default=0) + 1
         new_copy["name"] = f"Copy of {original['name']}"
@@ -181,120 +194,15 @@ async def restore_scenario(scenario_id: int):
     return {"status": "error"}
 
 # ==========================================
-# SETTINGS & EXPORT ENDPOINTS
+# SIMULATION LOGIC (Moved to global scope)
 # ==========================================
 
-@app.post("/api/settings")
-async def save_setting(request: Request):
-    data = await request.json()
-    # Here, you would save this to your SQLAlchemy User model
-    print(f"User updated setting: {data}")
-    return {"status": "success"}
-
-
-@app.get("/api/export-data")
-async def export_data(scenario_id: Optional[int] = None):
-    output = io.StringIO()
-    writer = csv.writer(output)
-    
-    # 1. Write Headers
-    writer.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status", "Final Value"])
-    
-    filename = "all_scenarios.csv"
-    
-    # 2. Write Data
-    if scenario_id:
-        # Export just one specific scenario
-        scenario = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
-        if scenario:
-            writer.writerow([
-                scenario["id"], scenario["name"], scenario["initial"], 
-                scenario["monthly"], scenario["annual_rate"], scenario["years"], 
-                scenario["status"], scenario["final_value"]
-            ])
-            filename = f"scenario_{scenario_id}_{scenario['name'].replace(' ', '_')}.csv"
-    else:
-        # Export all scenarios
-        for s in MOCK_DB:
-            writer.writerow([
-                s["id"], s["name"], s["initial"], 
-                s["monthly"], s["annual_rate"], s["years"], 
-                s["status"], s["final_value"]
-            ])
-    
-    output.seek(0)
-    
-    return StreamingResponse(
-        iter([output.getvalue()]), 
-        media_type="text/csv", 
-        # The attachment header tells the browser to download the file instead of opening it
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
-    )
-
-@app.get("/api/scenarios/{scenario_id}/details")
-async def get_scenario_details(scenario_id: int):
-    scenario = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
-    
-    if not scenario:
-        return {"status": "error", "message": "Not found"}
-
-    # --- DO THE MATH (Compound Interest) ---
-    initial = float(scenario["initial"])
-    monthly = float(scenario["monthly"])
-    annual_rate = float(scenario["annual_rate"]) / 100
-    years = int(scenario["years"])
-    
-    monthly_rate = annual_rate / 12
-    
-    # We will track the balance year by year for the chart
-    balance_data = [initial]
-    invested_data = [initial]
-    labels = ["0"] # Start at year 0
-    
-    current_balance = initial
-    current_invested = initial
-    
-    for year in range(1, years + 1):
-        # Calculate 12 months of growth for this year
-        for month in range(12):
-            interest = current_balance * monthly_rate
-            current_balance += interest + monthly
-            current_invested += monthly
-            
-        balance_data.append(round(current_balance))
-        invested_data.append(round(current_invested))
-        labels.append(str(year))
-
-    # Final breakdown
-    total_interest = current_balance - current_invested
-    total_monthly_contributions = current_invested - initial
-
-    return {
-        "scenario_name": scenario["name"],
-        "theme": scenario["theme"],
-        "breakdown": {
-            "initial": initial,
-            "monthly_total": total_monthly_contributions,
-            "interest_earned": total_interest,
-            "final_balance": current_balance,
-            "total_invested": current_invested
-        },
-        "chart": {
-            "labels": labels,
-            "balance_data": balance_data,
-            "invested_data": invested_data
-        }
-    }
-
-
-    # Add this Pydantic model
 class SimulationInput(BaseModel):
     initial: float
     monthly: float
     annual_rate: float
     years: int
 
-# Add this helper function
 def calculate_compound_interest(initial: float, monthly: float, annual_rate: float, years: int):
     monthly_rate = (annual_rate / 100) / 12
     
@@ -327,7 +235,127 @@ def calculate_compound_interest(initial: float, monthly: float, annual_rate: flo
         }
     }
 
-# Add this new API route
 @app.post("/api/simulate")
 async def simulate_investment(data: SimulationInput):
     return calculate_compound_interest(data.initial, data.monthly, data.annual_rate, data.years)
+
+@app.get("/api/scenarios/{scenario_id}/details")
+async def get_scenario_details(scenario_id: int):
+    scenario = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
+    
+    if not scenario:
+        return {"status": "error", "message": "Not found"}
+
+    math_results = calculate_compound_interest(
+        float(scenario["initial"]), 
+        float(scenario["monthly"]), 
+        float(scenario["annual_rate"]), 
+        int(scenario["years"])
+    )
+    
+    total_monthly = math_results["total_invested"] - float(scenario["initial"])
+
+    return {
+        "scenario_name": scenario["name"],
+        "theme": scenario["theme"],
+        "breakdown": {
+            "initial": float(scenario["initial"]),
+            "monthly_total": total_monthly,
+            "interest_earned": math_results["gains"],
+            "final_balance": math_results["final_balance"],
+            "total_invested": math_results["total_invested"]
+        },
+        "chart": math_results["chart"]
+    }
+
+# ==========================================
+# SETTINGS & EXPORT ENDPOINTS
+# ==========================================
+
+@app.post("/api/settings")
+async def save_setting(request: Request):
+    data = await request.json()
+    print(f"User updated setting: {data}")
+    return {"status": "success"}
+
+@app.get("/api/export-data")
+async def export_data(scenario_id: Optional[int] = None):
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status", "Final Value"])
+    
+    filename = "all_scenarios.csv"
+    
+    if scenario_id:
+        scenario = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
+        if scenario:
+            writer.writerow([
+                scenario["id"], scenario["name"], scenario["initial"], 
+                scenario["monthly"], scenario["annual_rate"], scenario["years"], 
+                scenario["status"], scenario["final_value"]
+            ])
+            filename = f"scenario_{scenario_id}_{scenario['name'].replace(' ', '_')}.csv"
+    else:
+        for s in MOCK_DB:
+            writer.writerow([
+                s["id"], s["name"], s["initial"], 
+                s["monthly"], s["annual_rate"], s["years"], 
+                s["status"], s["final_value"]
+            ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]), 
+        media_type="text/csv", 
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+# ==========================================
+# AUTHENTICATION ENDPOINTS
+# ==========================================
+
+@app.post("/api/login")
+async def login(request: Request, email: str = Form(...), password: str = Form(...)):
+    user = next((u for u in MOCK_USERS if u["email"] == email and u["password"] == password), None)
+    if user:
+        request.session["user"] = user
+        return {"status": "success"}
+    return {"status": "error", "message": "Invalid email or password"}
+
+@app.post("/api/signup")
+async def signup(request: Request, name: str = Form(...), email: str = Form(...), password: str = Form(...)):
+    if any(u["email"] == email for u in MOCK_USERS):
+        return {"status": "error", "message": "Email already registered"}
+    
+    new_user = {
+        "id": len(MOCK_USERS) + 1,
+        "name": name,
+        "email": email,
+        "password": password,
+        "initials": "".join([n[0] for n in name.split()[:2]]).upper()
+    }
+    MOCK_USERS.append(new_user)
+    request.session["user"] = new_user
+    return {"status": "success"}
+
+@app.get("/api/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/", status_code=303)
+
+
+from fastapi import Form
+
+@app.post("/api/forgot-password")
+async def forgot_password(email: str = Form(...)):
+    # In a real app, you would:
+    # 1. Check if the email exists in the database.
+    # 2. Generate a secure token.
+    # 3. Send an email with a link (e.g., /reset-password?token=xyz).
+    
+    # For your school project, we just return success.
+    print(f"Mock: Password reset requested for {email}")
+    
+    return {"status": "success", "message": "If an account exists, a reset link has been sent."}
