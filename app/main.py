@@ -332,3 +332,18 @@ def get_daily_sidebar_data():
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse(request=request, name="login.html")
+
+
+
+from fastapi import Form
+
+@app.post("/api/forgot-password")
+async def forgot_password(email: str = Form(...)):
+    # In a real app, you would check if the email exists in the database
+    # and generate a secure token to send via email.
+    
+    print(f"Password reset requested for: {email}")
+    
+    # We always return success for security reasons 
+    # (so hackers can't guess which emails are registered)
+    return {"status": "success", "message": "If an account exists, a reset link has been sent."}

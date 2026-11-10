@@ -75,3 +75,76 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("password-error").classList.add("hidden");
     });
 });
+
+
+
+
+
+    // ==========================================
+    // FORGOT PASSWORD LOGIC
+    // ==========================================
+    const forgotForm = document.getElementById("forgot-form");
+    const forgotEmail = document.getElementById("forgot-email");
+    const forgotError = document.getElementById("forgot-error");
+    const forgotModal = document.getElementById("forgot_modal");
+
+    if (forgotForm) {
+        forgotForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(forgotEmail.value.trim())) {
+                forgotEmail.classList.add("border-error", "focus:border-error", "focus:ring-error");
+                forgotError.classList.remove("hidden");
+                return;
+            }
+
+            forgotEmail.classList.remove("border-error", "focus:border-error", "focus:ring-error");
+            forgotError.classList.add("hidden");
+
+            const btn = document.getElementById("forgot-submit-btn");
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Sending...';
+            btn.disabled = true;
+
+            try {
+                const formData = new FormData(forgotForm);
+                const res = await fetch('/api/forgot-password', { 
+                    method: 'POST', 
+                    body: formData 
+                });
+                
+                if (res.ok) {
+                    // Change modal content to success state
+                    forgotModal.querySelector('.modal-box').innerHTML = `
+                        <div class="text-center py-6">
+                            <div class="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-paper-plane text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-2xl raleway-700 text-[#0f172a] mb-2">Check your email</h3>
+                            <p class="text-sm text-slate-500 mb-6">We've sent a password reset link to <br><strong>${forgotEmail.value}</strong></p>
+                            <form method="dialog">
+                                <button class="btn bg-[#0f172a] text-white w-full rounded-lg">Back to Login</button>
+                            </form>
+                        </div>
+                    `;
+                } else {
+                    alert("Something went wrong. Please try again.");
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error.");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Clear error when typing
+        forgotEmail.addEventListener("input", () => {
+            forgotEmail.classList.remove("border-error", "focus:border-error", "focus:ring-error");
+            forgotError.classList.add("hidden");
+        });
+    }
