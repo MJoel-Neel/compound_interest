@@ -396,9 +396,27 @@ function removeScenarioRow(id) {
 
 function updateScenarioCount() {
     const badge = document.getElementById('scenario-count-badge');
+    const viewAllContainer = document.getElementById('view-all-scenarios-container');
+    const viewAllBtn = document.getElementById('view-all-scenarios-btn');
+    const viewAllCountSpan = document.getElementById('view-all-count');
+    
+    // Count the remaining rows on the screen
     const remainingRows = document.querySelectorAll('.scenario-row').length;
 
+    // 1. Update the Badge (e.g., "5 scenarios")
     if (badge) {
         badge.textContent = `${remainingRows} scenario${remainingRows !== 1 ? 's' : ''}`;
+    }
+
+    // 2. Update the "View All" button
+    if (viewAllContainer && viewAllBtn && viewAllCountSpan) {
+        if (remainingRows > 5) {
+            // If more than 5, show the button and update the number
+            viewAllContainer.classList.remove('hidden');
+            viewAllCountSpan.textContent = remainingRows;
+        } else {
+            // If 5 or fewer, hide the button completely
+            viewAllContainer.classList.add('hidden');
+        }
     }
 }
