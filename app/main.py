@@ -60,6 +60,13 @@ MOCK_DB = [
 ]
 
 # ==========================================
+# GLOBAL MOCK STATE (For UI Testing)
+# ==========================================
+# Change this to None to test the "Sign In" button
+# Change this to a dictionary to test the "Log out" button
+GLOBAL_MOCK_USER = {"name": "Marie-Joel", "email": "mj@example.com"} 
+
+# ==========================================
 # HTML ROUTES
 # ==========================================
 
@@ -69,7 +76,12 @@ async def simulator_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="simulator.html", 
-        context={"scenarios": MOCK_DB, "daily_quote": daily_quote, "daily_plant": daily_plant}
+        context={
+            "scenarios": MOCK_DB, 
+            "daily_quote": daily_quote, 
+            "daily_plant": daily_plant,
+            "user": GLOBAL_MOCK_USER  
+        }
     )
 
 @app.get("/scenarios", response_class=HTMLResponse)
@@ -78,8 +90,15 @@ async def scenarios_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="scenarios.html", 
-        context={"scenarios": MOCK_DB, "daily_quote": daily_quote, "daily_plant": daily_plant} 
+        context={
+            "scenarios": MOCK_DB, 
+            "daily_quote": daily_quote, 
+            "daily_plant": daily_plant,
+            "user": GLOBAL_MOCK_USER
+        }
     )
+
+# ... do the exact same for /insights and /settings ...
 
 @app.get("/insights", response_class=HTMLResponse)
 async def insights_page(request: Request):
@@ -87,7 +106,8 @@ async def insights_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="insights.html",
-        context={"daily_quote": daily_quote, "daily_plant": daily_plant} 
+        context={"daily_quote": daily_quote, "daily_plant": daily_plant,
+            "user": GLOBAL_MOCK_USER } 
     )
 
 @app.get("/settings", response_class=HTMLResponse)
@@ -96,7 +116,8 @@ async def settings_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="settings.html",
-        context={"daily_quote": daily_quote, "daily_plant": daily_plant} 
+        context={"daily_quote": daily_quote, "daily_plant": daily_plant,
+            "user": GLOBAL_MOCK_USER } 
     )
 
 # ==========================================
@@ -305,3 +326,9 @@ def get_daily_sidebar_data():
     plant_index = (today % 4) + 1
     
     return quote, plant_index
+
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse(request=request, name="login.html")

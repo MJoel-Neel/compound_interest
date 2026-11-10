@@ -103,22 +103,37 @@
 
                 </div>
 
-                <!-- Spacer -->
+                <!-- Spacer to push everything to the bottom -->
                 <div class="flex-1"></div>
 
-                <!-- Bottom Message -->
-                <div class="px-3 mt-auto shrink-0 mb-4">
-                    <!-- Light green background with subtle border -->
-                    <div class="w-full p-4 bg-[#f0fcf4] border border-[#dcfce7] rounded-xl flex 
-                        flex-col items-start gap-3">
-                        <!-- Dynamic Plant Icon -->
-                        <img src="/static/assets/svg/plant{{ daily_plant|default(1) }}.svg" class="w-7 h-7" alt="Plant">
-                        <!-- Dynamic Quote -->
-                        <p class="raleway-500 text-[0.85rem] text-[#4a5d70] leading-relaxed text-left">
-                            {{ daily_quote }}
-                        </p>
+                <!-- BOTTOM SECTION (Quote + Auth Button) -->
+                <div class="px-3 mt-auto shrink-0 mb-4 flex flex-col gap-4">
 
+                    <!-- Daily Quote Block -->
+                    <div
+                        class="w-full p-4 bg-[#f0fcf4] border border-[#dcfce7] rounded-xl flex flex-col items-start gap-3">
+                        <img src="/static/assets/svg/plant{{ daily_plant|default(1) }}.svg" class="w-7 h-7" alt="Plant">
+                        <p class="raleway-500 text-[0.85rem] text-[#4a5d70] leading-relaxed text-left">
+                            {{ daily_quote|default('Plan. Simulate. Grow your wealth.') }}
+                        </p>
                     </div>
+
+                    <!-- Auth Toggle: Log Out or Sign In -->
+                    {% if user %}
+                    <!-- Log Out Button -->
+                    <a href="/api/logout"
+                        class="flex items-center gap-3 px-3 py-2 w-full text-[#1e1b4b] hover:bg-slate-100 rounded-lg transition-colors group">
+                        <i
+                            class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-lg group-hover:-translate-x-1 transition-transform"></i>
+                        <span class="raleway-600 text-sm">Log out</span>
+                    </a>
+                    {% else %}
+                    <!-- Sign In / Sign Up Button -->
+                    <a href="/login" class="btn btn-success w-full text-white raleway-600 rounded-xl shadow-sm">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Sign Up
+                    </a>
+                    {% endif %}
+
                 </div>
             </div>
         </aside>
