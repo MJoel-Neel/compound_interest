@@ -15,101 +15,106 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
 
     <title>Sign Up - What If I Invest?</title>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('app-theme') || 'light';
+            let activeTheme = savedTheme;
+            if (savedTheme === 'system') {
+                activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', activeTheme);
+        })();
+    </script>
 </head>
-<body class="min-h-screen bg-[#f4f8fb] flex items-center justify-center md:p-6 raleway-400 antialiased">
+<body class="min-h-screen bg-base-200 flex items-center justify-center md:p-6 raleway-400 antialiased transition-colors duration-300">
 
     <!-- Main Card Container -->
-    <div class="w-[98%] max-w-[1000px] mx-auto bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex flex-col md:flex-row relative min-h-[85vh] md:min-h-[650px] my-4 md:my-0">
+    <div class="w-[98%] max-w-[1000px] mx-auto bg-base-100 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex flex-col md:flex-row relative min-h-[85vh] md:min-h-[650px] my-4 md:my-0">
         
         <!-- DISTINCT RETURN BUTTON -->
-        <a href="/" class="absolute top-4 left-4 md:top-6 md:left-6 z-50 flex items-center justify-center w-10 h-10 bg-white border border-slate-200 rounded-full shadow-sm text-slate-500 hover:text-[#22c55e] hover:border-[#22c55e] hover:shadow-md transition-all group" title="Back to Home">
+        <a href="/" class="absolute top-4 left-4 md:top-6 md:left-6 z-50 flex items-center justify-center w-10 h-10 bg-base-100 border border-base-300 rounded-full shadow-sm text-base-content/70 hover:text-success hover:border-success hover:shadow-md transition-all group" title="Back to Home">
             <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-0.5 transition-transform"></i>
         </a>
 
-        <!-- LEFT SIDE (Branding & Illustration) - Hidden on Mobile -->
-        <div class="hidden md:flex w-1/2 bg-[#f8fbff] p-12 flex-col relative overflow-hidden">
-            <!-- Background Decoration -->
-            <div class="absolute -top-20 -left-20 w-64 h-64 bg-white rounded-full opacity-50 blur-3xl"></div>
-            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-100 rounded-full opacity-30 blur-3xl"></div>
+        <!-- LEFT SIDE (Branding & Illustration) -->
+        <div class="hidden md:flex w-1/2 bg-base-200/50 p-12 flex-col relative overflow-hidden">
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-primary/10 rounded-full opacity-50 blur-3xl"></div>
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/20 rounded-full opacity-30 blur-3xl"></div>
 
-            <!-- Logo -->
             <a href="/" class="flex items-center gap-2 z-10 w-fit">
                 <img src="/static/assets/svg/growth.svg" class="w-6 h-6" alt="Logo">
-                <span class="raleway-700 text-[#0f172a] text-lg">What If I Invest?</span>
+                <span class="raleway-700 text-base-content text-lg">What If I Invest?</span>
             </a>
 
-            <!-- Text Content -->
             <div class="mt-16 z-10">
-                <h1 class="raleway-700 text-4xl text-[#0f172a] leading-tight mb-4">
+                <h1 class="raleway-700 text-4xl text-base-content leading-tight mb-4">
                     Plan. Simulate.<br>
-                    <span class="text-[#22c55e]">Grow</span> your wealth.
+                    <span class="text-success">Grow</span> your wealth.
                 </h1>
-                <p class="text-slate-500 text-sm leading-relaxed max-w-xs">
+                <p class="text-base-content/70 text-sm leading-relaxed max-w-xs">
                     Explore investment scenarios, make smarter decisions, and build a stronger financial future.
                 </p>
             </div>
 
-            <!-- CSS Illustration -->
             <div class="mt-auto z-10 relative h-48 w-full flex items-end justify-center gap-2">
-                <div class="w-8 h-16 bg-[#e2e8f0] rounded-t-sm"></div>
-                <div class="w-10 h-24 bg-[#cbd5e1] rounded-t-sm"></div>
-                <div class="w-12 h-32 bg-[#94a3b8] rounded-t-sm"></div>
-                <div class="w-14 h-40 bg-[#64748b] rounded-t-sm"></div>
+                <div class="w-8 h-16 bg-base-300 rounded-t-sm"></div>
+                <div class="w-10 h-24 bg-base-300 rounded-t-sm opacity-80"></div>
+                <div class="w-12 h-32 bg-base-300 rounded-t-sm opacity-60"></div>
+                <div class="w-14 h-40 bg-base-300 rounded-t-sm opacity-40"></div>
                 <div class="absolute bottom-0 right-10 flex flex-col items-center">
                     <div class="w-12 h-4 bg-yellow-400 rounded-full border border-yellow-500 mb-1"></div>
                     <div class="w-12 h-4 bg-yellow-400 rounded-full border border-yellow-500 mb-1"></div>
                     <div class="w-12 h-4 bg-yellow-400 rounded-full border border-yellow-500"></div>
-                    <i class="fa-solid fa-seedling text-green-500 text-3xl absolute -top-8"></i>
+                    <i class="fa-solid fa-seedling text-success text-3xl absolute -top-8"></i>
                 </div>
             </div>
         </div>
 
         <!-- RIGHT SIDE (Signup Form) -->
-        <div class="w-full md:w-1/2 p-6 pt-16 sm:p-10 md:p-12 flex flex-col justify-center relative bg-white">
+        <div class="w-full md:w-1/2 p-6 pt-16 sm:p-10 md:p-12 flex flex-col justify-center relative bg-base-100">
             
-            <!-- Mobile Only Logo -->
             <div class="md:hidden flex items-center gap-2 mb-6">
                 <img src="/static/assets/svg/growth.svg" class="w-6 h-6" alt="Logo">
-                <span class="raleway-700 text-[#0f172a] text-lg">What If I Invest?</span>
+                <span class="raleway-700 text-base-content text-lg">What If I Invest?</span>
             </div>
 
             <div class="mb-6">
-                <h2 class="raleway-700 text-3xl text-[#0f172a] mb-2">Create your account</h2>
-                <p class="text-slate-500 text-sm">Join What If I Invest? today</p>
+                <h2 class="raleway-700 text-3xl text-base-content mb-2">Create your account</h2>
+                <p class="text-base-content/60 text-sm">Join What If I Invest? today</p>
             </div>
 
             <form id="signup-form" class="flex flex-col gap-4">
                 
                 <!-- Full Name -->
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-sm font-semibold text-[#0f172a]">Full name</label>
+                    <label class="text-sm font-semibold text-base-content">Full name</label>
                     <div class="relative">
-                        <i class="fa-regular fa-user absolute left-3 top-3.5 text-slate-400"></i>
+                        <i class="fa-regular fa-user absolute left-3 top-3.5 text-base-content/40"></i>
                         <input type="text" id="name" name="name" placeholder="Marie-Joel ALLOHAN" 
-                            class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e] transition-all text-sm" required>
+                            class="w-full pl-10 pr-4 py-3 rounded-lg border border-base-300 bg-base-100 text-base-content focus:outline-none focus:border-success focus:ring-1 focus:ring-success transition-all text-sm" required>
                     </div>
                     <p class="text-xs text-error hidden mt-1" id="name-error"><i class="fa-solid fa-circle-exclamation"></i> Please enter your full name.</p>
                 </div>
 
                 <!-- Email -->
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-sm font-semibold text-[#0f172a]">Email address</label>
+                    <label class="text-sm font-semibold text-base-content">Email address</label>
                     <div class="relative">
-                        <i class="fa-regular fa-envelope absolute left-3 top-3.5 text-slate-400"></i>
+                        <i class="fa-regular fa-envelope absolute left-3 top-3.5 text-base-content/40"></i>
                         <input type="email" id="email" name="email" placeholder="you@example.com" 
-                            class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e] transition-all text-sm" required>
+                            class="w-full pl-10 pr-4 py-3 rounded-lg border border-base-300 bg-base-100 text-base-content focus:outline-none focus:border-success focus:ring-1 focus:ring-success transition-all text-sm" required>
                     </div>
                     <p class="text-xs text-error hidden mt-1" id="email-error"><i class="fa-solid fa-circle-exclamation"></i> Please enter a valid email address.</p>
                 </div>
 
                 <!-- Password -->
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-sm font-semibold text-[#0f172a]">Password</label>
+                    <label class="text-sm font-semibold text-base-content">Password</label>
                     <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-3 top-3.5 text-slate-400"></i>
+                        <i class="fa-solid fa-lock absolute left-3 top-3.5 text-base-content/40"></i>
                         <input type="password" id="password" name="password" placeholder="Create a password" 
-                            class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-200 focus:outline-none focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e] transition-all text-sm" required>
-                        <button type="button" class="toggle-password absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 focus:outline-none">
+                            class="w-full pl-10 pr-10 py-3 rounded-lg border border-base-300 bg-base-100 text-base-content focus:outline-none focus:border-success focus:ring-1 focus:ring-success transition-all text-sm" required>
+                        <button type="button" class="toggle-password absolute right-3 top-3.5 text-base-content/40 hover:text-base-content focus:outline-none">
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
@@ -118,12 +123,12 @@
 
                 <!-- Confirm Password -->
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-sm font-semibold text-[#0f172a]">Confirm password</label>
+                    <label class="text-sm font-semibold text-base-content">Confirm password</label>
                     <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-3 top-3.5 text-slate-400"></i>
+                        <i class="fa-solid fa-lock absolute left-3 top-3.5 text-base-content/40"></i>
                         <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm your password" 
-                            class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-200 focus:outline-none focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e] transition-all text-sm" required>
-                        <button type="button" class="toggle-password absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 focus:outline-none">
+                            class="w-full pl-10 pr-10 py-3 rounded-lg border border-base-300 bg-base-100 text-base-content focus:outline-none focus:border-success focus:ring-1 focus:ring-success transition-all text-sm" required>
+                        <button type="button" class="toggle-password absolute right-3 top-3.5 text-base-content/40 hover:text-base-content focus:outline-none">
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
@@ -132,28 +137,26 @@
 
                 <!-- Terms Checkbox -->
                 <div class="mt-2">
-                    <label class="flex items-start gap-2 cursor-pointer text-xs text-slate-600 leading-tight">
-                        <input type="checkbox" id="terms" class="checkbox checkbox-xs rounded border-slate-300 checked:border-[#22c55e] checked:bg-[#22c55e] mt-0.5" required> 
-                        <span>I agree to the <a href="#" class="text-[#2563eb] hover:underline">Terms of Service</a> and <a href="#" class="text-[#2563eb] hover:underline">Privacy Policy</a>.</span>
+                    <label class="flex items-start gap-2 cursor-pointer text-xs text-base-content/70 leading-tight">
+                        <input type="checkbox" id="terms" class="checkbox checkbox-xs rounded border-base-300 checked:border-success checked:bg-success mt-0.5" required> 
+                        <span>I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and <a href="#" class="text-primary hover:underline">Privacy Policy</a>.</span>
                     </label>
                     <p class="text-xs text-error hidden mt-1" id="terms-error"><i class="fa-solid fa-circle-exclamation"></i> You must agree to the terms.</p>
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" id="submit-btn" class="btn bg-[#22c55e] hover:bg-[#16a34a] border-none text-white w-full rounded-lg h-11 min-h-0 mt-2 text-sm font-semibold shadow-sm flex items-center gap-2">
+                <button type="submit" id="submit-btn" class="btn btn-success w-full rounded-lg h-11 min-h-0 mt-2 text-sm font-semibold shadow-sm flex items-center gap-2 text-success-content">
                     <i class="fa-solid fa-user-plus"></i> Create Account
                 </button>
             </form>
 
-            <!-- Sign In Link -->
-            <div class="mt-6 text-center text-sm text-slate-500">
-                Already have an account? <a href="/login" class="text-[#2563eb] font-semibold hover:underline">Sign in</a>
+            <div class="mt-6 text-center text-sm text-base-content/60">
+                Already have an account? <a href="/login" class="text-primary font-semibold hover:underline">Sign in</a>
             </div>
 
         </div>
     </div>
 
-    <!-- Page Specific JS -->
     <script src="/static/js/pages/signup.js" defer></script>
 </body>
 </html>

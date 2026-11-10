@@ -12,12 +12,11 @@
             </div>
             <h1 class="capitalize raleway-600 text-2xl text-base-content">Settings</h1>
         </div>
-        <p class="raleway-400 text-stone-500 mt-1 ml-11">Customize your experience and manage your account.</p>
+        <p class="raleway-400 text-base-content/60 mt-1 ml-11">Customize your experience and manage your account.</p>
     </div>
 </div>
 
 <!-- Tabs / Quick Navigation -->
-<!-- Changed to flex-wrap so tabs stack nicely on very small screens -->
 <div class="flex flex-wrap gap-2 px-4 mb-6">
     <a href="#account" class="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 py-2 px-4 rounded-lg bg-success/10 text-success border border-success/20 raleway-500 text-sm transition-colors hover:bg-success/20">
         <i class="fa-solid fa-user"></i> <span class="hidden sm:inline">Account</span>
@@ -41,10 +40,9 @@
             <h2 class="card-title raleway-600 text-base-content mb-4 flex items-center gap-2">
                 <i class="fa-regular fa-user text-primary"></i> Account Information
             </h2>
-            
+
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div class="flex items-center gap-4 min-w-0">
-                    <!-- Large Avatar -->
                     <div class="relative shrink-0">
                         <div class="w-16 h-16 rounded-full bg-primary/20 text-primary flex items-center justify-center raleway-700 text-2xl">
                             MJ
@@ -53,14 +51,13 @@
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </div>
-                    <!-- User Details -->
                     <div class="min-w-0">
-                        <h3 class="raleway-600 text-lg truncate">Marie-Joel ALLOHAN</h3>
-                        <p class="raleway-400 text-stone-500 text-sm truncate">mjoel.allohan@gmail.com</p>
-                        <p class="raleway-400 text-stone-400 text-xs mt-1"><i class="fa-regular fa-calendar mr-1"></i> Member since: October 2026</p>
+                        <h3 class="raleway-600 text-lg truncate text-base-content">Marie-Joel ALLOHAN</h3>
+                        <p class="raleway-400 text-base-content/60 text-sm truncate">mjoel.allohan@gmail.com</p>
+                        <p class="raleway-400 text-base-content/50 text-xs mt-1"><i class="fa-regular fa-calendar mr-1"></i> Member since: October 2026</p>
                     </div>
                 </div>
-                
+
                 <button class="btn btn-outline btn-primary btn-sm raleway-500 w-full sm:w-auto mt-2 sm:mt-0 shrink-0">
                     <i class="fa-solid fa-pen"></i> Edit Profile
                 </button>
@@ -74,14 +71,13 @@
             <h2 class="card-title raleway-600 text-base-content mb-1 flex items-center gap-2">
                 <i class="fa-solid fa-sliders text-primary"></i> Preferences
             </h2>
-            <p class="raleway-400 text-sm text-stone-500 mb-6">Set your default preferences for a better experience.</p>
+            <p class="raleway-400 text-sm text-base-content/60 mb-6">Set your default preferences for a better experience.</p>
 
-            <!-- Changed to lg:grid-cols-3 to give items more space on tablets -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Currency -->
                 <div class="form-control w-full">
                     <label class="label pt-0"><span class="label-text raleway-500 text-base-content">Currency</span></label>
-                    <select class="select select-bordered w-full raleway-400 bg-base-50 focus:border-primary focus:ring-1 focus:ring-primary">
+                    <select class="select select-bordered w-full raleway-400 bg-base-100 text-base-content border-base-300 focus:border-primary focus:ring-1 focus:ring-primary">
                         <option>EUR (€)</option>
                         <option>USD ($)</option>
                         <option>GBP (£)</option>
@@ -91,7 +87,7 @@
                 <!-- Time Range -->
                 <div class="form-control w-full">
                     <label class="label pt-0"><span class="label-text raleway-500 text-base-content">Default Time Range</span></label>
-                    <select class="select select-bordered w-full raleway-400 bg-base-50">
+                    <select class="select select-bordered w-full raleway-400 bg-base-100 text-base-content border-base-300">
                         <option>10 years</option>
                         <option>20 years</option>
                         <option>30 years</option>
@@ -101,84 +97,72 @@
                 <!-- Theme Selector -->
                 <div class="form-control w-full sm:col-span-2 lg:col-span-1">
                     <label class="label pt-0"><span class="label-text raleway-500 text-base-content">Theme</span></label>
-                    <!-- Changed from flex to grid to prevent overflow -->
+
                     <div class="grid grid-cols-3 gap-2 w-full">
-                        <!-- Light (Active) -->
-                        <label class="cursor-pointer border border-success bg-success/5 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 relative">
-                            <input type="radio" name="theme" class="hidden" checked />
-                            <i class="fa-solid fa-sun text-success text-lg"></i>
-                            <span class="raleway-500 text-xs text-success">Light</span>
-                            <i class="fa-solid fa-circle-check text-success absolute top-1 right-1 text-xs"></i>
-                        </label>
-                        
+                        <!-- Light -->
+                        <div id="label-theme-light" onclick="changeTheme('light')" class="cursor-pointer border border-base-200 hover:border-base-300 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 relative transition-all">
+                            <i class="fa-solid fa-sun text-base-content/60 text-lg transition-colors"></i>
+                            <span class="raleway-500 text-xs text-base-content/60 transition-colors">Light</span>
+                            <i id="check-theme-light" class="fa-solid fa-circle-check text-success absolute top-1 right-1 text-xs hidden"></i>
+                        </div>
+
                         <!-- Dark -->
-                        <label class="cursor-pointer border border-base-200 hover:border-base-300 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2">
-                            <input type="radio" name="theme" class="hidden" />
-                            <i class="fa-solid fa-moon text-base-content/60 text-lg"></i>
-                            <span class="raleway-500 text-xs text-base-content/60">Dark</span>
-                        </label>
-                        
+                        <div id="label-theme-dark" onclick="changeTheme('dark')" class="cursor-pointer border border-base-200 hover:border-base-300 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 relative transition-all">
+                            <i class="fa-solid fa-moon text-base-content/60 text-lg transition-colors"></i>
+                            <span class="raleway-500 text-xs text-base-content/60 transition-colors">Dark</span>
+                            <i id="check-theme-dark" class="fa-solid fa-circle-check text-success absolute top-1 right-1 text-xs hidden"></i>
+                        </div>
+
                         <!-- System -->
-                        <label class="cursor-pointer border border-base-200 hover:border-base-300 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2">
-                            <input type="radio" name="theme" class="hidden" />
-                            <i class="fa-solid fa-desktop text-base-content/60 text-lg"></i>
-                            <span class="raleway-500 text-xs text-base-content/60">System</span>
-                        </label>
+                        <div id="label-theme-system" onclick="changeTheme('system')" class="cursor-pointer border border-base-200 hover:border-base-300 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 relative transition-all">
+                            <i class="fa-solid fa-desktop text-base-content/60 text-lg transition-colors"></i>
+                            <span class="raleway-500 text-xs text-base-content/60 transition-colors">System</span>
+                            <i id="check-theme-system" class="fa-solid fa-circle-check text-success absolute top-1 right-1 text-xs hidden"></i>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 
     <!-- 3. Notifications -->
-    <div id="notifications" class="card bg-base-100 shadow-sm border border-base-200 scroll-mt-6">
-        <div class="card-body p-6">
-            <h2 class="card-title raleway-600 text-base-content mb-1 flex items-center gap-2">
-                <i class="fa-regular fa-bell text-primary"></i> Notifications
-            </h2>
-            <p class="raleway-400 text-sm text-stone-500 mb-6">Choose what notifications you want to receive.</p>
-
-            <div class="flex flex-col gap-6">
-                <!-- Toggle 1 -->
-                <div class="flex items-start sm:items-center justify-between gap-4">
-                    <div class="flex items-start sm:items-center gap-4">
-                        <div class="p-2 bg-primary/10 text-primary rounded-lg shrink-0"><i class="fa-solid fa-chart-line"></i></div>
-                        <div>
-                            <p class="raleway-600 text-sm">Portfolio Alerts</p>
-                            <p class="raleway-400 text-xs text-stone-500">Get notified about important changes in your portfolio.</p>
-                        </div>
-                    </div>
-                    <input type="checkbox" class="toggle toggle-success shrink-0" checked />
-                </div>
-
-                <hr class="border-base-200 border-dashed">
-
-                <!-- Toggle 2 -->
-                <div class="flex items-start sm:items-center justify-between gap-4">
-                    <div class="flex items-start sm:items-center gap-4">
-                        <div class="p-2 bg-purple-500/10 text-purple-500 rounded-lg shrink-0"><i class="fa-solid fa-chart-pie"></i></div>
-                        <div>
-                            <p class="raleway-600 text-sm">Market Updates</p>
-                            <p class="raleway-400 text-xs text-stone-500">Receive updates on market trends and insights.</p>
-                        </div>
-                    </div>
-                    <input type="checkbox" class="toggle toggle-success shrink-0" checked />
-                </div>
-
-                <hr class="border-base-200 border-dashed">
-
-                <!-- Toggle 3 -->
-                <div class="flex items-start sm:items-center justify-between gap-4">
-                    <div class="flex items-start sm:items-center gap-4">
-                        <div class="p-2 bg-warning/10 text-warning rounded-lg shrink-0"><i class="fa-solid fa-box-open"></i></div>
-                        <div>
-                            <p class="raleway-600 text-sm">Product Updates</p>
-                            <p class="raleway-400 text-xs text-stone-500">Be the first to know about new features.</p>
-                        </div>
-                    </div>
-                    <input type="checkbox" class="toggle toggle-success shrink-0" checked />
+    <div class="flex flex-col gap-6">
+        <div class="flex items-start sm:items-center justify-between gap-4">
+            <div class="flex items-start sm:items-center gap-4">
+                <div class="p-2 bg-primary/10 text-primary rounded-lg shrink-0"><i class="fa-solid fa-chart-line"></i></div>
+                <div>
+                    <p class="raleway-600 text-sm text-base-content">Portfolio Alerts</p>
+                    <p class="raleway-400 text-xs text-base-content/60">Get notified about important changes in your portfolio.</p>
                 </div>
             </div>
+            <input type="checkbox" id="toggle-portfolio-alerts" onchange="updateSetting('portfolio_alerts', this.checked)" class="toggle toggle-success shrink-0" checked />
+        </div>
+
+        <hr class="border-base-200 border-dashed">
+
+        <div class="flex items-start sm:items-center justify-between gap-4">
+            <div class="flex items-start sm:items-center gap-4">
+                <div class="p-2 bg-purple-500/10 text-purple-500 rounded-lg shrink-0"><i class="fa-solid fa-chart-pie"></i></div>
+                <div>
+                    <p class="raleway-600 text-sm text-base-content">Market Updates</p>
+                    <p class="raleway-400 text-xs text-base-content/60">Receive updates on market trends and insights.</p>
+                </div>
+            </div>
+            <input type="checkbox" id="toggle-market-updates" onchange="updateSetting('market_updates', this.checked)" class="toggle toggle-success shrink-0" checked />
+        </div>
+
+        <hr class="border-base-200 border-dashed">
+
+        <div class="flex items-start sm:items-center justify-between gap-4">
+            <div class="flex items-start sm:items-center gap-4">
+                <div class="p-2 bg-warning/10 text-warning rounded-lg shrink-0"><i class="fa-solid fa-box-open"></i></div>
+                <div>
+                    <p class="raleway-600 text-sm text-base-content">Product Updates</p>
+                    <p class="raleway-400 text-xs text-base-content/60">Be the first to know about new features.</p>
+                </div>
+            </div>
+            <input type="checkbox" id="toggle-product-updates" onchange="updateSetting('product_updates', this.checked)" class="toggle toggle-success shrink-0" checked />
         </div>
     </div>
 
@@ -188,20 +172,19 @@
             <h2 class="card-title raleway-600 text-base-content mb-1 flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved text-primary"></i> Data & Privacy
             </h2>
-            <p class="raleway-400 text-sm text-stone-500 mb-6">Manage your data and privacy settings.</p>
+            <p class="raleway-400 text-sm text-base-content/60 mb-6">Manage your data and privacy settings.</p>
 
-            <!-- Changed to lg:grid-cols-2 -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Export Data -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-base-200 rounded-lg bg-base-50/50 min-w-0">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-base-200 rounded-lg bg-base-200/50 min-w-0">
                     <div class="flex gap-3 items-start min-w-0">
                         <i class="fa-solid fa-download text-primary mt-1 shrink-0"></i>
                         <div class="min-w-0">
-                            <p class="raleway-600 text-sm">Export Your Data</p>
-                            <p class="raleway-400 text-xs text-stone-500 mt-1">Download a copy of your portfolio and settings.</p>
+                            <p class="raleway-600 text-sm text-base-content">Export Your Data</p>
+                            <p class="raleway-400 text-xs text-base-content/60 mt-1">Download a copy of your portfolio and settings.</p>
                         </div>
                     </div>
-                    <button class="btn btn-outline btn-sm raleway-500 w-full sm:w-auto mt-2 sm:mt-0 shrink-0">
+                    <button class="btn btn-outline border-base-300 btn-sm raleway-500 w-full sm:w-auto mt-2 sm:mt-0 shrink-0 text-base-content hover:bg-base-300">
                         <i class="fa-solid fa-download"></i> Export Data
                     </button>
                 </div>
@@ -212,7 +195,7 @@
                         <i class="fa-regular fa-trash-can text-error mt-1 shrink-0"></i>
                         <div class="min-w-0">
                             <p class="raleway-600 text-sm text-error">Delete Account</p>
-                            <p class="raleway-400 text-xs text-stone-500 mt-1">Permanently delete your account and data.</p>
+                            <p class="raleway-400 text-xs text-base-content/60 mt-1">Permanently delete your account and data.</p>
                         </div>
                     </div>
                     <button class="btn btn-outline btn-error btn-sm raleway-500 w-full sm:w-auto mt-2 sm:mt-0 shrink-0">
@@ -223,4 +206,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/pages/settings.js" defer></script>
 {% endblock %}

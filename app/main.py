@@ -280,6 +280,7 @@ async def get_scenario_details(scenario_id: int):
 @app.post("/api/settings")
 async def save_setting(request: Request):
     data = await request.json()
+    print(f"Settings saved: {data}")
     return {"status": "success"}
 
 @app.get("/api/export-data")

@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Initialize Theme Immediately
+    initTheme();
+
     // Mobile Sidebar Toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const appSidebar = document.getElementById('app-sidebar');
@@ -32,4 +35,25 @@ function showToast(message, type = 'success') {
         toast.style.transition = 'opacity 0.4s';
         setTimeout(() => toast.remove(), 400);
     }, 3500);
+}
+
+// ==========================================
+// THEME ENGINE (GLOBAL)
+// ==========================================
+function initTheme() {
+    const savedTheme = localStorage.getItem('app-theme') || 'light';
+    applyTheme(savedTheme);
+}
+
+function applyTheme(theme) {
+    let activeTheme = theme;
+    
+    // Handle "System" preference
+    if (theme === 'system') {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        activeTheme = isDark ? 'dark' : 'light';
+    }
+
+    // Set DaisyUI theme on the <html> tag
+    document.documentElement.setAttribute('data-theme', activeTheme);
 }

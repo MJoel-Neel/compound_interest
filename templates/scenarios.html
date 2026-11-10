@@ -12,12 +12,12 @@
             </div>
             <h1 class="capitalize raleway-600 text-2xl text-base-content">Saved Scenarios</h1>
         </div>
-        <p class="raleway-400 text-stone-500 mt-1 ml-11">Manage your saved scenarios and compare their performance.</p>
+        <p class="raleway-400 text-base-content/60 mt-1 ml-11">Manage your saved scenarios and compare their performance.</p>
     </div>
 
     <div class="flex gap-2">
         <!-- Export All Button -->
-        <a href="/api/export-data" class="export-all-btn btn btn-outline btn-sm rounded-md raleway-500 gap-2">
+        <a href="/api/export-data" class="export-all-btn btn btn-outline border-base-300 btn-sm rounded-md raleway-500 gap-2 text-base-content hover:bg-base-200 hover:border-base-300">
             <i class="fa-solid fa-download"></i> Export All
         </a>
 
@@ -29,24 +29,17 @@
 </div>
 
 <!-- Filter Tabs -->
-<!-- We pass the total counts directly from Jinja2 -->
 <div class="flex flex-wrap gap-2 px-4 mb-6" id="filter-container">
-    <!-- All Button (Active by default) -->
-    <button data-filter="all"
-        class="filter-btn btn btn-sm btn-soft btn-success raleway-500 rounded-full px-4 transition-all">
+    <button data-filter="all" class="filter-btn btn btn-sm btn-soft btn-success raleway-500 rounded-full px-4 transition-all">
         All Scenarios ({{ scenarios|length }})
     </button>
 
-    <!-- Active Button -->
-    <button data-filter="active"
-        class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
+    <button data-filter="active" class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
         <span class="w-2 h-2 rounded-full bg-success mr-1"></span>
         Active ({{ scenarios|selectattr('status', 'equalto', 'Active')|list|length }})
     </button>
 
-    <!-- Archived Button -->
-    <button data-filter="archived"
-        class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
+    <button data-filter="archived" class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
         <span class="w-2 h-2 rounded-full bg-base-content/30 mr-1"></span>
         Archived ({{ scenarios|selectattr('status', 'equalto', 'Archived')|list|length }})
     </button>
@@ -62,8 +55,7 @@
             <!-- Card Header -->
             <div class="flex justify-between items-start mb-4">
                 <div class="flex gap-3">
-                    <div
-                        class="w-10 h-10 rounded-full bg-{{ scenario.theme }}/10 text-{{ scenario.theme }} flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-full bg-{{ scenario.theme }}/10 text-{{ scenario.theme }} flex items-center justify-center">
                         <i class="fa-solid {{ scenario.icon }}"></i>
                     </div>
                     <div>
@@ -81,32 +73,24 @@
 
                 <!-- 3-Dots Dropdown Menu -->
                 <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs btn-circle">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs btn-circle text-base-content">
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                     </div>
-                    <ul tabindex="0"
-                        class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-200 mt-1">
-                        <li><button class="rename-btn text-sm" data-id="{{ scenario.id }}"
-                                data-name="{{ scenario.name }}"><i class="fa-solid fa-pen text-xs w-4"></i>
-                                Rename</button></li>
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-200 mt-1 text-base-content">
+                        <li><button class="rename-btn text-sm hover:bg-base-200" data-id="{{ scenario.id }}" data-name="{{ scenario.name }}"><i class="fa-solid fa-pen text-xs w-4"></i> Rename</button></li>
                         <li>
-                            <button class="archive-btn text-sm" data-id="{{ scenario.id }}"
-                                data-status="{{ scenario.status }}">
-                                <i
-                                    class="fa-solid {% if scenario.status == 'Active' %}fa-box-archive{% else %}fa-box-open{% endif %} text-xs w-4"></i>
+                            <button class="archive-btn text-sm hover:bg-base-200" data-id="{{ scenario.id }}" data-status="{{ scenario.status }}">
+                                <i class="fa-solid {% if scenario.status == 'Active' %}fa-box-archive{% else %}fa-box-open{% endif %} text-xs w-4"></i>
                                 {% if scenario.status == 'Active' %}Archive{% else %}Unarchive{% endif %}
                             </button>
                         </li>
                         <li>
-                            <!-- Single Export Link -->
-                            <a href="/api/export-data?scenario_id={{ scenario.id }}" class="text-sm export-single-btn">
+                            <a href="/api/export-data?scenario_id={{ scenario.id }}" class="text-sm export-single-btn hover:bg-base-200">
                                 <i class="fa-solid fa-download text-xs w-4"></i> Export
                             </a>
                         </li>
                         <li class="border-t border-base-200 mt-1 pt-1">
-                            <!-- Trigger the delete modal -->
-                            <button class="delete-trigger text-sm text-error hover:bg-error/10"
-                                data-id="{{ scenario.id }}">
+                            <button class="delete-trigger text-sm text-error hover:bg-error/10" data-id="{{ scenario.id }}">
                                 <i class="fa-regular fa-trash-can text-xs w-4"></i> Delete
                             </button>
                         </li>
@@ -114,14 +98,14 @@
                 </div>
             </div>
 
-            <!-- Card Data & Chart ... (Keep existing) ... -->
+            <!-- Card Data & Chart -->
             <div class="flex justify-between items-end mb-4">
                 <div>
                     <h2 class="text-2xl raleway-700 text-{{ scenario.theme }}">{{ scenario.gain }}</h2>
                     <p class="text-sm raleway-600 text-{{ scenario.theme }}/80">({{ scenario.percent }})</p>
                     <div class="mt-4">
                         <p class="raleway-400 text-xs text-base-content/60">Final Value</p>
-                        <p class="raleway-600 text-sm">{{ scenario.final_value }}</p>
+                        <p class="raleway-600 text-sm text-base-content">{{ scenario.final_value }}</p>
                     </div>
                 </div>
 
@@ -135,26 +119,20 @@
 
             <!-- Action Buttons -->
             <div class="flex gap-2 mt-2">
-                <button data-id="{{ scenario.id }}"
-                    class="view-details-btn btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
+                <button data-id="{{ scenario.id }}" class="view-details-btn btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs text-base-content hover:bg-base-200">
                     <i class="fa-solid fa-chart-simple"></i> View Details
                 </button>
-                <!-- Added duplicate-btn class -->
-                <button data-id="{{ scenario.id }}"
-                    class="duplicate-btn btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs">
+                <button data-id="{{ scenario.id }}" class="duplicate-btn btn btn-sm btn-outline border-base-300 flex-1 raleway-500 text-xs text-base-content hover:bg-base-200">
                     <i class="fa-regular fa-copy"></i> Duplicate
                 </button>
 
                 {% if scenario.status == 'Active' %}
-                <!-- Load remains a simple link -->
                 <a href="/?initial={{ scenario.initial }}&monthly={{ scenario.monthly }}&annual_rate={{ scenario.annual_rate }}&years={{ scenario.years }}"
                     class="btn btn-sm btn-success text-white flex-1 raleway-500 text-xs">
                     <i class="fa-solid fa-play"></i> Load
                 </a>
                 {% else %}
-                <!-- Added restore-btn class -->
-                <button data-id="{{ scenario.id }}"
-                    class="restore-btn btn btn-sm btn-outline btn-primary flex-1 raleway-500 text-xs bg-primary/5">
+                <button data-id="{{ scenario.id }}" class="restore-btn btn btn-sm btn-outline btn-primary flex-1 raleway-500 text-xs bg-primary/5">
                     <i class="fa-solid fa-rotate-left"></i> Restore
                 </button>
                 {% endif %}
@@ -163,12 +141,17 @@
     </div>
     {% endfor %}
 
-    <!-- Empty State ... (Keep existing) ... -->
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden col-span-1 xl:col-span-2 text-center py-12 text-base-content/50 raleway-400">
+        <i class="fa-regular fa-folder-open text-5xl mb-3 text-base-content/30"></i>
+        <p class="text-lg">No scenarios found for this filter.</p>
+    </div>
+
 </div>
 
-<!-- DELETE CONFIRMATION MODAL (Placed here so JS can find it) -->
+<!-- DELETE CONFIRMATION MODAL -->
 <dialog id="delete_modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box border-t-4 border-error">
+    <div class="modal-box border-t-4 border-error bg-base-100 text-base-content">
         <h3 class="font-bold text-lg text-error flex items-center gap-2">
             <i class="fa-solid fa-triangle-exclamation"></i> Delete Scenario
         </h3>
@@ -187,45 +170,36 @@
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
 
-
 <!-- RENAME CONFIRMATION MODAL -->
 <dialog id="rename_modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box border-t-4 border-primary">
+    <div class="modal-box border-t-4 border-primary bg-base-100 text-base-content">
         <h3 class="font-bold text-lg text-primary flex items-center gap-2 mb-4">
             <i class="fa-solid fa-pen"></i> Rename Scenario
         </h3>
 
         <form id="rename-form" class="flex flex-col gap-4">
             <div class="flex flex-col gap-2">
-                <label for="rename-input" class="text-sm font-semibold text-base-content/80 raleway-500">
-                    Scenario Name
-                </label>
-                <input type="text" id="rename-input"
-                    class="input input-bordered w-full raleway-400 focus:outline-primary" required />
+                <label for="rename-input" class="text-sm font-semibold text-base-content/80 raleway-500">Scenario Name</label>
+                <input type="text" id="rename-input" class="input input-bordered w-full raleway-400 focus:outline-primary bg-base-100" required />
                 <span id="rename-error" class="text-sm text-error hidden raleway-500 mt-1">
                     <i class="fa-solid fa-circle-exclamation"></i> Name cannot be empty.
                 </span>
             </div>
 
             <div class="modal-action mt-2">
-                <button type="button" class="btn btn-ghost raleway-500"
-                    onclick="document.getElementById('rename_modal').close()">Cancel</button>
+                <button type="button" class="btn btn-ghost raleway-500" onclick="document.getElementById('rename_modal').close()">Cancel</button>
                 <button type="submit" id="confirm-rename-btn" class="btn btn-primary text-white raleway-500 px-8">
                     Save Changes
                 </button>
             </div>
         </form>
     </div>
-    <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-    </form>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
 
 <!-- VIEW DETAILS MODAL -->
 <dialog id="details_modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box w-11/12 m-auto max-w-3xl p-5 sm:p-7 max-h-[90vh] overflow-y-auto">
-        
-        <!-- Close Button -->
+    <div class="modal-box w-11/12 m-auto max-w-3xl p-5 sm:p-7 max-h-[90vh] overflow-y-auto bg-base-100 text-base-content">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3">✕</button>
         </form>
@@ -233,7 +207,6 @@
         <h3 class="font-bold text-xl sm:text-2xl raleway-700 mb-1 pr-8" id="details-title">Scenario Details</h3>
         <p class="text-xs sm:text-sm text-base-content/60 mb-6 raleway-400">Detailed performance breakdown.</p>
 
-        <!-- Stats Row (Stacks on mobile, side-by-side on sm+) -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
             <div class="bg-base-200 rounded-xl p-4 flex flex-col items-center sm:items-start">
                 <p class="text-[0.7rem] text-base-content/60 raleway-600 uppercase tracking-wider">Final Balance</p>
@@ -249,12 +222,10 @@
             </div>
         </div>
 
-        <!-- Chart Container -->
         <div class="w-full h-64 sm:h-80 bg-base-100 border border-base-200 rounded-xl p-3 sm:p-5 relative">
             <canvas id="detailsChart"></canvas>
         </div>
         
-        <!-- Breakdown text -->
         <div class="mt-4 text-xs sm:text-sm text-base-content/70 raleway-400 flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center">
             <span>Initial: <strong id="details-initial" class="text-base-content">€0</strong></span>
             <span class="hidden sm:inline">&bull;</span>
