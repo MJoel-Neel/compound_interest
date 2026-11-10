@@ -71,7 +71,7 @@
             <i class="fa-solid fa-play"></i>
             <p class="capitalize raleway-500">Simulate</p>
         </button>
-        <button type="button" class="btn btn-soft btn-primary flex gap-1 items-center">
+        <button type="button" id="open-save-modal-btn" class="btn btn-soft btn-primary flex gap-1 items-center">
             <i class="fa-solid fa-floppy-disk"></i>
             <p class="capitalize raleway-500">Save Scenario</p>
         </button>
@@ -128,8 +128,8 @@
 
 </div>
 
-
-<div class="saved_scenarios max-w-[1000px] m-auto border border-base-200 rounded-xl p-4 md:p-6 mt-7 mb-10 bg-base-100 shadow-sm">
+<div
+    class="saved_scenarios max-w-[1000px] m-auto border border-base-200 rounded-xl p-4 md:p-6 mt-10 mb-10 bg-base-100 shadow-sm">
     <!-- Header -->
     <div class="flex justify-between items-center mb-4">
         <div class="raleway-600 flex gap-2 items-center text-base-content">
@@ -137,7 +137,7 @@
             <p class="capitalize text-base">Saved scenarios</p>
         </div>
         <div id="scenario-count-badge" class="badge badge-soft badge-success raleway-500 capitalize text-xs">
-            3 scenarios
+            {{ scenarios[:5]|length }} scenarios
         </div>
     </div>
 
@@ -145,90 +145,202 @@
 
     <!-- Scenario List -->
     <div class="flex flex-col w-full" id="simulator-scenarios-list">
-        <!-- ROW 1 -->
-        <div id="scenario-row-1" class="scenario-row flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-base-200 last:border-0">
+
+        {% if scenarios %}
+        <!-- JINJA LOOP: Limits to 5 items using array slicing [:5] -->
+        {% for scenario in scenarios[:5] %}
+        <div id="scenario-row-{{ scenario.id }}"
+            class="scenario-row flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-base-200 last:border-0">
+
+            <!-- Name & Icon -->
             <div class="flex gap-3 items-center w-full md:w-1/3">
-                <div class="w-8 h-8 rounded-lg bg-success/10 text-success flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-arrow-trend-up text-sm"></i>
+                <div
+                    class="w-8 h-8 rounded-lg bg-{{ scenario.theme }}/10 text-{{ scenario.theme }} flex items-center justify-center shrink-0">
+                    <i class="fa-solid {{ scenario.icon }} text-sm"></i>
                 </div>
-                <p class="capitalize raleway-600 text-sm truncate">Aggressive 10%</p>
+                <p class="capitalize raleway-600 text-sm truncate">{{ scenario.name }}</p>
             </div>
 
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-stone-500 raleway-400 w-full md:w-1/2">
-                <span>Initial: <strong class="text-base-content">€1,000</strong></span>
+            <!-- Metrics -->
+            <div
+                class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-stone-500 raleway-400 w-full md:w-1/2">
+                <span>Initial: <strong class="text-base-content">€{{ "{:,.0f}".format(scenario.initial)
+                        }}</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
-                <span>Monthly: <strong class="text-base-content">€300</strong></span>
+                <span>Monthly: <strong class="text-base-content">€{{ "{:,.0f}".format(scenario.monthly)
+                        }}</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
-                <span>Rate: <strong class="text-base-content">10%</strong></span>
+                <span>Rate: <strong class="text-base-content">{{ scenario.annual_rate }}%</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
-                <span>Years: <strong class="text-base-content">25</strong></span>
+                <span>Years: <strong class="text-base-content">{{ scenario.years }}</strong></span>
             </div>
 
+            <!-- Actions -->
             <div class="flex items-center gap-2 w-full md:w-auto justify-end md:justify-start shrink-0">
-                <a href="/?initial=1000&monthly=300&annual_rate=10&years=25" class="btn btn-sm btn-success text-white raleway-500 rounded-md px-4">
+                <a href="/?initial={{ scenario.initial }}&monthly={{ scenario.monthly }}&annual_rate={{ scenario.annual_rate }}&years={{ scenario.years }}"
+                    class="btn btn-sm btn-success text-white raleway-500 rounded-md px-4">
                     <i class="fa-solid fa-play text-xs"></i> Load
                 </a>
-                <button data-id="1" class="delete-btn btn btn-sm btn-soft btn-error raleway-500 rounded-md px-4">
+                <button data-id="{{ scenario.id }}"
+                    class="delete-btn btn btn-sm btn-soft btn-error raleway-500 rounded-md px-4">
                     <i class="fa-regular fa-trash-can text-xs"></i> Delete
                 </button>
             </div>
         </div>
-
-        <!-- ROW 2 -->
-        <div id="scenario-row-2" class="scenario-row flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-base-200 last:border-0">
-            <div class="flex gap-3 items-center w-full md:w-1/3">
-                <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-shield-halved text-sm"></i>
-                </div>
-                <p class="capitalize raleway-600 text-sm truncate">Safe 4%</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-stone-500 raleway-400 w-full md:w-1/2">
-                <span>Initial: <strong class="text-base-content">€500</strong></span>
-                <span class="hidden sm:inline">&bull;</span>
-                <span>Monthly: <strong class="text-base-content">€150</strong></span>
-                <span class="hidden sm:inline">&bull;</span>
-                <span>Rate: <strong class="text-base-content">4%</strong></span>
-                <span class="hidden sm:inline">&bull;</span>
-                <span>Years: <strong class="text-base-content">15</strong></span>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto justify-end md:justify-start shrink-0">
-                <a href="/?initial=500&monthly=150&annual_rate=4&years=15" class="btn btn-sm btn-success text-white raleway-500 rounded-md px-4">
-                    <i class="fa-solid fa-play text-xs"></i> Load
-                </a>
-                <button data-id="2" class="delete-btn btn btn-sm btn-soft btn-error raleway-500 rounded-md px-4">
-                    <i class="fa-regular fa-trash-can text-xs"></i> Delete
-                </button>
-            </div>
+        {% endfor %}
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-6 text-stone-400 raleway-400 text-sm">
+            <i class="fa-regular fa-folder-open text-3xl mb-2 text-stone-300"></i>
+            <p>No saved scenarios yet.</p>
         </div>
-
-        <!-- ROW 3 -->
-        <div id="scenario-row-3" class="scenario-row flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-base-200 last:border-0">
-            <div class="flex gap-3 items-center w-full md:w-1/3">
-                <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-briefcase text-sm"></i>
-                </div>
-                <p class="capitalize raleway-600 text-sm truncate">Retirement plan</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-stone-500 raleway-400 w-full md:w-1/2">
-                <span>Initial: <strong class="text-base-content">€2,000</strong></span>
-                <span class="hidden sm:inline">&bull;</span>
-                <span>Monthly: <strong class="text-base-content">€250</strong></span>
-                <span class="hidden sm:inline">&bull;</span>
-                <span>Rate: <strong class="text-base-content">6%</strong></span>
-                <span class="hidden sm:inline">&bull;</span>
-                <span>Years: <strong class="text-base-content">30</strong></span>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto justify-end md:justify-start shrink-0">
-                <a href="/?initial=2000&monthly=250&annual_rate=6&years=30" class="btn btn-sm btn-success text-white raleway-500 rounded-md px-4">
-                    <i class="fa-solid fa-play text-xs"></i> Load
-                </a>
-                <button data-id="3" class="delete-btn btn btn-sm btn-soft btn-error raleway-500 rounded-md px-4">
-                    <i class="fa-regular fa-trash-can text-xs"></i> Delete
-                </button>
-            </div>
-        </div>
+        {% endif %}
 
     </div>
+
+    <!-- Footer Button (Redirect to all scenarios) -->
+    {% if scenarios|length > 5 %}
+    <div class="mt-4 pt-4 border-t border-base-200 flex justify-center">
+        <a href="/scenarios" class="btn btn-ghost btn-sm text-primary raleway-500 hover:bg-primary/5">
+            View all {{ scenarios|length }} scenarios <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+        </a>
+    </div>
+    {% endif %}
 </div>
+
+
+<!-- SAVE SCENARIO MODAL -->
+<dialog id="save_scenario_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box p-6">
+        <h3 class="font-bold text-xl text-primary flex items-center gap-2 mb-6">
+            <i class="fa-solid fa-floppy-disk"></i> Save Scenario
+        </h3>
+
+        <form id="save-scenario-form" class="flex flex-col gap-6">
+            <!-- 1. Name Input (Fixed spacing) -->
+            <div class="flex flex-col gap-2">
+                <label for="scenario-name-input" class="text-sm font-semibold text-base-content/80 raleway-500">
+                    Scenario Name
+                </label>
+                <input type="text" id="scenario-name-input" placeholder="e.g., My Retirement Plan"
+                    class="input input-bordered w-full raleway-400 focus:outline-primary" required />
+                <span class="text-sm text-error hidden raleway-500 mt-1" id="name-error">
+                    <i class="fa-solid fa-circle-exclamation"></i> Please enter a name.
+                </span>
+            </div>
+
+            <!-- 2. Icon Selector -->
+            <div class="flex flex-col gap-3">
+                <label class="text-sm font-semibold text-base-content/80 raleway-500">
+                    Choose an Icon
+                </label>
+                <div class="grid grid-cols-6 gap-2" id="icon-selector">
+                    <!-- Default Active (Green) -->
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-primary bg-primary/10 text-primary cursor-pointer transition-all"
+                        data-value="fa-arrow-trend-up">
+                        <i class="fa-solid fa-arrow-trend-up text-xl pointer-events-none"></i>
+                    </div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-shield-halved">
+                        <i class="fa-solid fa-shield-halved text-xl pointer-events-none"></i>
+                    </div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-briefcase">
+                        <i class="fa-solid fa-briefcase text-xl pointer-events-none"></i>
+                    </div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-star">
+                        <i class="fa-solid fa-star text-xl pointer-events-none"></i>
+                    </div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-rocket">
+                        <i class="fa-solid fa-rocket text-xl pointer-events-none"></i>
+                    </div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-piggy-bank">
+                        <i class="fa-solid fa-piggy-bank text-xl pointer-events-none"></i>
+                    </div>
+                </div>
+                <!-- Hidden input to store the value for the form -->
+                <input type="hidden" name="scenario_icon" id="selected-icon" value="fa-arrow-trend-up">
+            </div>
+
+            <!-- 3. Color Selector -->
+            <div class="flex flex-col gap-3">
+                <label class="text-sm font-semibold text-base-content/80 raleway-500">
+                    Choose a Theme Color
+                </label>
+                <div class="grid grid-cols-5 gap-3" id="color-selector">
+                    <!-- Default Active (Green) -->
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-success bg-success/10 cursor-pointer transition-all"
+                        data-value="success">
+                        <span class="w-6 h-6 rounded-full bg-success shadow-sm pointer-events-none"></span>
+                    </div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="primary">
+                        <span class="w-6 h-6 rounded-full bg-primary shadow-sm pointer-events-none"></span>
+                    </div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="purple-500">
+                        <span class="w-6 h-6 rounded-full bg-purple-500 shadow-sm pointer-events-none"></span>
+                    </div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="warning">
+                        <span class="w-6 h-6 rounded-full bg-warning shadow-sm pointer-events-none"></span>
+                    </div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="error">
+                        <span class="w-6 h-6 rounded-full bg-error shadow-sm pointer-events-none"></span>
+                    </div>
+                </div>
+                <!-- Hidden input to store the value for the form -->
+                <input type="hidden" name="scenario_color" id="selected-color" value="success">
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="modal-action mt-4">
+                <button type="button" class="btn btn-ghost raleway-500"
+                    onclick="document.getElementById('save_scenario_modal').close()">Cancel</button>
+                <button type="submit" id="confirm-save-btn" class="btn btn-primary text-white raleway-500 px-8">
+                    Save Scenario
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+
+<!-- DELETE CONFIRMATION MODAL -->
+<dialog id="delete_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box border-t-4 border-error">
+        <h3 class="font-bold text-lg text-error flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i> Delete Scenario
+        </h3>
+        <p class="py-4 raleway-400 text-base-content/80">
+            Are you sure you want to delete this scenario? This action cannot be undone.
+        </p>
+        <div class="modal-action">
+            <!-- Cancel button (DaisyUI form method="dialog" automatically closes the modal) -->
+            <form method="dialog">
+                <button class="btn btn-ghost raleway-500">Cancel</button>
+            </form>
+            <!-- Confirm button (We will attach JS to this) -->
+            <button id="confirm-delete-btn" class="btn btn-error text-white raleway-500">
+                Yes, Delete
+            </button>
+        </div>
+    </div>
+    <!-- Clicking outside the modal closes it -->
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
 <script src="/static/js/pages/simulator.js" defer></script>
 {% endblock %}

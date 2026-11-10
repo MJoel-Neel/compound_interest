@@ -15,15 +15,25 @@ templates = Jinja2Templates(directory="templates")
 # 3. Define Routes
 @app.get("/", response_class=HTMLResponse)
 async def simulator_page(request: Request):
-    """Renders the main simulator page."""
     
-    # We can read the query parameters here later to do the math!
-    # For now, we just render the HTML.
+    # Fetch all scenarios from the database, ordered by newest first
+    # db_scenarios = db.query(Scenario).order_by(Scenario.id.desc()).all()
     
+    # For now, using your mock data:
+    db_scenarios = [
+        {"id": 1, "name": "Aggressive 10%", "icon": "fa-arrow-trend-up", "theme": "success", "initial": 1000, "monthly": 300, "annual_rate": 10, "years": 25},
+        {"id": 2, "name": "Safe 4%", "icon": "fa-shield-halved", "theme": "primary", "initial": 500, "monthly": 150, "annual_rate": 4, "years": 15},
+        {"id": 3, "name": "Retirement plan", "icon": "fa-briefcase", "theme": "purple-500", "initial": 2000, "monthly": 250, "annual_rate": 6, "years": 30},
+        # Add 3 more to test the "View all" button
+        {"id": 4, "name": "Dream Portfolio", "icon": "fa-star", "theme": "success", "initial": 5000, "monthly": 500, "annual_rate": 8, "years": 20},
+        {"id": 5, "name": "Crypto Play", "icon": "fa-rocket", "theme": "warning", "initial": 200, "monthly": 50, "annual_rate": 15, "years": 5},
+        {"id": 6, "name": "House Fund", "icon": "fa-piggy-bank", "theme": "error", "initial": 10000, "monthly": 1000, "annual_rate": 3, "years": 10},
+    ]
+
     return templates.TemplateResponse(
         request=request, 
         name="simulator.html", 
-        context={}
+        context={"scenarios": db_scenarios}
     )
 
 @app.get("/insights", response_class=HTMLResponse)
@@ -100,6 +110,24 @@ async def delete_scenario(scenario_id: int):
     # For now, just return success
     return {"message": "Deleted successfully"}
 
+from pydantic import BaseModel
+
+class ScenarioCreate(BaseModel):
+    name: str
+    icon: str
+    theme: str
+    initial: float
+    monthly: float
+    annual_rate: float
+    years: int
+
+@app.post("/api/scenarios")
+async def create_scenario(scenario: ScenarioCreate):
+    # Save to database using SQLAlchemy...
+    # new_scenario = Scenario(**scenario.dict())
+    # db.add(new_scenario)
+    # db.commit()
+    return {"status": "success", "message": "Saved to database"}
 
 
 """

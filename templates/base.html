@@ -84,13 +84,36 @@
             </div>
         </aside>
 
+        
         <!-- 3. MAIN CONTENT AREA -->
-        <section class="flex-1 h-full overflow-y-auto px-2 md:px-10 pb-10 relative">
-            <div class="pt-16 md:pt-0 w-full h-full">
-                {% block content %}{% endblock %}
+        <section class="flex-1 h-full overflow-y-auto px-2 md:px-10 relative">
+            <!-- Wrapper to push footer to the bottom -->
+            <div class="pt-16 md:pt-0 w-full min-h-full flex flex-col">
+
+                <!-- Page Content (Simulator, Scenarios, etc.) -->
+                <div class="flex-1">
+                    {% block content %}{% endblock %}
+                </div>
+
+                <!-- GLOBAL FOOTER -->
+                <footer
+                    class="mt-12 mb-4 pt-6 border-t border-base-200 text-xs text-stone-400 raleway-400 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p>&copy; 2026 What If I Invest? All rights reserved.</p>
+                    <div class="flex gap-6">
+                        <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
+                        <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
+                        <a href="/settings" class="hover:text-primary transition-colors">Settings</a>
+                    </div>
+                </footer>
+
             </div>
         </section>
     </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast toast-end toast-bottom z-[100]"></div>
+    <!-- Page-Specific JS (Loads ONLY on the page that defines it) -->
+    {% block scripts %}{% endblock %}
 </body>
 
 </html>
