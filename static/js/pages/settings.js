@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 2. Load Select Preferences (Currency & Time Range)
     loadPreferences();
+
+    initDeleteAccountModal();
+
 });
 
 // ==========================================
@@ -12,15 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
 function changeTheme(theme) {
     // 1. Save the user's choice
     localStorage.setItem('app-theme', theme);
-    
+
     // 2. Apply the theme using the global function
     if (typeof applyTheme === 'function') {
         applyTheme(theme);
     }
-    
+
     // 3. Update the visual boxes
     syncThemeUI();
-    
+
     // 4. Send to backend
     updateSetting('theme', theme);
 }
@@ -28,19 +31,19 @@ function changeTheme(theme) {
 function syncThemeUI() {
     const currentPreference = localStorage.getItem('app-theme') || 'light';
     const themes = ['light', 'dark', 'system'];
-    
+
     themes.forEach(t => {
         const label = document.getElementById(`label-theme-${t}`);
         const check = document.getElementById(`check-theme-${t}`);
-        
+
         // Safety check: If HTML is missing, stop here so JS doesn't crash
-        if (!label || !check) return; 
+        if (!label || !check) return;
 
         const icon = label.querySelector('i:first-child');
         const span = label.querySelector('span');
 
         // Safety check: If span or icon is missing, stop here
-        if (!icon || !span) return; 
+        if (!icon || !span) return;
 
         // Reset all boxes to "unselected" state
         label.className = 'cursor-pointer border border-base-200 hover:border-base-300 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 relative transition-all';
@@ -98,7 +101,7 @@ async function updateSetting(settingName, value) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ setting: settingName, value: value })
         });
-        
+
         if (response.ok) {
             console.log(`Saved to backend: ${settingName} = ${value}`);
             // Optional: Show a toast if you have the global function available
@@ -108,11 +111,66 @@ async function updateSetting(settingName, value) {
         }
     } catch (error) {
         console.error("Failed to save setting", error);
-        
+
         // Revert the toggle if the network fails
         if (typeof value === 'boolean') {
             const toggle = document.getElementById(`toggle-${settingName.replace('_', '-')}`);
             if (toggle) toggle.checked = !value;
         }
     }
+}
+
+
+// ==========================================
+// 4. DELETE ACCOUNT LOGIC
+// ==========================================
+function initDeleteAccountModal() {
+    const deleteBtn = document.getElementById('delete-account-btn');
+    const modal = document.getElementById('delete_account_modal');
+    const confirmBtn = document.getElementById('confirm-delete-account-btn');
+    const confirmInput = document.getElementById('delete-confirm-input');
+
+    if (!deleteBtn || !modal) return;
+
+    // Open Modal
+    deleteBtn.addEventListener('click', () => {
+        confirmInput.value = ''; // Reset input
+        confirmBtn.disabled = true; // Disable button initially
+        modal.showModal();
+    });
+
+    // Enable confirm button only if user types "DELETE"
+    confirmInput.addEventListener('input', (e) => {
+        if (e.target.value === 'DELETE') {
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove('btn-disabled');
+        } else {
+            confirmBtn.disabled = true;
+            confirmBtn.classList.add('btn-disabled');
+        }
+    });
+
+    // Handle actual deletion
+    confirmBtn.addEventListener('click', async () => {
+        confirmBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Deleting...';
+        confirmBtn.disabled = true;
+
+        try {
+            const res = await fetch('/api/delete-account', { method: 'DELETE' });
+
+            if (res.ok) {
+                // Success! Redirect to home (which will now show the logged-out state)
+                window.location.href = "/";
+            } else {
+                if (typeof showToast === 'function') showToast("Failed to delete account.", "error");
+                confirmBtn.innerHTML = 'Permanently Delete';
+                confirmBtn.disabled = false;
+            }
+        } catch (err) {
+            console.error(err);
+            if (typeof showToast === 'function') showToast("Network error.", "error");
+            confirmBtn.innerHTML = 'Permanently Delete';
+            confirmBtn.disabled = false;
+        }
+    });
 }

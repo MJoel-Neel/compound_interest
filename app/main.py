@@ -379,3 +379,16 @@ async def save_setting(request: Request):
     data = await request.json()
     print(f"Settings saved: {data}")
     return {"status": "success"}
+
+
+@app.delete("/api/delete-account")
+async def delete_account():
+    global GLOBAL_MOCK_USER
+    
+    # In a real app, you would delete the user from the database here:
+    # db.query(User).filter(User.id == current_user.id).delete()
+    
+    # For our mock app, we just log them out and "delete" the global user
+    GLOBAL_MOCK_USER = None
+    
+    return {"status": "success", "message": "Account deleted successfully"}
