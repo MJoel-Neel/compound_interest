@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import io
 import csv
 import copy
+import datetime
 from typing import Optional
 
 app = FastAPI()
@@ -64,27 +65,39 @@ MOCK_DB = [
 
 @app.get("/", response_class=HTMLResponse)
 async def simulator_page(request: Request):
+    daily_quote, daily_plant = get_daily_sidebar_data()
     return templates.TemplateResponse(
         request=request, 
         name="simulator.html", 
-        context={"scenarios": MOCK_DB}
+        context={"scenarios": MOCK_DB, "daily_quote": daily_quote, "daily_plant": daily_plant}
     )
 
 @app.get("/scenarios", response_class=HTMLResponse)
 async def scenarios_page(request: Request):
+    daily_quote, daily_plant = get_daily_sidebar_data()
     return templates.TemplateResponse(
         request=request, 
         name="scenarios.html", 
-        context={"scenarios": MOCK_DB} 
+        context={"scenarios": MOCK_DB, "daily_quote": daily_quote, "daily_plant": daily_plant} 
     )
 
 @app.get("/insights", response_class=HTMLResponse)
 async def insights_page(request: Request):
-    return templates.TemplateResponse(request=request, name="insights.html")
+    daily_quote, daily_plant = get_daily_sidebar_data()
+    return templates.TemplateResponse(
+        request=request, 
+        name="insights.html",
+        context={"daily_quote": daily_quote, "daily_plant": daily_plant} 
+    )
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
-    return templates.TemplateResponse(request=request, name="settings.html")
+    daily_quote, daily_plant = get_daily_sidebar_data()
+    return templates.TemplateResponse(
+        request=request, 
+        name="settings.html",
+        context={"daily_quote": daily_quote, "daily_plant": daily_plant} 
+    )
 
 # ==========================================
 # API ENDPOINTS
@@ -267,3 +280,28 @@ async def export_data(scenario_id: Optional[int] = None):
         media_type="text/csv", 
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+
+
+
+# 5 Financial Quotes
+FINANCIAL_QUOTES = [
+    "Save your scenarios to compare and plan your investments.",
+    "The best time to plant a tree was 20 years ago. The second best time is now.",
+    "Compound interest is the eighth wonder of the world.",
+    "Do not save what is left after spending; instead spend what is left after saving.",
+    "An investment in knowledge pays the best interest."
+]
+
+def get_daily_sidebar_data():
+    # Get today's date as a number
+    today = datetime.date.today().toordinal()
+    
+    # Pick a quote based on the day (this will change automatically every day)
+    quote_index = today % len(FINANCIAL_QUOTES)
+    quote = FINANCIAL_QUOTES[quote_index]
+    
+    # Pick a plant image (1 to 4) based on the day
+    plant_index = (today % 4) + 1
+    
+    return quote, plant_index
