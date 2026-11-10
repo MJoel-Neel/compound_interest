@@ -375,7 +375,7 @@ $RECYCLE.BIN/
 logs/
 *.log
 
-
+config.py
 hided/
 tailwind.config.js
 todo.md
