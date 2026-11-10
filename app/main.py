@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -119,6 +119,17 @@ async def settings_page(request: Request):
         context={"daily_quote": daily_quote, "daily_plant": daily_plant,
             "user": GLOBAL_MOCK_USER } 
     )
+
+
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse(request=request, name="login.html")
+
+@app.get("/signup", response_class=HTMLResponse)
+async def signup_page(request: Request):
+    return templates.TemplateResponse(request=request, name="signup.html")
 
 # ==========================================
 # API ENDPOINTS
@@ -329,13 +340,6 @@ def get_daily_sidebar_data():
 
 
 
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse(request=request, name="login.html")
-
-
-
-from fastapi import Form
 
 @app.post("/api/forgot-password")
 async def forgot_password(email: str = Form(...)):
