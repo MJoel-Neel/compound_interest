@@ -230,3 +230,58 @@ async def export_data(scenario_id: Optional[int] = None):
         # The attachment header tells the browser to download the file instead of opening it
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+@app.get("/api/scenarios/{scenario_id}/details")
+async def get_scenario_details(scenario_id: int):
+    scenario = next((s for s in MOCK_DB if s["id"] == scenario_id), None)
+    
+    if not scenario:
+        return {"status": "error", "message": "Not found"}
+
+    # --- DO THE MATH (Compound Interest) ---
+    initial = float(scenario["initial"])
+    monthly = float(scenario["monthly"])
+    annual_rate = float(scenario["annual_rate"]) / 100
+    years = int(scenario["years"])
+    
+    monthly_rate = annual_rate / 12
+    
+    # We will track the balance year by year for the chart
+    balance_data = [initial]
+    invested_data = [initial]
+    labels = ["0"] # Start at year 0
+    
+    current_balance = initial
+    current_invested = initial
+    
+    for year in range(1, years + 1):
+        # Calculate 12 months of growth for this year
+        for month in range(12):
+            interest = current_balance * monthly_rate
+            current_balance += interest + monthly
+            current_invested += monthly
+            
+        balance_data.append(round(current_balance))
+        invested_data.append(round(current_invested))
+        labels.append(str(year))
+
+    # Final breakdown
+    total_interest = current_balance - current_invested
+    total_monthly_contributions = current_invested - initial
+
+    return {
+        "scenario_name": scenario["name"],
+        "theme": scenario["theme"],
+        "breakdown": {
+            "initial": initial,
+            "monthly_total": total_monthly_contributions,
+            "interest_earned": total_interest,
+            "final_balance": current_balance,
+            "total_invested": current_invested
+        },
+        "chart": {
+            "labels": labels,
+            "balance_data": balance_data,
+            "invested_data": invested_data
+        }
+    }

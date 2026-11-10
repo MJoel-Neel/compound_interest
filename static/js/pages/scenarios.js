@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initDeleteModal();
     initRenameModal();
     initExportButtons();
+    initViewDetails();
 });
 
 // ==========================================
@@ -24,7 +25,7 @@ function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `alert alert-${type} shadow-lg mb-2 raleway-500`;
     let icon = type === 'error' ? '<i class="fa-solid fa-circle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
-    
+
     toast.innerHTML = `<div class="flex items-center gap-2">${icon}<span>${message}</span></div>`;
     container.appendChild(toast);
 
@@ -40,14 +41,14 @@ function showToast(message, type = 'success') {
 // 2. ACTION BUTTONS (Duplicate, Restore, Archive)
 // ==========================================
 function initActionButtons() {
-    
+
     // --- DUPLICATE ---
     document.querySelectorAll('.duplicate-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const id = btn.dataset.id;
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
-            
+
             try {
                 const res = await fetch(`/api/scenarios/${id}/duplicate`, { method: 'POST' });
                 if (res.ok) {
@@ -70,7 +71,7 @@ function initActionButtons() {
             const id = btn.dataset.id;
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
-            
+
             try {
                 const res = await fetch(`/api/scenarios/${id}/restore`, { method: 'PATCH' });
                 if (res.ok) {
@@ -93,7 +94,7 @@ function initActionButtons() {
             const id = btn.dataset.id;
             const isArchived = btn.dataset.status === 'Archived';
             const endpoint = isArchived ? 'restore' : 'archive';
-            
+
             try {
                 const res = await fetch(`/api/scenarios/${id}/${endpoint}`, { method: 'PATCH' });
                 if (res.ok) {
@@ -161,7 +162,7 @@ function initRenameModal() {
     const renameInput = document.getElementById('rename-input');
     const renameError = document.getElementById('rename-error');
     const confirmRenameBtn = document.getElementById('confirm-rename-btn');
-    
+
     let scenarioToRenameId = null;
 
     if (!renameModal) return console.error("Rename modal HTML not found!");
@@ -171,11 +172,11 @@ function initRenameModal() {
         btn.addEventListener('click', () => {
             scenarioToRenameId = btn.dataset.id;
             const currentName = btn.dataset.name;
-            
+
             renameInput.value = currentName;
             renameInput.classList.remove('input-error');
             renameError.classList.add('hidden');
-            
+
             renameModal.showModal();
         });
     });
@@ -287,4 +288,150 @@ function initExportButtons() {
             showToast("Preparing all scenarios for download...", "info");
         });
     }
+}
+
+
+// ==========================================
+// 7. VIEW DETAILS MODAL & CHART.JS
+// ==========================================
+let detailsChartInstance = null; // Keep track of the chart to destroy it later
+
+function initViewDetails() {
+    const detailsModal = document.getElementById('details_modal');
+    if (!detailsModal) return;
+
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+
+            // Show modal with loading state
+            document.getElementById('details-title').textContent = "Loading...";
+            detailsModal.showModal();
+
+            try {
+                const res = await fetch(`/api/scenarios/${id}/details`);
+                const data = await res.json();
+
+                // 1. Populate Text Data
+                document.getElementById('details-title').textContent = data.scenario_name;
+
+                const formatEuro = (num) => "€" + num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+                document.getElementById('details-final').textContent = formatEuro(data.breakdown.final_balance);
+                document.getElementById('details-invested').textContent = formatEuro(data.breakdown.total_invested);
+                document.getElementById('details-interest').textContent = formatEuro(data.breakdown.interest_earned);
+                document.getElementById('details-initial').textContent = formatEuro(data.breakdown.initial);
+                document.getElementById('details-monthly').textContent = formatEuro(data.breakdown.monthly_total);
+
+                // Color the final balance text based on theme
+                document.getElementById('details-final').className = `text-2xl font-bold raleway-700 text-${data.theme}`;
+
+                // 2. Draw Chart
+                renderDetailsChart(data.chart, data.theme);
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('details-title').textContent = "Error loading data";
+            }
+        });
+    });
+}
+
+function renderDetailsChart(chartData, theme) {
+    const canvas = document.getElementById('detailsChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+
+    if (detailsChartInstance) {
+        detailsChartInstance.destroy();
+    }
+
+    const themeColors = {
+        'success': '#22c55e',
+        'primary': '#3b82f6',
+        'purple-500': '#a855f7',
+        'warning': '#f59e0b',
+        'error': '#ef4444'
+    };
+    const mainColor = themeColors[theme] || '#3b82f6';
+
+    detailsChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [
+                {
+                    label: 'Total Balance',
+                    data: chartData.balance_data,
+                    borderColor: mainColor,
+                    backgroundColor: mainColor + '20',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Amount Invested',
+                    data: chartData.invested_data,
+                    borderColor: '#94a3b8',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 10,
+                    right: 10
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    align: 'end', // Puts legend on the right side to save vertical space
+                    labels: {
+                        font: { family: 'Raleway', size: 11 },
+                        usePointStyle: true,
+                        boxWidth: 8
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return context.dataset.label + ': €' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 10 },
+                        callback: function (value) {
+                            if (value >= 1000000) return '€' + (value / 1000000) + 'M';
+                            if (value >= 1000) return '€' + (value / 1000) + 'k';
+                            return '€' + value;
+                        }
+                    }
+                },
+                x: {
+                    title: { display: true, text: 'Years', font: { size: 11 } },
+                    ticks: {
+                        font: { size: 10 },
+                        maxTicksLimit: 8
+                    }
+                }
+            }
+        }
+    });
 }
