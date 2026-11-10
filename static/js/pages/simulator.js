@@ -2,7 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initFormValidation();
     initDeleteModal();
     initSaveModal();
+    initSimulatorChart(); 
 });
+
+// Global variable to hold the chart instance
+let simChartInstance = null;
 
 // ==========================================
 // 1. PRO TOAST NOTIFICATION SYSTEM
@@ -35,36 +39,153 @@ function showToast(message, type = 'success') {
 }
 
 // ==========================================
-// 2. FORM VALIDATION
+// 2. SIMULATION LOGIC & CHART.JS
+// ==========================================
+function initSimulatorChart() {
+    const form = document.getElementById('simulator-form');
+    if (!form) return;
+
+    // Run simulation immediately on page load so the chart isn't empty
+    runSimulation();
+
+    // Intercept form submit to use AJAX instead of page reload
+    form.addEventListener('submit', (e) => {
+        e.preventDefault(); // Stop page reload
+        
+        // Check if inputs are valid before running
+        if (validateForm()) {
+            runSimulation();
+        }
+    });
+}
+
+async function runSimulation() {
+    const btn = document.querySelector('#simulator-form button[type="submit"]');
+    const originalBtnHTML = btn.innerHTML;
+    
+    // Show loading state
+    btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Simulating...';
+    btn.disabled = true;
+
+    const payload = {
+        initial: parseFloat(document.getElementById('initial').value),
+        monthly: parseFloat(document.getElementById('monthly').value),
+        annual_rate: parseFloat(document.getElementById('annual_rate').value),
+        years: parseInt(document.getElementById('years').value)
+    };
+
+    try {
+        const res = await fetch('/api/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+
+        // 1. Update the Bilan Numbers dynamically
+        const formatEuro = (num) => "€" + Math.round(num).toLocaleString('en-US');
+        document.getElementById('final-balance-val').textContent = formatEuro(data.final_balance);
+        document.getElementById('total-invested-val').textContent = formatEuro(data.total_invested);
+        document.getElementById('gains-val').textContent = formatEuro(data.gains);
+
+        // 2. Render the Chart
+        renderSimulatorChart(data.chart);
+
+    } catch (err) {
+        console.error(err);
+        showToast("Failed to run simulation.", "error");
+    } finally {
+        btn.innerHTML = originalBtnHTML;
+        btn.disabled = false;
+    }
+}
+
+function renderSimulatorChart(chartData) {
+    const canvas = document.getElementById('simulator-chart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+
+    // Destroy old chart to prevent memory leaks and overlapping drawing
+    if (simChartInstance) {
+        simChartInstance.destroy();
+    }
+
+    const successColor = '#22c55e'; // DaisyUI success (green)
+    const primaryColor = '#3b82f6'; // DaisyUI primary (blue)
+
+    simChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [
+                {
+                    label: 'Total Balance',
+                    data: chartData.balance_data,
+                    borderColor: successColor,
+                    backgroundColor: successColor + '20', // Transparent fill
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4, // Smooth curve
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Amount Invested',
+                    data: chartData.invested_data,
+                    borderColor: primaryColor,
+                    borderWidth: 2,
+                    borderDash: [5, 5], // Dashed line
+                    fill: false,
+                    tension: 0, // Straight line
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false }, // Custom legend is in HTML
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': €' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) return '€' + (value / 1000000) + 'M';
+                            if (value >= 1000) return '€' + (value / 1000) + 'k';
+                            return '€' + value;
+                        }
+                    }
+                },
+                x: {
+                    title: { display: true, text: 'Years' },
+                    ticks: { maxTicksLimit: 10 }
+                }
+            }
+        }
+    });
+}
+
+// ==========================================
+// 3. FORM VALIDATION HELPERS
 // ==========================================
 function initFormValidation() {
     const simulatorForm = document.getElementById('simulator-form');
     if (!simulatorForm) return;
 
-    simulatorForm.addEventListener('submit', function (event) {
-        let isValid = true;
-        const inputs = simulatorForm.querySelectorAll('input[type="number"]');
-
-        inputs.forEach(input => {
-            const inputWrapper = input.closest('.input');
-            const errorMsg = inputWrapper.nextElementSibling;
-
-            if (!input.checkValidity()) {
-                isValid = false;
-                inputWrapper.classList.add('input-error');
-                if (errorMsg) errorMsg.classList.remove('hidden');
-            } else {
-                inputWrapper.classList.remove('input-error');
-                if (errorMsg) errorMsg.classList.add('hidden');
-            }
-        });
-
-        if (!isValid) {
-            event.preventDefault();
-            showToast("Please fill out all fields correctly.", "error");
-        }
-    });
-
+    // Clear error state when the user types
     const inputs = simulatorForm.querySelectorAll('input');
     inputs.forEach(input => {
         input.addEventListener('input', function () {
@@ -79,8 +200,35 @@ function initFormValidation() {
     });
 }
 
+// Returns true if valid, false if invalid
+function validateForm() {
+    const simulatorForm = document.getElementById('simulator-form');
+    let isValid = true;
+    const inputs = simulatorForm.querySelectorAll('input[type="number"]');
+
+    inputs.forEach(input => {
+        const inputWrapper = input.closest('.input');
+        const errorMsg = inputWrapper.nextElementSibling;
+
+        if (!input.checkValidity()) {
+            isValid = false;
+            inputWrapper.classList.add('input-error');
+            if (errorMsg) errorMsg.classList.remove('hidden');
+        } else {
+            inputWrapper.classList.remove('input-error');
+            if (errorMsg) errorMsg.classList.add('hidden');
+        }
+    });
+
+    if (!isValid) {
+        showToast("Please fill out all fields correctly.", "error");
+    }
+    
+    return isValid;
+}
+
 // ==========================================
-// 3. DELETE MODAL & API LOGIC
+// 4. DELETE MODAL & API LOGIC
 // ==========================================
 function initDeleteModal() {
     const scenarioList = document.getElementById('simulator-scenarios-list');
@@ -131,7 +279,7 @@ function initDeleteModal() {
 }
 
 // ==========================================
-// 4. SAVE SCENARIO MODAL (NEW CUSTOM SELECTORS)
+// 5. SAVE SCENARIO MODAL
 // ==========================================
 function initSaveModal() {
     const openBtn = document.getElementById('open-save-modal-btn');
@@ -149,13 +297,10 @@ function initSaveModal() {
 
     iconOptions.forEach(option => {
         option.addEventListener('click', () => {
-            // Reset all
             iconOptions.forEach(opt => {
                 opt.className = 'icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all';
             });
-            // Set active
             option.className = 'icon-option flex items-center justify-center p-3 rounded-lg border-2 border-primary bg-primary/10 text-primary cursor-pointer transition-all';
-            // Update hidden input
             iconInput.value = option.dataset.value;
         });
     });
@@ -166,14 +311,11 @@ function initSaveModal() {
 
     colorOptions.forEach(option => {
         option.addEventListener('click', () => {
-            // Reset all
             colorOptions.forEach(opt => {
                 opt.className = 'color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all';
             });
-            // Set active
             const color = option.dataset.value;
             option.className = `color-option flex items-center justify-center p-3 rounded-lg border-2 border-${color} bg-${color}/10 cursor-pointer transition-all`;
-            // Update hidden input
             colorInput.value = color;
         });
     });
@@ -236,7 +378,7 @@ function initSaveModal() {
 }
 
 // ==========================================
-// 5. DOM MANIPULATION HELPERS
+// 6. DOM MANIPULATION HELPERS
 // ==========================================
 function removeScenarioRow(id) {
     const rowToRemove = document.getElementById(`scenario-row-${id}`);
