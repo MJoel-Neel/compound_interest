@@ -12,7 +12,7 @@ router = APIRouter()
 async def export_data(scenario_id: Optional[int] = None):
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status", "Final Value"])
+    writer.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Compounding", "Inflation", "Tax", "Status", "Final Value"])
     
     filename = "all_scenarios.csv"
 
@@ -39,14 +39,12 @@ async def export_data(scenario_id: Optional[int] = None):
         scenario = next((s for s in constants.MOCK_DB if s["id"] == scenario_id), None)
         if scenario:
             writer.writerow([
-                scenario["id"], 
-                scenario["name"], 
-                format_currency(scenario["initial"]), 
-                format_currency(scenario["monthly"]), 
-                f"{scenario['annual_rate']}%", 
-                scenario["years"], 
-                scenario["status"], 
-                format_currency(scenario["final_value"])
+                scenario["id"], scenario["name"], scenario["initial"], 
+                scenario["monthly"], scenario["annual_rate"], scenario["years"], 
+                scenario.get("compounding_frequency", "Monthly"),
+                scenario.get("inflation_rate", 0.0),
+                scenario.get("tax_rate", 0.0),
+                scenario["status"], scenario["final_value"]
             ])
             # Safe filename generation
             safe_name = str(scenario['name']).replace(' ', '_').replace('/', '_')
@@ -118,11 +116,15 @@ async def export_full_data():
         # --- 4. SCENARIOS CSV ---
         scenarios_csv = io.StringIO()
         w = csv.writer(scenarios_csv)
-        w.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Status"])
+        w.writerow(["ID", "Name", "Initial", "Monthly", "Rate", "Years", "Compounding", "Inflation", "Tax", "Status", "Final Value"])
         for s in constants.MOCK_DB:
             w.writerow([
                 s["id"], s["name"], s["initial"], 
-                s["monthly"], s["annual_rate"], s["years"], s["status"]
+                s["monthly"], s["annual_rate"], s["years"], 
+                s.get("compounding_frequency", "Monthly"),
+                s.get("inflation_rate", 0.0),
+                s.get("tax_rate", 0.0),
+                s["status"], s["final_value"]
             ])
         zip_file.writestr("all_scenarios.csv", scenarios_csv.getvalue())
 
