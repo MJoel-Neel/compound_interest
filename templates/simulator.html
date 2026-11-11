@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="py-6 px-4 max-w-[1400px] mx-auto">
-    
+
     <!-- HEADER -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div class="flex items-center gap-3">
@@ -13,14 +13,16 @@
             </div>
             <div>
                 <h1 class="raleway-700 text-2xl text-base-content">Investment Simulator</h1>
-                <p class="raleway-400 text-base-content/60 text-sm mt-1">Plan your investments and see how your wealth could grow over time.</p>
+                <p class="raleway-400 text-base-content/60 text-sm mt-1">Plan your investments and see how your wealth
+                    could grow over time.</p>
             </div>
         </div>
         <!-- Mock "Live Data" Badge -->
-        <div class="flex items-center gap-2 bg-success/10 text-success px-4 py-2 rounded-full border border-success/20 text-xs raleway-500">
+        <div
+            class="flex items-center gap-2 bg-success/10 text-success px-4 py-2 rounded-full border border-success/20 text-xs raleway-500">
             <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
             </span>
             Live data &bull; Updated: Today
         </div>
@@ -28,7 +30,7 @@
 
     <!-- MAIN GRID: 4 Cols for Inputs, 8 Cols for Results -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
+
         <!-- ==========================================
              LEFT COLUMN: SIMULATION PARAMETERS
              ========================================== -->
@@ -39,47 +41,71 @@
                 </h2>
 
                 <form id="advanced-form" class="flex flex-col gap-4">
-                    
+
                     <!-- 1. Initial Investment -->
                     <div class="form-control w-full">
-                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Initial Investment <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="The starting amount you invest."></i></span></label>
-                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary flex items-center gap-2">
+                        <label class="label pt-0 pb-1"><span
+                                class="label-text raleway-500 text-base-content flex items-center gap-1">Initial
+                                Investment <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]"
+                                    title="The starting amount you invest."></i></span></label>
+                        <div
+                            class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary flex items-center gap-2">
                             <span class="text-base-content/50">€</span>
-                            <input type="number" id="adv-initial" class="grow raleway-400" value="10000" min="0" step="any" required>
+                            <input type="number" id="adv-initial" class="grow raleway-400" value="10000" min="0"
+                                step="any" required>
                         </div>
                     </div>
 
                     <!-- 2. Monthly Contribution -->
                     <div class="form-control w-full">
-                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Monthly Contribution <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="Amount added to the portfolio every month."></i></span></label>
-                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
+                        <label class="label pt-0 pb-1"><span
+                                class="label-text raleway-500 text-base-content flex items-center gap-1">Monthly
+                                Contribution <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]"
+                                    title="Amount added to the portfolio every month."></i></span></label>
+                        <div
+                            class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
                             <span class="text-base-content/50">€</span>
-                            <input type="number" id="adv-monthly" class="grow raleway-400" value="500" min="0" step="any" required>
+                            <input type="number" id="adv-monthly" class="grow raleway-400" value="500" min="0"
+                                step="any" required>
                         </div>
                     </div>
 
                     <!-- 3. Expected Annual Return -->
                     <div class="form-control w-full">
-                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Expected Annual Return <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="The average yearly growth rate."></i></span></label>
-                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
-                            <input type="number" id="adv-rate" class="grow raleway-400" value="8" min="0" max="100" step="any" required>
+                        <label class="label pt-0 pb-1"><span
+                                class="label-text raleway-500 text-base-content flex items-center gap-1">Expected Annual
+                                Return <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]"
+                                    title="The average yearly growth rate."></i></span></label>
+                        <div
+                            class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
+                            <input type="number" id="adv-rate" class="grow raleway-400" value="8" min="0" max="100"
+                                step="any" required>
                             <span class="text-base-content/50">%</span>
                         </div>
                     </div>
 
                     <!-- 4. Investment Duration -->
                     <div class="form-control w-full">
-                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Investment Duration <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="How many years you plan to invest."></i></span></label>
-                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
-                            <input type="number" id="adv-years" class="grow raleway-400" value="20" min="1" max="100" step="any" required>
+                        <label class="label pt-0 pb-1"><span
+                                class="label-text raleway-500 text-base-content flex items-center gap-1">Investment
+                                Duration <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]"
+                                    title="How many years you plan to invest."></i></span></label>
+                        <div
+                            class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
+                            <input type="number" id="adv-years" class="grow raleway-400" value="20" min="1" max="100"
+                                step="any" required>
                             <span class="text-base-content/50">years</span>
                         </div>
                     </div>
 
                     <!-- 5. Compounding Frequency -->
                     <div class="form-control w-full">
-                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Compounding Frequency <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="How often interest is calculated."></i></span></label>
-                        <select id="adv-compounding" class="select select-bordered w-full bg-base-100 border-base-300 raleway-400">
+                        <label class="label pt-0 pb-1"><span
+                                class="label-text raleway-500 text-base-content flex items-center gap-1">Compounding
+                                Frequency <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]"
+                                    title="How often interest is calculated."></i></span></label>
+                        <select id="adv-compounding"
+                            class="select select-bordered w-full bg-base-100 border-base-300 raleway-400">
                             <option value="Monthly" selected>Monthly</option>
                             <option value="Quarterly">Quarterly</option>
                             <option value="Annually">Annually</option>
@@ -90,13 +116,19 @@
                     <!-- 6. Inflation Adjustment -->
                     <div class="form-control w-full">
                         <div class="flex justify-between items-center">
-                            <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Inflation Adjustment <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="Adjusts final balance to today's purchasing power."></i></span></label>
-                            <input type="checkbox" id="adv-inflation-toggle" class="toggle toggle-success toggle-sm" onchange="document.getElementById('inflation-input-container').classList.toggle('hidden')" />
+                            <label class="label pt-0 pb-1"><span
+                                    class="label-text raleway-500 text-base-content flex items-center gap-1">Inflation
+                                    Adjustment <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]"
+                                        title="Adjusts final balance to today's purchasing power."></i></span></label>
+                            <input type="checkbox" id="adv-inflation-toggle" class="toggle toggle-success toggle-sm"
+                                onchange="document.getElementById('inflation-input-container').classList.toggle('hidden')" />
                         </div>
                         <!-- Hidden by default, shown when toggle is ON -->
                         <div id="inflation-input-container" class="hidden mt-2">
-                            <div class="input input-bordered w-full bg-base-100 border-base-300 flex items-center gap-2 text-sm">
-                                <input type="number" id="adv-inflation-rate" class="grow raleway-400" value="2.5" step="0.1">
+                            <div
+                                class="input input-bordered w-full bg-base-100 border-base-300 flex items-center gap-2 text-sm">
+                                <input type="number" id="adv-inflation-rate" class="grow raleway-400" value="2.5"
+                                    step="0.1">
                                 <span class="text-base-content/50">% annually</span>
                             </div>
                         </div>
@@ -104,16 +136,23 @@
 
                     <!-- 7. Taxation -->
                     <div class="form-control w-full">
-                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Taxation <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="Tax applied to total gains at the end."></i></span></label>
-                        <select id="adv-tax-select" class="select select-bordered w-full bg-base-100 border-base-300 raleway-400" onchange="document.getElementById('custom-tax-container').classList.toggle('hidden', this.value !== 'custom')">
+                        <label class="label pt-0 pb-1"><span
+                                class="label-text raleway-500 text-base-content flex items-center gap-1">Taxation <i
+                                    class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]"
+                                    title="Tax applied to total gains at the end."></i></span></label>
+                        <select id="adv-tax-select"
+                            class="select select-bordered w-full bg-base-100 border-base-300 raleway-400"
+                            onchange="document.getElementById('custom-tax-container').classList.toggle('hidden', this.value !== 'custom')">
                             <option value="0">No Tax</option>
                             <option value="30" selected>Standard Tax (30%)</option>
                             <option value="custom">Custom Tax Rate</option>
                         </select>
                         <!-- Hidden by default, shown when 'custom' is selected -->
                         <div id="custom-tax-container" class="hidden mt-2">
-                            <div class="input input-bordered w-full bg-base-100 border-base-300 flex items-center gap-2 text-sm">
-                                <input type="number" id="adv-custom-tax" class="grow raleway-400" value="15" min="0" max="100" step="0.1">
+                            <div
+                                class="input input-bordered w-full bg-base-100 border-base-300 flex items-center gap-2 text-sm">
+                                <input type="number" id="adv-custom-tax" class="grow raleway-400" value="15" min="0"
+                                    max="100" step="0.1">
                                 <span class="text-base-content/50">%</span>
                             </div>
                         </div>
@@ -128,7 +167,8 @@
                             <button type="reset" class="btn btn-outline border-base-300 flex-1 raleway-500">
                                 <i class="fa-solid fa-rotate-left"></i> Reset
                             </button>
-                            <button type="button" id="adv-save-btn" class="btn btn-outline btn-primary flex-1 raleway-500">
+                            <button type="button" id="adv-save-btn"
+                                class="btn btn-outline btn-primary flex-1 raleway-500">
                                 <i class="fa-regular fa-floppy-disk"></i> Save
                             </button>
                         </div>
@@ -141,7 +181,7 @@
              RIGHT COLUMN: RESULTS & VISUALIZATION
              ========================================== -->
         <div class="lg:col-span-8 flex flex-col gap-6">
-            
+
             <!-- 4 KPI CARDS -->
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 <!-- Final Balance -->
@@ -151,7 +191,8 @@
                             <i class="fa-solid fa-sack-dollar text-warning"></i>
                             <span class="raleway-500 text-xs uppercase tracking-wider">Final Balance</span>
                         </div>
-                        <p class="raleway-700 text-2xl text-base-content truncate" title="Final Balance" id="res-final">$0</p>
+                        <p class="raleway-700 text-2xl text-base-content truncate" title="Final Balance" id="res-final">
+                            $0</p>
                         <p class="raleway-500 text-xs text-success mt-1" id="res-growth-percent">↑ 0%</p>
                     </div>
                 </div>
@@ -163,7 +204,8 @@
                             <i class="fa-solid fa-wallet text-primary"></i>
                             <span class="raleway-500 text-xs uppercase tracking-wider">Contributions</span>
                         </div>
-                        <p class="raleway-700 text-2xl text-base-content truncate" title="Total Contributions" id="res-invested">$0</p>
+                        <p class="raleway-700 text-2xl text-base-content truncate" title="Total Contributions"
+                            id="res-invested">$0</p>
                     </div>
                 </div>
 
@@ -174,7 +216,7 @@
                             <i class="fa-solid fa-arrow-trend-up text-success"></i>
                             <span class="raleway-500 text-xs uppercase tracking-wider">Total Gains</span>
                         </div>
-<p class="raleway-700 text-2xl text-success truncate" title="Total Gains" id="res-gains">$0</p>
+                        <p class="raleway-700 text-2xl text-success truncate" title="Total Gains" id="res-gains">$0</p>
                         <p class="raleway-500 text-xs text-success mt-1" id="res-tax-note">After Tax</p>
                     </div>
                 </div>
@@ -186,7 +228,8 @@
                             <i class="fa-solid fa-percent text-purple-500"></i>
                             <span class="raleway-500 text-xs uppercase tracking-wider">Annual Growth</span>
                         </div>
-<p class="raleway-700 text-2xl text-base-content truncate" title="Annual Growth" id="res-cagr">0.0%</p>
+                        <p class="raleway-700 text-2xl text-base-content truncate" title="Annual Growth" id="res-cagr">
+                            0.0%</p>
                     </div>
                 </div>
             </div>
@@ -199,8 +242,10 @@
                             <i class="fa-solid fa-chart-line text-primary"></i> Growth Over Time
                         </h2>
                         <div class="flex gap-4 text-xs raleway-400">
-                            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success"></span> Portfolio Value</div>
-                            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span> Contributions</div>
+                            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success"></span>
+                                Portfolio Value</div>
+                            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span>
+                                Contributions</div>
                         </div>
                     </div>
                     <div class="w-full h-72 relative">
@@ -211,7 +256,7 @@
 
             <!-- YEARLY BREAKDOWN & INSIGHTS GRID -->
             <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-                
+
                 <!-- Table (Left side) -->
                 <div class="xl:col-span-8 card bg-base-100 shadow-sm border border-base-200">
                     <div class="card-body p-5">
@@ -250,11 +295,13 @@
                             <p id="insight-2">Compounding interest is your best friend.</p>
                             <p id="insight-3">Inflation reduces your actual purchasing power.</p>
                         </div>
-                        
+
                         <!-- DISCLAIMER -->
-                        <div class="mt-6 pt-4 border-t border-success/20 text-[0.7rem] text-base-content/50 raleway-500 leading-relaxed">
+                        <div
+                            class="mt-6 pt-4 border-t border-success/20 text-[0.7rem] text-base-content/50 raleway-500 leading-relaxed">
                             <i class="fa-solid fa-triangle-exclamation text-warning mr-1"></i>
-                            <strong>Hypothetical projections.</strong> These are not guaranteed returns. Actual investment results may vary and are subject to market risks.
+                            <strong>Hypothetical projections.</strong> These are not guaranteed returns. Actual
+                            investment results may vary and are subject to market risks.
                         </div>
                     </div>
                 </div>
@@ -276,7 +323,8 @@
         <form id="save-scenario-form" class="flex flex-col gap-6">
             <!-- Name -->
             <div class="flex flex-col gap-2">
-                <label for="scenario-name-input" class="text-sm font-semibold text-base-content/80 raleway-500">Scenario Name</label>
+                <label for="scenario-name-input" class="text-sm font-semibold text-base-content/80 raleway-500">Scenario
+                    Name</label>
                 <input type="text" id="scenario-name-input" placeholder="e.g., My Advanced Retirement Plan"
                     class="input input-bordered w-full raleway-400 focus:outline-primary bg-base-100" required />
                 <span class="text-sm text-error hidden raleway-500 mt-1" id="name-error">
@@ -288,12 +336,22 @@
             <div class="flex flex-col gap-3">
                 <label class="text-sm font-semibold text-base-content/80 raleway-500">Choose an Icon</label>
                 <div class="grid grid-cols-6 gap-2" id="icon-selector">
-                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-primary bg-primary/10 text-primary cursor-pointer transition-all" data-value="fa-arrow-trend-up"><i class="fa-solid fa-arrow-trend-up text-xl pointer-events-none"></i></div>
-                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-shield-halved"><i class="fa-solid fa-shield-halved text-xl pointer-events-none"></i></div>
-                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-briefcase"><i class="fa-solid fa-briefcase text-xl pointer-events-none"></i></div>
-                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-star"><i class="fa-solid fa-star text-xl pointer-events-none"></i></div>
-                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-rocket"><i class="fa-solid fa-rocket text-xl pointer-events-none"></i></div>
-                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-piggy-bank"><i class="fa-solid fa-piggy-bank text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-primary bg-primary/10 text-primary cursor-pointer transition-all"
+                        data-value="fa-arrow-trend-up"><i
+                            class="fa-solid fa-arrow-trend-up text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-shield-halved"><i
+                            class="fa-solid fa-shield-halved text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-briefcase"><i class="fa-solid fa-briefcase text-xl pointer-events-none"></i>
+                    </div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-star"><i class="fa-solid fa-star text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-rocket"><i class="fa-solid fa-rocket text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="fa-piggy-bank"><i class="fa-solid fa-piggy-bank text-xl pointer-events-none"></i>
+                    </div>
                 </div>
                 <input type="hidden" name="scenario_icon" id="selected-icon" value="fa-arrow-trend-up">
             </div>
@@ -302,19 +360,31 @@
             <div class="flex flex-col gap-3">
                 <label class="text-sm font-semibold text-base-content/80 raleway-500">Choose a Theme Color</label>
                 <div class="grid grid-cols-5 gap-3" id="color-selector">
-                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-success bg-success/10 cursor-pointer transition-all" data-value="success"><span class="w-6 h-6 rounded-full bg-success shadow-sm pointer-events-none"></span></div>
-                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="primary"><span class="w-6 h-6 rounded-full bg-primary shadow-sm pointer-events-none"></span></div>
-                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="purple-500"><span class="w-6 h-6 rounded-full bg-purple-500 shadow-sm pointer-events-none"></span></div>
-                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="warning"><span class="w-6 h-6 rounded-full bg-warning shadow-sm pointer-events-none"></span></div>
-                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="error"><span class="w-6 h-6 rounded-full bg-error shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-success bg-success/10 cursor-pointer transition-all"
+                        data-value="success"><span
+                            class="w-6 h-6 rounded-full bg-success shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="primary"><span
+                            class="w-6 h-6 rounded-full bg-primary shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="purple-500"><span
+                            class="w-6 h-6 rounded-full bg-purple-500 shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="warning"><span
+                            class="w-6 h-6 rounded-full bg-warning shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all"
+                        data-value="error"><span
+                            class="w-6 h-6 rounded-full bg-error shadow-sm pointer-events-none"></span></div>
                 </div>
                 <input type="hidden" name="scenario_color" id="selected-color" value="success">
             </div>
 
             <!-- Actions -->
             <div class="modal-action mt-4">
-                <button type="button" class="btn btn-ghost raleway-500" onclick="document.getElementById('save_scenario_modal').close()">Cancel</button>
-                <button type="submit" id="confirm-save-btn" class="btn btn-primary text-white raleway-500 px-8">Save Scenario</button>
+                <button type="button" class="btn btn-ghost raleway-500"
+                    onclick="document.getElementById('save_scenario_modal').close()">Cancel</button>
+                <button type="submit" id="confirm-save-btn" class="btn btn-primary text-white raleway-500 px-8">Save
+                    Scenario</button>
             </div>
         </form>
     </div>

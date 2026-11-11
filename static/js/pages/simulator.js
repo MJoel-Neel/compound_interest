@@ -26,16 +26,13 @@ function initAdvancedSimulator() {
     // 1. Read URL Parameters
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('initial')) {
-        const rawInitial = urlParams.get('initial');
-        const rawMonthly = urlParams.get('monthly');
-        
-        // Use valueAsNumber to safely parse floats and scientific notation
-        document.getElementById('adv-initial').valueAsNumber = parseFloat(rawInitial) || 1000;
-        document.getElementById('adv-monthly').valueAsNumber = parseFloat(rawMonthly) || 200;
-        
-        document.getElementById('adv-rate').valueAsNumber = parseFloat(urlParams.get('annual_rate')) || 7;
-        document.getElementById('adv-years').valueAsNumber = parseInt(urlParams.get('years')) || 20;
-        
+        // Assign the raw string. The number input will handle it.
+        document.getElementById('adv-initial').value = urlParams.get('initial') || 1000;
+        document.getElementById('adv-monthly').value = urlParams.get('monthly') || 200;
+
+        document.getElementById('adv-rate').value = urlParams.get('annual_rate') || 7;
+        document.getElementById('adv-years').value = urlParams.get('years') || 20;
+
         if (urlParams.has('compounding')) {
             document.getElementById('adv-compounding').value = urlParams.get('compounding');
         }
@@ -45,7 +42,7 @@ function initAdvancedSimulator() {
         if (inflation > 0) {
             document.getElementById('adv-inflation-toggle').checked = true;
             document.getElementById('inflation-input-container').classList.remove('hidden');
-            document.getElementById('adv-inflation-rate').valueAsNumber = inflation;
+            document.getElementById('adv-inflation-rate').value = inflation;
         }
 
         // Handle Tax
@@ -57,7 +54,7 @@ function initAdvancedSimulator() {
         } else {
             document.getElementById('adv-tax-select').value = 'custom';
             document.getElementById('custom-tax-container').classList.remove('hidden');
-            document.getElementById('adv-custom-tax').valueAsNumber = tax;
+            document.getElementById('adv-custom-tax').value = tax;
         }
     }
 
