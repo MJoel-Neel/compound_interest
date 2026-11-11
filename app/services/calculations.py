@@ -123,7 +123,8 @@ def format_compact_currency(num: float) -> str:
     abs_num = abs(num)
     prefix = "-€" if is_negative else "€"
     
-    if abs_num >= 1e15: return f"{prefix}{abs_num / 1e15:.2f}Q"
+    if abs_num >= 1e15:
+        return f"{prefix}{abs_num:.2e}".replace('e+', 'e')
     if abs_num >= 1e12: return f"{prefix}{abs_num / 1e12:.2f}T"
     if abs_num >= 1e9: return f"{prefix}{abs_num / 1e9:.2f}B"
     if abs_num >= 1e6: return f"{prefix}{abs_num / 1e6:.2f}M"

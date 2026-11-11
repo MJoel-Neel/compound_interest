@@ -44,8 +44,8 @@
                     <div class="form-control w-full">
                         <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Initial Investment <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="The starting amount you invest."></i></span></label>
                         <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary flex items-center gap-2">
-                            <span class="text-base-content/50">$</span>
-                            <input type="number" id="adv-initial" class="grow raleway-400" value="10000" min="0" required>
+                            <span class="text-base-content/50">€</span>
+                            <input type="number" id="adv-initial" class="grow raleway-400" value="10000" min="0" step="any" required>
                         </div>
                     </div>
 
@@ -53,8 +53,8 @@
                     <div class="form-control w-full">
                         <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Monthly Contribution <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="Amount added to the portfolio every month."></i></span></label>
                         <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
-                            <span class="text-base-content/50">$</span>
-                            <input type="number" id="adv-monthly" class="grow raleway-400" value="500" min="0" required>
+                            <span class="text-base-content/50">€</span>
+                            <input type="number" id="adv-monthly" class="grow raleway-400" value="500" min="0" step="any" required>
                         </div>
                     </div>
 
@@ -62,7 +62,7 @@
                     <div class="form-control w-full">
                         <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Expected Annual Return <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="The average yearly growth rate."></i></span></label>
                         <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
-                            <input type="number" id="adv-rate" class="grow raleway-400" value="8" min="0" max="100" step="0.1" required>
+                            <input type="number" id="adv-rate" class="grow raleway-400" value="8" min="0" max="100" step="any" required>
                             <span class="text-base-content/50">%</span>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                     <div class="form-control w-full">
                         <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Investment Duration <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="How many years you plan to invest."></i></span></label>
                         <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
-                            <input type="number" id="adv-years" class="grow raleway-400" value="20" min="1" max="100" required>
+                            <input type="number" id="adv-years" class="grow raleway-400" value="20" min="1" max="100" step="any" required>
                             <span class="text-base-content/50">years</span>
                         </div>
                     </div>
@@ -327,5 +327,5 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- 2. Page Specific Script -->
-<script src="/static/js/pages/simulator.js" defer></script>
+<script src="/static/js/pages/simulator.js?v=2" defer></script>
 {% endblock %}

@@ -50,25 +50,24 @@ function formatCurrency(num) {
     const isNegative = num < 0;
     const absNum = Math.abs(num);
     const prefix = isNegative ? "-€" : "€";
-    let formatted = "";
-
-    if (absNum >= 1e15) formatted = (absNum / 1e15).toFixed(2) + "Q";
-    else if (absNum >= 1e12) formatted = (absNum / 1e12).toFixed(2) + "T";
-    else if (absNum >= 1e9) formatted = (absNum / 1e9).toFixed(2) + "B";
-    else if (absNum >= 1e6) formatted = (absNum / 1e6).toFixed(2) + "M";
-    else if (absNum >= 1e3) formatted = (absNum / 1e3).toFixed(2) + "k";
-    else formatted = Math.round(absNum).toLocaleString('en-US');
-
-    // Fallback for exceptionally huge numbers
-    if (formatted.length > 10) {
-        return prefix + absNum.toExponential(2);
+    
+    // If it exceeds Quadrillions, fallback to clean scientific notation
+    if (absNum >= 1e15) {
+        let expStr = absNum.toExponential(2); // e.g., 1.23e+58
+        return prefix + expStr.replace('e+', 'e'); // e.g., €1.23e58
     }
     
-    return prefix + formatted;
+    if (absNum >= 1e12) return `${prefix}${(absNum / 1e12).toFixed(2)}T`;
+    if (absNum >= 1e9) return `${prefix}${(absNum / 1e9).toFixed(2)}B`;
+    if (absNum >= 1e6) return `${prefix}${(absNum / 1e6).toFixed(2)}M`;
+    if (absNum >= 1e3) return `${prefix}${(absNum / 1e3).toFixed(2)}k`;
+    
+    return `${prefix}${Math.round(absNum).toLocaleString('en-US')}`;
 }
 
-// THE ONE AND ONLY CHART AXIS FORMATTER
 function formatChartAxis(val) {
+    if (val === 0) return '€0';
+    if (val >= 1e15) return '€' + val.toExponential(1).replace('+', '');
     if (val >= 1e12) return '€' + (val / 1e12).toFixed(1) + 'T';
     if (val >= 1e9) return '€' + (val / 1e9).toFixed(1) + 'B';
     if (val >= 1e6) return '€' + (val / 1e6).toFixed(1) + 'M';

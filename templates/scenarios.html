@@ -142,7 +142,7 @@
                 </button>
 
                 {% if scenario.status == 'Active' %}
-                <a href="/simulator?initial={{ scenario.initial }}&monthly={{ scenario.monthly }}&annual_rate={{ scenario.annual_rate }}&years={{ scenario.years }}&compounding={{ scenario.compounding_frequency|default('Monthly') }}&inflation={{ scenario.inflation_rate|default(0) }}&tax={{ scenario.tax_rate|default(0) }}"
+                <a href="/simulator?initial={{ '{:.0f}'.format(scenario.initial) }}&monthly={{ '{:.0f}'.format(scenario.monthly) }}&annual_rate={{ scenario.annual_rate }}&years={{ scenario.years }}&compounding={{ scenario.compounding_frequency|default('Monthly') }}&inflation={{ scenario.inflation_rate|default(0) }}&tax={{ scenario.tax_rate|default(0) }}"
                     class="btn btn-sm btn-success text-white flex-1 raleway-500 text-xs">
                     <i class="fa-solid fa-play"></i> Load
                 </a>

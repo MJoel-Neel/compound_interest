@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function getPayload() {
     const inflationToggle = document.getElementById('adv-inflation-toggle');
     const taxSelect = document.getElementById('adv-tax-select').value;
-    
+
     return {
         initial: parseFloat(document.getElementById('adv-initial').value) || 0,
         monthly: parseFloat(document.getElementById('adv-monthly').value) || 0,
@@ -26,10 +26,15 @@ function initAdvancedSimulator() {
     // 1. Read URL Parameters
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('initial')) {
-        document.getElementById('adv-initial').value = urlParams.get('initial') || 1000;
-        document.getElementById('adv-monthly').value = urlParams.get('monthly') || 200;
-        document.getElementById('adv-rate').value = urlParams.get('annual_rate') || 7;
-        document.getElementById('adv-years').value = urlParams.get('years') || 20;
+        const rawInitial = urlParams.get('initial');
+        const rawMonthly = urlParams.get('monthly');
+        
+        // Use valueAsNumber to safely parse floats and scientific notation
+        document.getElementById('adv-initial').valueAsNumber = parseFloat(rawInitial) || 1000;
+        document.getElementById('adv-monthly').valueAsNumber = parseFloat(rawMonthly) || 200;
+        
+        document.getElementById('adv-rate').valueAsNumber = parseFloat(urlParams.get('annual_rate')) || 7;
+        document.getElementById('adv-years').valueAsNumber = parseInt(urlParams.get('years')) || 20;
         
         if (urlParams.has('compounding')) {
             document.getElementById('adv-compounding').value = urlParams.get('compounding');
@@ -40,7 +45,7 @@ function initAdvancedSimulator() {
         if (inflation > 0) {
             document.getElementById('adv-inflation-toggle').checked = true;
             document.getElementById('inflation-input-container').classList.remove('hidden');
-            document.getElementById('adv-inflation-rate').value = inflation;
+            document.getElementById('adv-inflation-rate').valueAsNumber = inflation;
         }
 
         // Handle Tax
@@ -52,7 +57,7 @@ function initAdvancedSimulator() {
         } else {
             document.getElementById('adv-tax-select').value = 'custom';
             document.getElementById('custom-tax-container').classList.remove('hidden');
-            document.getElementById('adv-custom-tax').value = tax;
+            document.getElementById('adv-custom-tax').valueAsNumber = tax;
         }
     }
 
@@ -81,8 +86,8 @@ function initAdvancedSimulator() {
 // --- 3. RUN SIMULATION ---
 async function runAdvancedSimulation() {
     const submitBtn = document.querySelector('#advanced-form button[type="submit"]');
-    if(!submitBtn) return;
-    
+    if (!submitBtn) return;
+
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Calculating...';
     submitBtn.disabled = true;
@@ -91,7 +96,7 @@ async function runAdvancedSimulation() {
 
     try {
         const data = await API.simulate(payload);
-        
+
         updateKPIs(data.kpis, payload);
         Charts.renderLineChart('advanced-chart', data.chart.labels, data.chart.balance_data, data.chart.invested_data);
         renderTable(data.table, payload);
@@ -109,19 +114,29 @@ async function runAdvancedSimulation() {
 // --- 4. UPDATE UI KPI CARDS ---
 function updateKPIs(kpis, payload) {
     document.getElementById('res-final').textContent = formatCurrency(kpis.net_balance);
-    
-    // Fix the scientific notation in Annual Growth
-    let growthDisplay = kpis.cagr > 10000 ? "> 10000%" : `${kpis.cagr}%`;
-    document.getElementById('res-cagr').textContent = growthDisplay;
-
-    const growthPercent = payload.initial > 0 
-        ? (((kpis.net_balance - kpis.total_invested) / kpis.total_invested) * 100).toFixed(1) 
-        : 0;
-    document.getElementById('res-growth-percent').innerHTML = `↑ ${growthPercent.toLocaleString()}%`;
-
     document.getElementById('res-invested').textContent = formatCurrency(kpis.total_invested);
     document.getElementById('res-gains').textContent = formatCurrency(kpis.gross_gains);
-    
+
+    // 1. Handle Annual Growth (CAGR) Safely
+    let growthDisplay = "> 99999%";
+    if (kpis.cagr < 99999) {
+        growthDisplay = `${kpis.cagr}%`;
+    }
+    document.getElementById('res-cagr').textContent = growthDisplay;
+
+    // 2. Handle Total Return Percentage Safely
+    let growthPercent = 0;
+    if (payload.initial > 0 && kpis.total_invested > 0) {
+        growthPercent = ((kpis.net_balance - kpis.total_invested) / kpis.total_invested) * 100;
+    }
+
+    let percentDisplay = "> 99999%";
+    if (growthPercent < 99999) {
+        percentDisplay = `${growthPercent.toFixed(1)}%`;
+    }
+    document.getElementById('res-growth-percent').innerHTML = `↑ ${percentDisplay}`;
+
+    // 3. Handle Tax Note
     const taxNote = document.getElementById('res-tax-note');
     if (payload.tax_rate > 0) {
         taxNote.innerHTML = `<span class="text-error">-${formatCurrency(kpis.tax_owed)} in taxes</span>`;
@@ -134,8 +149,8 @@ function updateKPIs(kpis, payload) {
 function renderTable(tableData, payload) {
     const tbody = document.getElementById('adv-table-body');
     if (!tbody) return;
-    
-    tbody.innerHTML = ''; 
+
+    tbody.innerHTML = '';
 
     tableData.forEach(row => {
         const cumulativeContributions = payload.initial + (payload.monthly * 12 * row.year);
@@ -144,9 +159,9 @@ function renderTable(tableData, payload) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="font-bold">${row.year}</td>
-            <td>${formatCurrency(row.end_balance)}</td>
-            <td>${formatCurrency(cumulativeContributions)}</td>
-            <td class="text-success font-semibold">+${formatCurrency(gainsSoFar)}</td>
+            <td class="truncate max-w-[120px]" title="${row.end_balance}">${formatCurrency(row.end_balance)}</td>
+            <td class="truncate max-w-[120px]" title="${cumulativeContributions}">${formatCurrency(cumulativeContributions)}</td>
+            <td class="text-success font-semibold truncate max-w-[120px]" title="${gainsSoFar}">+${formatCurrency(gainsSoFar)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -158,7 +173,7 @@ function updateInsights(kpis, payload) {
     const insight2 = document.getElementById('insight-2');
     const insight3 = document.getElementById('insight-3');
 
-    if(!insight1) return; 
+    if (!insight1) return;
 
     insight1.innerHTML = `Your investment could grow to <strong>${formatCurrency(kpis.net_balance)}</strong> over ${payload.years} years, assuming a ${payload.annual_rate}% annual return.`;
 
@@ -222,7 +237,7 @@ function initAdvancedSaveModal() {
             return;
         }
 
-        const payload = getPayload(); 
+        const payload = getPayload();
         payload.name = nameInput.value.trim();
         payload.icon = selectedIcon;
         payload.theme = selectedColor;
