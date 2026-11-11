@@ -150,6 +150,9 @@ function initDetailsModal() {
                 document.getElementById('details-invested').textContent = formatCurrency(data.breakdown.total_invested);
                 document.getElementById('details-interest').textContent = formatCurrency(data.breakdown.interest_earned);
 
+                     document.getElementById('details-initial').textContent = formatCurrency(data.breakdown.initial);
+                document.getElementById('details-monthly').textContent = formatCurrency(data.breakdown.monthly_total);
+                
                 try {
                     if (typeof Charts !== 'undefined') {
                         Charts.renderLineChart('detailsChart', data.chart.labels, data.chart.balance_data, data.chart.invested_data, '#3b82f6');
