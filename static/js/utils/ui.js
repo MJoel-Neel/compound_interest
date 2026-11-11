@@ -41,3 +41,24 @@ function applyTheme(theme) {
     }
     document.documentElement.setAttribute('data-theme', activeTheme);
 }
+
+
+// THE ONE AND ONLY CURRENCY FORMATTER
+function formatCurrency(num) {
+    if (num === null || num === undefined) return "€0";
+    if (num >= 1e15) return "€" + (num / 1e15).toFixed(2) + "Q"; // Quadrillion
+    if (num >= 1e12) return "€" + (num / 1e12).toFixed(2) + "T"; // Trillion
+    if (num >= 1e9) return "€" + (num / 1e9).toFixed(2) + "B"; // Billion
+    if (num >= 1e6) return "€" + (num / 1e6).toFixed(2) + "M"; // Million
+    if (num >= 1e3) return "€" + (num / 1e3).toFixed(2) + "k"; // Thousand
+    return "€" + Math.round(num).toLocaleString('en-US');
+}
+
+// THE ONE AND ONLY CHART AXIS FORMATTER
+function formatChartAxis(val) {
+    if (val >= 1e12) return '€' + (val / 1e12).toFixed(1) + 'T';
+    if (val >= 1e9) return '€' + (val / 1e9).toFixed(1) + 'B';
+    if (val >= 1e6) return '€' + (val / 1e6).toFixed(1) + 'M';
+    if (val >= 1e3) return '€' + (val / 1e3).toFixed(1) + 'k';
+    return '€' + val;
+}

@@ -108,27 +108,26 @@ async function runAdvancedSimulation() {
 
 // --- 4. UPDATE UI KPI CARDS ---
 function updateKPIs(kpis, payload) {
-    const fmt = (num) => "€" + Math.round(num).toLocaleString('en-US');
-
-    document.getElementById('res-final').textContent = fmt(kpis.net_balance);
+    document.getElementById('res-final').textContent = formatCurrency(kpis.net_balance);
     
+    // Fix the scientific notation in Annual Growth
+    let growthDisplay = kpis.cagr > 10000 ? "> 10000%" : `${kpis.cagr}%`;
+    document.getElementById('res-cagr').textContent = growthDisplay;
+
     const growthPercent = payload.initial > 0 
         ? (((kpis.net_balance - kpis.total_invested) / kpis.total_invested) * 100).toFixed(1) 
         : 0;
-    document.getElementById('res-growth-percent').innerHTML = `↑ ${growthPercent}%`;
+    document.getElementById('res-growth-percent').innerHTML = `↑ ${growthPercent.toLocaleString()}%`;
 
-    document.getElementById('res-invested').textContent = fmt(kpis.total_invested);
-
-    document.getElementById('res-gains').textContent = fmt(kpis.gross_gains);
+    document.getElementById('res-invested').textContent = formatCurrency(kpis.total_invested);
+    document.getElementById('res-gains').textContent = formatCurrency(kpis.gross_gains);
     
     const taxNote = document.getElementById('res-tax-note');
     if (payload.tax_rate > 0) {
-        taxNote.innerHTML = `<span class="text-error">-${fmt(kpis.tax_owed)} in taxes</span>`;
+        taxNote.innerHTML = `<span class="text-error">-${formatCurrency(kpis.tax_owed)} in taxes</span>`;
     } else {
         taxNote.innerHTML = "Tax-free projection";
     }
-
-    document.getElementById('res-cagr').textContent = `${kpis.cagr}%`;
 }
 
 // --- 5. RENDER DYNAMIC TABLE ---
@@ -137,7 +136,6 @@ function renderTable(tableData, payload) {
     if (!tbody) return;
     
     tbody.innerHTML = ''; 
-    const fmt = (num) => "€" + Math.round(num).toLocaleString('en-US');
 
     tableData.forEach(row => {
         const cumulativeContributions = payload.initial + (payload.monthly * 12 * row.year);
@@ -146,9 +144,9 @@ function renderTable(tableData, payload) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="font-bold">${row.year}</td>
-            <td>${fmt(row.end_balance)}</td>
-            <td>${fmt(cumulativeContributions)}</td>
-            <td class="text-success font-semibold">+${fmt(gainsSoFar)}</td>
+            <td>${formatCurrency(row.end_balance)}</td>
+            <td>${formatCurrency(cumulativeContributions)}</td>
+            <td class="text-success font-semibold">+${formatCurrency(gainsSoFar)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -156,22 +154,20 @@ function renderTable(tableData, payload) {
 
 // --- 6. UPDATE INSIGHTS ---
 function updateInsights(kpis, payload) {
-    const fmt = (num) => "€" + Math.round(num).toLocaleString('en-US');
-    
     const insight1 = document.getElementById('insight-1');
     const insight2 = document.getElementById('insight-2');
     const insight3 = document.getElementById('insight-3');
 
     if(!insight1) return; 
 
-    insight1.innerHTML = `Your investment could grow to <strong>${fmt(kpis.net_balance)}</strong> over ${payload.years} years, assuming a ${payload.annual_rate}% annual return.`;
+    insight1.innerHTML = `Your investment could grow to <strong>${formatCurrency(kpis.net_balance)}</strong> over ${payload.years} years, assuming a ${payload.annual_rate}% annual return.`;
 
-    insight2.innerHTML = `That's a total gain of <strong>${fmt(kpis.gross_gains)}</strong>. Your money earned ${((kpis.gross_gains / kpis.total_invested) * 100).toFixed(1)}% more than you put in.`;
+    insight2.innerHTML = `That's a total gain of <strong>${formatCurrency(kpis.gross_gains)}</strong>.`;
 
     if (payload.inflation_rate > 0) {
-        insight3.innerHTML = `After adjusting for <strong>${payload.inflation_rate}% inflation</strong>, your final balance has the purchasing power of <strong>${fmt(kpis.real_net_balance)}</strong> in today's money.`;
+        insight3.innerHTML = `After adjusting for <strong>${payload.inflation_rate}% inflation</strong>, your final balance has the purchasing power of <strong>${formatCurrency(kpis.real_net_balance)}</strong> in today's money.`;
     } else if (payload.tax_rate > 0) {
-        insight3.innerHTML = `A tax rate of <strong>${payload.tax_rate}%</strong> will reduce your gross gains, leaving you with a net balance of ${fmt(kpis.net_balance)}.`;
+        insight3.innerHTML = `A tax rate of <strong>${payload.tax_rate}%</strong> will reduce your gross gains, leaving you with a net balance of ${formatCurrency(kpis.net_balance)}.`;
     } else {
         insight3.innerHTML = `You selected <strong>no taxes</strong> and <strong>no inflation</strong>. This represents an ideal, theoretical growth scenario.`;
     }

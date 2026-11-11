@@ -1,5 +1,5 @@
 const Charts = {
-    renderLineChart: function(canvasId, labels, data1, data2, color1 = '#22c55e', color2 = '#3b82f6') {
+    renderLineChart: function (canvasId, labels, data1, data2, color1 = '#22c55e', color2 = '#3b82f6') {
         const oldCanvas = document.getElementById(canvasId);
         if (!oldCanvas || !oldCanvas.parentNode) return;
 
@@ -51,7 +51,16 @@ const Charts = {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { callback: (val) => '€' + (val >= 1000 ? (val/1000) + 'k' : val) }
+                        ticks: {
+                            callback: function (val) {
+                                if (val >= 1e15) return '€' + (val / 1e15).toFixed(1) + 'Q';
+                                if (val >= 1e12) return '€' + (val / 1e12).toFixed(1) + 'T';
+                                if (val >= 1e9) return '€' + (val / 1e9).toFixed(1) + 'B';
+                                if (val >= 1e6) return '€' + (val / 1e6).toFixed(1) + 'M';
+                                if (val >= 1e3) return '€' + (val / 1e3).toFixed(1) + 'k';
+                                return '€' + val;
+                            }
+                        }
                     },
                     x: { ticks: { maxTicksLimit: 10 } }
                 }
@@ -59,7 +68,7 @@ const Charts = {
         });
     },
 
-    renderDonutChart: function(canvasId, labels, data, colors) {
+    renderDonutChart: function (canvasId, labels, data, colors) {
         const oldCanvas = document.getElementById(canvasId);
         if (!oldCanvas || !oldCanvas.parentNode) return;
 

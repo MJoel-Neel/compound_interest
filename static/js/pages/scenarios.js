@@ -137,12 +137,10 @@ function initDetailsModal() {
                     return;
                 }
 
-                const fmt = (num) => "€" + Math.round(num).toLocaleString();
-
                 document.getElementById('details-title').textContent = data.scenario_name;
-                document.getElementById('details-final').textContent = fmt(data.breakdown.final_balance);
-                document.getElementById('details-invested').textContent = fmt(data.breakdown.total_invested);
-                document.getElementById('details-interest').textContent = fmt(data.breakdown.interest_earned);
+                document.getElementById('details-final').textContent = formatCurrency(data.breakdown.final_balance);
+                document.getElementById('details-invested').textContent = formatCurrency(data.breakdown.total_invested);
+                document.getElementById('details-interest').textContent = formatCurrency(data.breakdown.interest_earned);
                 
                 try {
                     if (typeof Charts !== 'undefined') {

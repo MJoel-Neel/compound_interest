@@ -2,8 +2,10 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 import copy
 import app.core.constants as constants
-from app.services.calculations import calculate_compound_interest
+from app.services.calculations import calculate_compound_interest, format_compact_currency
 from typing import Optional
+
+
 
 router = APIRouter()
 
@@ -20,6 +22,7 @@ class ScenarioCreate(BaseModel):
     inflation_rate: Optional[float] = 0.0
     tax_rate: Optional[float] = 0.0
 
+
 @router.post("/api/scenarios")
 async def create_scenario(scenario: ScenarioCreate):
     new_id = max([s["id"] for s in constants.MOCK_DB], default=0) + 1
@@ -35,16 +38,24 @@ async def create_scenario(scenario: ScenarioCreate):
     )
     kpis = math_results["kpis"]
 
-    gain_str = f"+€{kpis['net_balance'] - kpis['total_invested']:,.0f}" # Show net gains
-    percent_val = ((kpis['net_balance'] - kpis['total_invested']) / scenario.initial * 100) if scenario.initial > 0 else 0
-    percent_str = f"(+{percent_val:.1f}%)"
-    final_val_str = f"€{kpis['net_balance']:,.0f}"
+    # 1. Format Gains (No extra € symbol)
+    net_gains = kpis['net_balance'] - kpis['total_invested']
+    gain_str = f"+{format_compact_currency(net_gains)}"
+    
+    # 2. Format Percentage (Prevents 1.2409e+30% overflow)
+    percent_val = (net_gains / scenario.initial * 100) if scenario.initial > 0 else 0
+    if percent_val > 99999:
+        percent_str = "(+>99999%)"
+    else:
+        percent_str = f"(+{percent_val:.1f}%)"
+        
+    # 3. Format Final Value (No extra € symbol)
+    final_val_str = format_compact_currency(kpis['net_balance'])
 
     new_scenario = {
         "id": new_id, "name": scenario.name, "icon": scenario.icon, "theme": scenario.theme,
         "initial": scenario.initial, "monthly": scenario.monthly, "annual_rate": scenario.annual_rate,
         "years": scenario.years, 
-        # SAVE THE ADVANCED PARAMETERS
         "compounding_frequency": scenario.compounding_frequency,
         "inflation_rate": scenario.inflation_rate,
         "tax_rate": scenario.tax_rate,

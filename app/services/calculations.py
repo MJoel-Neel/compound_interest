@@ -113,3 +113,15 @@ def calculate_compound_interest(
         },
         "table": table_data
     }
+
+
+
+
+def format_compact_currency(num: float) -> str:
+    if num is None: return "€0"
+    if num >= 1e15: return f"€{num / 1e15:.2f}Q"
+    if num >= 1e12: return f"€{num / 1e12:.2f}T"
+    if num >= 1e9: return f"€{num / 1e9:.2f}B"
+    if num >= 1e6: return f"€{num / 1e6:.2f}M"
+    if num >= 1e3: return f"€{num / 1e3:.2f}k"
+    return f"€{num:,.0f}"

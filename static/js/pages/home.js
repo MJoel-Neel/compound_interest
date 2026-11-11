@@ -35,12 +35,10 @@ async function runSimulation() {
     try {
         const data = await API.simulate(payload);
 
-        const fmt = (num) => "€" + Math.round(num).toLocaleString('en-US');
-
         // UPDATE: Access the values inside the "kpis" object now
-        document.getElementById('final-balance-val').textContent = fmt(data.kpis.gross_balance);
-        document.getElementById('total-invested-val').textContent = fmt(data.kpis.total_invested);
-        document.getElementById('gains-val').textContent = fmt(data.kpis.gross_gains);
+        document.getElementById('final-balance-val').textContent = formatCurrency(data.kpis.gross_balance);
+        document.getElementById('total-invested-val').textContent = formatCurrency(data.kpis.total_invested);
+        document.getElementById('gains-val').textContent = formatCurrency(data.kpis.gross_gains);
 
         // The chart data structure hasn't changed, so this is still fine
         Charts.renderLineChart('simulator-chart', data.chart.labels, data.chart.balance_data, data.chart.invested_data);
