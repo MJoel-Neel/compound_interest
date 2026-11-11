@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 # Import all your routers
-from app.routers import pages, scenarios, simulator_api, user, export_api
+from app.routers import export, pages, scenarios, simulator, user
 
 import os
 os.makedirs("static/uploads", exist_ok=True)
@@ -16,6 +16,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Include the routers to connect them to the app
 app.include_router(pages.router)
 app.include_router(scenarios.router)
-app.include_router(simulator_api.router)
+app.include_router(simulator.router)
 app.include_router(user.router)
-app.include_router(export_api.router)
+app.include_router(export.router)

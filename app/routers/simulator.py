@@ -28,7 +28,6 @@ async def simulate_investment(data: SimulationInput):
         tax_rate=data.tax_rate
     )
 
-
 @router.get("/api/scenarios/{scenario_id}/details")
 async def get_scenario_details(scenario_id: int):
     scenario = next((s for s in constants.MOCK_DB if s["id"] == scenario_id), None)
@@ -46,19 +45,24 @@ async def get_scenario_details(scenario_id: int):
     )
     
     kpis = math_results["kpis"]
-    
-    # Calculate just the monthly contributions part for the breakdown
     total_monthly = kpis["total_invested"] - float(scenario["initial"])
     
     return {
         "scenario_name": scenario["name"],
         "theme": scenario["theme"],
+        # --- NEW ADVANCED DATA ---
+        "advanced": {
+            "compounding": scenario.get("compounding_frequency", "Monthly"),
+            "inflation": scenario.get("inflation_rate", 0.0),
+            "tax": scenario.get("tax_rate", 0.0)
+        },
         "breakdown": {
             "initial": float(scenario["initial"]),
             "monthly_total": total_monthly,
-            "interest_earned": kpis["gross_gains"], # Updated
-            "final_balance": kpis["gross_balance"], # Updated
-            "total_invested": kpis["total_invested"] # Updated
+            "interest_earned": kpis["gross_gains"],
+            "final_balance": kpis["gross_balance"],
+            "total_invested": kpis["total_invested"],
+            "net_balance": kpis["net_balance"] # Added net balance for advanced
         },
         "chart": math_results["chart"]
     }

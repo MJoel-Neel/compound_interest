@@ -41,9 +41,9 @@ function initActions() {
             btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
             try {
                 const res = await API.duplicateScenario(btn.dataset.id);
-                if (res.ok) { 
-                    showToast("Duplicated!"); 
-                    setTimeout(() => window.location.reload(), 800); 
+                if (res.ok) {
+                    showToast("Duplicated!");
+                    setTimeout(() => window.location.reload(), 800);
                 } else {
                     showToast("Failed to duplicate", "error");
                     btn.innerHTML = '<i class="fa-regular fa-copy"></i> Duplicate';
@@ -60,9 +60,9 @@ function initActions() {
             const isArchived = btn.dataset.status === 'Archived';
             try {
                 const res = isArchived ? await API.restoreScenario(btn.dataset.id) : await API.archiveScenario(btn.dataset.id);
-                if (res.ok) { 
-                    showToast(isArchived ? "Restored!" : "Archived!"); 
-                    setTimeout(() => window.location.reload(), 800); 
+                if (res.ok) {
+                    showToast(isArchived ? "Restored!" : "Archived!");
+                    setTimeout(() => window.location.reload(), 800);
                 }
             } catch {
                 showToast("Network error", "error");
@@ -75,9 +75,9 @@ function initActions() {
             btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
             try {
                 const res = await API.restoreScenario(btn.dataset.id);
-                if (res.ok) { 
-                    showToast("Restored!"); 
-                    setTimeout(() => window.location.reload(), 800); 
+                if (res.ok) {
+                    showToast("Restored!");
+                    setTimeout(() => window.location.reload(), 800);
                 }
             } catch {
                 showToast("Network error", "error");
@@ -109,10 +109,10 @@ function initRenameModal() {
         if (!input.value.trim()) return;
         btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
         const res = await API.renameScenario(id, input.value.trim());
-        if (res.ok) { 
-            modal.close(); 
-            showToast("Renamed!"); 
-            setTimeout(() => window.location.reload(), 800); 
+        if (res.ok) {
+            modal.close();
+            showToast("Renamed!");
+            setTimeout(() => window.location.reload(), 800);
         }
     });
 }
@@ -129,7 +129,7 @@ function initDetailsModal() {
 
             try {
                 const data = await API.getScenarioDetails(btn.dataset.id);
-                
+
                 if (!data || data.status === 'error' || !data.breakdown) {
                     console.error("Backend failed to return data. Response:", data);
                     showToast("Scenario no longer exists. Refreshing...", "error");
@@ -138,10 +138,18 @@ function initDetailsModal() {
                 }
 
                 document.getElementById('details-title').textContent = data.scenario_name;
-                document.getElementById('details-final').textContent = formatCurrency(data.breakdown.final_balance);
+                // NEW: Populate Advanced Badges
+                if (data.advanced) {
+                    document.getElementById('det-compounding').textContent = `Compounding: ${data.advanced.compounding}`;
+                    document.getElementById('det-inflation').textContent = `Inflation: ${data.advanced.inflation}%`;
+                    document.getElementById('det-tax').textContent = `Tax: ${data.advanced.tax}%`;
+                }
+                // Use net_balance for the final display if it exists, otherwise gross
+                const finalDisplay = data.breakdown.net_balance || data.breakdown.final_balance;
+                document.getElementById('details-final').textContent = formatCurrency(finalDisplay);
                 document.getElementById('details-invested').textContent = formatCurrency(data.breakdown.total_invested);
                 document.getElementById('details-interest').textContent = formatCurrency(data.breakdown.interest_earned);
-                
+
                 try {
                     if (typeof Charts !== 'undefined') {
                         Charts.renderLineChart('detailsChart', data.chart.labels, data.chart.balance_data, data.chart.invested_data, '#3b82f6');
@@ -175,10 +183,10 @@ function initDeleteModal() {
         btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
         try {
             const res = await API.deleteScenario(id);
-            if (res.ok) { 
-                modal.close(); 
-                showToast("Deleted!"); 
-                setTimeout(() => window.location.reload(), 800); 
+            if (res.ok) {
+                modal.close();
+                showToast("Deleted!");
+                setTimeout(() => window.location.reload(), 800);
             } else {
                 showToast("Failed to delete", "error");
                 btn.innerHTML = 'Yes, Delete';
