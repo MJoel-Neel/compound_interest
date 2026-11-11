@@ -162,13 +162,10 @@
             </div>
 
             <!-- Metrics -->
-            <div
-                class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-base-content/60 raleway-400 w-full md:w-1/2">
-                <span>Initial: <strong class="text-base-content">€{{ "{:,.0f}".format(scenario.initial)
-                        }}</strong></span>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-base-content/60 raleway-400 w-full md:w-1/2 min-w-0">
+                <span class="truncate">Initial: <strong class="text-base-content">{{ scenario.initial|compact_currency }}</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
-                <span>Monthly: <strong class="text-base-content">€{{ "{:,.0f}".format(scenario.monthly)
-                        }}</strong></span>
+                <span class="truncate">Monthly: <strong class="text-base-content">{{ scenario.monthly|compact_currency }}</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
                 <span>Rate: <strong class="text-base-content">{{ scenario.annual_rate }}%</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
