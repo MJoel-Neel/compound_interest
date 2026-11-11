@@ -297,7 +297,11 @@
                 <label for="avatar-upload" class="cursor-pointer relative group">
                     <!-- Preview Container -->
                     <div class="w-20 h-20 rounded-full bg-primary/20 text-primary flex items-center justify-center raleway-700 text-2xl overflow-hidden border-2 border-transparent group-hover:border-primary transition-all">
-                        <img id="avatar-preview" src="{{ user.avatar|default('') }}" class="w-full h-full object-cover {% if not user.avatar %}hidden{% endif %}">
+                        <img id="avatar-preview"
+                            src="{% if user.avatar and user.avatar != 'None' %}{{ user.avatar }}{% endif %}"
+                            class="w-full h-full object-cover {% if not user.avatar or user.avatar == 'None' %}hidden{% endif %}">
+                        
+                        
                         <span id="avatar-initials" class="{% if user.avatar %}hidden{% endif %}">{{ user.initials }}</span>
                     </div>
                     <!-- Overlay Icon -->

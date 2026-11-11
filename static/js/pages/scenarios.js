@@ -1,230 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("scenarios.js loaded successfully!");
-
     initFilters();
-    initActionButtons();
-    initDeleteModal();
+    initActions();
     initRenameModal();
-    initExportButtons();
-    initViewDetails();
+    initDetailsModal();
+    initDeleteModal();
 });
 
-// ==========================================
-// 1. TOAST NOTIFICATIONS
-// ==========================================
-function showToast(message, type = 'success') {
-    let container = document.getElementById('toast-container');
-    // Create container if it doesn't exist
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'toast toast-end toast-bottom z-[100]';
-        document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type} shadow-lg mb-2 raleway-500`;
-    let icon = type === 'error' ? '<i class="fa-solid fa-circle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
-
-    toast.innerHTML = `<div class="flex items-center gap-2">${icon}<span>${message}</span></div>`;
-    container.appendChild(toast);
-
-    // Auto-remove after 3.5 seconds
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.4s';
-        setTimeout(() => toast.remove(), 400);
-    }, 3500);
-}
-
-// ==========================================
-// 2. ACTION BUTTONS (Duplicate, Restore, Archive)
-// ==========================================
-function initActionButtons() {
-
-    // --- DUPLICATE ---
-    document.querySelectorAll('.duplicate-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
-
-            try {
-                const res = await fetch(`/api/scenarios/${id}/duplicate`, { method: 'POST' });
-                if (res.ok) {
-                    showToast("Scenario duplicated successfully!");
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    throw new Error("Server error");
-                }
-            } catch (err) {
-                console.error(err);
-                showToast("Failed to duplicate scenario.", "error");
-                btn.innerHTML = originalHTML;
-            }
-        });
-    });
-
-    // --- RESTORE ---
-    document.querySelectorAll('.restore-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
-
-            try {
-                const res = await fetch(`/api/scenarios/${id}/restore`, { method: 'PATCH' });
-                if (res.ok) {
-                    showToast("Scenario restored to Active!");
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    throw new Error("Server error");
-                }
-            } catch (err) {
-                console.error(err);
-                showToast("Failed to restore scenario.", "error");
-                btn.innerHTML = originalHTML;
-            }
-        });
-    });
-
-    // --- ARCHIVE / UNARCHIVE ---
-    document.querySelectorAll('.archive-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            const isArchived = btn.dataset.status === 'Archived';
-            const endpoint = isArchived ? 'restore' : 'archive';
-
-            try {
-                const res = await fetch(`/api/scenarios/${id}/${endpoint}`, { method: 'PATCH' });
-                if (res.ok) {
-                    showToast(`Scenario ${isArchived ? 'unarchived' : 'archived'}!`);
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    throw new Error("Server error");
-                }
-            } catch (err) {
-                console.error(err);
-                showToast("Failed to change status.", "error");
-            }
-        });
-    });
-}
-
-// ==========================================
-// 3. DELETE MODAL
-// ==========================================
-function initDeleteModal() {
-    const deleteModal = document.getElementById('delete_modal');
-    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    let scenarioToDeleteId = null;
-
-    if (!deleteModal) return console.error("Delete modal HTML not found!");
-
-    document.querySelectorAll('.delete-trigger').forEach(btn => {
-        btn.addEventListener('click', () => {
-            scenarioToDeleteId = btn.dataset.id;
-            deleteModal.showModal();
-        });
-    });
-
-    confirmDeleteBtn.addEventListener('click', async () => {
-        if (!scenarioToDeleteId) return;
-
-        const originalHTML = confirmDeleteBtn.innerHTML;
-        confirmDeleteBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Deleting...';
-        confirmDeleteBtn.disabled = true;
-
-        try {
-            const res = await fetch(`/api/scenarios/${scenarioToDeleteId}`, { method: 'DELETE' });
-            if (res.ok) {
-                deleteModal.close();
-                showToast("Scenario deleted successfully!");
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                throw new Error("Server error");
-            }
-        } catch (err) {
-            console.error(err);
-            showToast("Failed to delete scenario.", "error");
-            confirmDeleteBtn.innerHTML = originalHTML;
-            confirmDeleteBtn.disabled = false;
-        }
-    });
-}
-
-// ==========================================
-// 4. RENAME MODAL (Custom Modal)
-// ==========================================
-function initRenameModal() {
-    const renameModal = document.getElementById('rename_modal');
-    const renameForm = document.getElementById('rename-form');
-    const renameInput = document.getElementById('rename-input');
-    const renameError = document.getElementById('rename-error');
-    const confirmRenameBtn = document.getElementById('confirm-rename-btn');
-
-    let scenarioToRenameId = null;
-
-    if (!renameModal) return console.error("Rename modal HTML not found!");
-
-    // Open Modal
-    document.querySelectorAll('.rename-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            scenarioToRenameId = btn.dataset.id;
-            const currentName = btn.dataset.name;
-
-            renameInput.value = currentName;
-            renameInput.classList.remove('input-error');
-            renameError.classList.add('hidden');
-
-            renameModal.showModal();
-        });
-    });
-
-    // Handle Submit
-    renameForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!scenarioToRenameId) return;
-
-        const newName = renameInput.value.trim();
-
-        // Validation
-        if (!newName) {
-            renameInput.classList.add('input-error');
-            renameError.classList.remove('hidden');
-            return;
-        }
-
-        const originalHTML = confirmRenameBtn.innerHTML;
-        confirmRenameBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Saving...';
-        confirmRenameBtn.disabled = true;
-
-        try {
-            const res = await fetch(`/api/scenarios/${scenarioToRenameId}/rename`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: newName })
-            });
-
-            if (res.ok) {
-                renameModal.close();
-                showToast("Scenario renamed successfully!");
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                throw new Error("Server error");
-            }
-        } catch (err) {
-            console.error(err);
-            showToast("Failed to rename scenario.", "error");
-            confirmRenameBtn.innerHTML = originalHTML;
-            confirmRenameBtn.disabled = false;
-        }
-    });
-}
-
-// ==========================================
-// 5. FILTERS
-// ==========================================
+// --- 1. FILTERS ---
 function initFilters() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const cards = document.querySelectorAll('.scenario-card');
@@ -234,204 +16,178 @@ function initFilters() {
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            const filterValue = btn.getAttribute('data-filter');
-
-            // Update Button Styles
-            filterBtns.forEach(b => {
-                b.className = 'filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all';
-            });
+            const filter = btn.dataset.filter;
+            filterBtns.forEach(b => b.className = 'filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all');
             btn.className = 'filter-btn btn btn-sm btn-soft btn-success raleway-500 rounded-full px-4 transition-all';
 
-            // Filter Cards
-            let visibleCount = 0;
+            let visible = 0;
             cards.forEach(card => {
-                const cardStatus = card.getAttribute('data-status');
-                if (filterValue === 'all' || filterValue === cardStatus) {
+                if (filter === 'all' || filter === card.dataset.status) {
                     card.classList.remove('hidden');
-                    // Add tiny fade-in animation
-                    card.style.opacity = '0';
-                    setTimeout(() => card.style.opacity = '1', 50);
-                    visibleCount++;
+                    visible++;
                 } else {
                     card.classList.add('hidden');
                 }
             });
+            if (emptyState) emptyState.classList.toggle('hidden', visible > 0);
+        });
+    });
+}
 
-            // Handle Empty State
-            if (emptyState) {
-                if (visibleCount === 0) {
-                    emptyState.classList.remove('hidden');
+// --- 2. ACTIONS (Duplicate, Archive, Restore) ---
+function initActions() {
+    document.querySelectorAll('.duplicate-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
+            try {
+                const res = await API.duplicateScenario(btn.dataset.id);
+                if (res.ok) { 
+                    showToast("Duplicated!"); 
+                    setTimeout(() => window.location.reload(), 800); 
                 } else {
-                    emptyState.classList.add('hidden');
+                    showToast("Failed to duplicate", "error");
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Duplicate';
                 }
+            } catch {
+                showToast("Network error", "error");
+                btn.innerHTML = '<i class="fa-regular fa-copy"></i> Duplicate';
+            }
+        });
+    });
+
+    document.querySelectorAll('.archive-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const isArchived = btn.dataset.status === 'Archived';
+            try {
+                const res = isArchived ? await API.restoreScenario(btn.dataset.id) : await API.archiveScenario(btn.dataset.id);
+                if (res.ok) { 
+                    showToast(isArchived ? "Restored!" : "Archived!"); 
+                    setTimeout(() => window.location.reload(), 800); 
+                }
+            } catch {
+                showToast("Network error", "error");
+            }
+        });
+    });
+
+    document.querySelectorAll('.restore-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
+            try {
+                const res = await API.restoreScenario(btn.dataset.id);
+                if (res.ok) { 
+                    showToast("Restored!"); 
+                    setTimeout(() => window.location.reload(), 800); 
+                }
+            } catch {
+                showToast("Network error", "error");
             }
         });
     });
 }
 
+// --- 3. RENAME MODAL ---
+function initRenameModal() {
+    const modal = document.getElementById('rename_modal');
+    const form = document.getElementById('rename-form');
+    const input = document.getElementById('rename-input');
+    const btn = document.getElementById('confirm-rename-btn');
+    let id = null;
 
-// ==========================================
-// 6. EXPORT BUTTONS (Toast Notifications)
-// ==========================================
-function initExportButtons() {
-    // Individual Export
-    document.querySelectorAll('.export-single-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            showToast("Preparing your CSV download...", "info");
+    if (!modal) return;
+
+    document.querySelectorAll('.rename-btn').forEach(b => {
+        b.addEventListener('click', () => {
+            id = b.dataset.id;
+            input.value = b.dataset.name;
+            modal.showModal();
         });
     });
 
-    // Export All
-    const exportAllBtn = document.querySelector('.export-all-btn');
-    if (exportAllBtn) {
-        exportAllBtn.addEventListener('click', () => {
-            showToast("Preparing all scenarios for download...", "info");
-        });
-    }
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!input.value.trim()) return;
+        btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
+        const res = await API.renameScenario(id, input.value.trim());
+        if (res.ok) { 
+            modal.close(); 
+            showToast("Renamed!"); 
+            setTimeout(() => window.location.reload(), 800); 
+        }
+    });
 }
 
-
-// ==========================================
-// 7. VIEW DETAILS MODAL & CHART.JS
-// ==========================================
-let detailsChartInstance = null; // Keep track of the chart to destroy it later
-
-function initViewDetails() {
-    const detailsModal = document.getElementById('details_modal');
-    if (!detailsModal) return;
+// --- 4. DETAILS MODAL ---
+function initDetailsModal() {
+    const modal = document.getElementById('details_modal');
+    if (!modal) return;
 
     document.querySelectorAll('.view-details-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-
-            // Show modal with loading state
             document.getElementById('details-title').textContent = "Loading...";
-            detailsModal.showModal();
+            modal.showModal();
 
             try {
-                const res = await fetch(`/api/scenarios/${id}/details`);
-                const data = await res.json();
+                const data = await API.getScenarioDetails(btn.dataset.id);
+                
+                if (!data || data.status === 'error' || !data.breakdown) {
+                    console.error("Backend failed to return data. Response:", data);
+                    showToast("Scenario no longer exists. Refreshing...", "error");
+                    setTimeout(() => window.location.reload(), 1500);
+                    return;
+                }
 
-                // 1. Populate Text Data
+                const fmt = (num) => "€" + Math.round(num).toLocaleString();
+
                 document.getElementById('details-title').textContent = data.scenario_name;
-
-                const formatEuro = (num) => "€" + num.toLocaleString('en-US', { maximumFractionDigits: 0 });
-
-                document.getElementById('details-final').textContent = formatEuro(data.breakdown.final_balance);
-                document.getElementById('details-invested').textContent = formatEuro(data.breakdown.total_invested);
-                document.getElementById('details-interest').textContent = formatEuro(data.breakdown.interest_earned);
-                document.getElementById('details-initial').textContent = formatEuro(data.breakdown.initial);
-                document.getElementById('details-monthly').textContent = formatEuro(data.breakdown.monthly_total);
-
-                // Color the final balance text based on theme
-                document.getElementById('details-final').className = `text-2xl font-bold raleway-700 text-${data.theme}`;
-
-                // 2. Draw Chart
-                renderDetailsChart(data.chart, data.theme);
+                document.getElementById('details-final').textContent = fmt(data.breakdown.final_balance);
+                document.getElementById('details-invested').textContent = fmt(data.breakdown.total_invested);
+                document.getElementById('details-interest').textContent = fmt(data.breakdown.interest_earned);
+                
+                try {
+                    if (typeof Charts !== 'undefined') {
+                        Charts.renderLineChart('detailsChart', data.chart.labels, data.chart.balance_data, data.chart.invested_data, '#3b82f6');
+                    }
+                } catch (chartError) {
+                    console.error("Chart failed to render, but data loaded:", chartError);
+                }
 
             } catch (err) {
-                console.error(err);
-                document.getElementById('details-title').textContent = "Error loading data";
+                console.error("Network fetch error:", err);
+                showToast("Network error loading details.", "error");
+                modal.close();
             }
         });
     });
 }
 
-function renderDetailsChart(chartData, theme) {
-    const canvas = document.getElementById('detailsChart');
-    if (!canvas) return;
+// --- 5. DELETE MODAL ---
+function initDeleteModal() {
+    const modal = document.getElementById('delete_modal');
+    const btn = document.getElementById('confirm-delete-btn');
+    let id = null;
 
-    const ctx = canvas.getContext('2d');
+    if (!modal) return;
 
-    if (detailsChartInstance) {
-        detailsChartInstance.destroy();
-    }
+    document.querySelectorAll('.delete-trigger').forEach(b => {
+        b.addEventListener('click', () => { id = b.dataset.id; modal.showModal(); });
+    });
 
-    const themeColors = {
-        'success': '#22c55e',
-        'primary': '#3b82f6',
-        'purple-500': '#a855f7',
-        'warning': '#f59e0b',
-        'error': '#ef4444'
-    };
-    const mainColor = themeColors[theme] || '#3b82f6';
-
-    detailsChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: chartData.labels,
-            datasets: [
-                {
-                    label: 'Total Balance',
-                    data: chartData.balance_data,
-                    borderColor: mainColor,
-                    backgroundColor: mainColor + '20',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    pointHoverRadius: 6
-                },
-                {
-                    label: 'Amount Invested',
-                    data: chartData.invested_data,
-                    borderColor: '#94a3b8',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0,
-                    pointRadius: 0,
-                    pointHoverRadius: 6
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: {
-                padding: {
-                    top: 10,
-                    right: 10
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    align: 'end', // Puts legend on the right side to save vertical space
-                    labels: {
-                        font: { family: 'Raleway', size: 11 },
-                        usePointStyle: true,
-                        boxWidth: 8
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return context.dataset.label + ': €' + context.parsed.y.toLocaleString();
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        font: { size: 10 },
-                        callback: function (value) {
-                            if (value >= 1000000) return '€' + (value / 1000000) + 'M';
-                            if (value >= 1000) return '€' + (value / 1000) + 'k';
-                            return '€' + value;
-                        }
-                    }
-                },
-                x: {
-                    title: { display: true, text: 'Years', font: { size: 11 } },
-                    ticks: {
-                        font: { size: 10 },
-                        maxTicksLimit: 8
-                    }
-                }
+    btn.addEventListener('click', async () => {
+        btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
+        try {
+            const res = await API.deleteScenario(id);
+            if (res.ok) { 
+                modal.close(); 
+                showToast("Deleted!"); 
+                setTimeout(() => window.location.reload(), 800); 
+            } else {
+                showToast("Failed to delete", "error");
+                btn.innerHTML = 'Yes, Delete';
             }
+        } catch {
+            showToast("Network error", "error");
+            btn.innerHTML = 'Yes, Delete';
         }
     });
 }

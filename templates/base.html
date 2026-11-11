@@ -1,7 +1,6 @@
 <!-- templates/base.html -->
 <!DOCTYPE html>
-<html lang="en" data-theme="cupcake">
-
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +8,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-    <!-- Your Custom CSS (Make sure to move these to static/css/) -->
+    <!-- Your Custom CSS -->
     <link rel="stylesheet" href="/static/css/font.css">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/base.css">
@@ -25,8 +22,17 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
 
-    <!-- Global JS -->
-    <script src="/static/js/script.js?v=1" defer></script>
+    <!-- 1. Third-Party Libraries (MUST LOAD FIRST) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- 2. Custom Utilities (Depend on libraries above) -->
+    <!-- Make sure this matches your actual filename (chart.js or charts.js) -->
+    <script src="/static/js/utils/ui.js" defer></script>
+    <script src="/static/js/utils/api.js" defer></script>
+    <script src="/static/js/utils/chart.js?v=1" defer></script>
+
+    <!-- 3. Global Script -->
+    <script src="/static/js/script.js" defer></script>
 
     <title>{% block title %}What If I Invest?{% endblock %}</title>
 
@@ -58,7 +64,7 @@
 
             <!-- Scrollable Container -->
             <div class="flex-1 overflow-y-auto pb-4 flex flex-col">
-                
+
                 <!-- Header / Logo -->
                 <div class="logo flex gap-1 pt-16 md:pt-4 pb-2 pl-3 items-center shrink-0">
                     <img src="/static/assets/svg/growth.svg" class="w-5 h-5" loading="lazy" alt="">
@@ -70,16 +76,19 @@
                 {% if user %}
                 <div class="px-3 mb-4 shrink-0">
                     <div class="dropdown dropdown-bottom w-full">
-                        <div tabindex="0" role="button" class="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-base-200 transition-colors cursor-pointer">
+                        <div tabindex="0" role="button"
+                            class="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-base-200 transition-colors cursor-pointer">
                             <!-- Avatar -->
-                            {% if user.avatar %}
-                                <img src="{{ user.avatar }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover shadow-sm border border-base-300 shrink-0">
+                            {% if user.avatar and user.avatar != 'None' %}
+                            <img src="{{ user.avatar }}" alt="Avatar"
+                                class="w-10 h-10 rounded-full object-cover shadow-sm border border-base-300 shrink-0">
                             {% else %}
-                                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center raleway-700 text-sm shrink-0 dark:bg-primary/20 dark:text-primary">
-                                    {{ user.initials|default('MJ') }}
-                                </div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center raleway-700 text-sm shrink-0 dark:bg-primary/20 dark:text-primary">
+                                {{ user.initials|default('MJ') }}
+                            </div>
                             {% endif %}
-                            
+
                             <!-- Name -->
                             <div class="flex-1 min-w-0 text-left">
                                 <p class="raleway-600 text-sm text-base-content truncate">{{ user.name }}</p>
@@ -87,9 +96,10 @@
                             <!-- Chevron Icon -->
                             <i class="fa-solid fa-chevron-down text-xs text-base-content/40"></i>
                         </div>
-                        
+
                         <!-- Dropdown Menu -->
-                        <ul tabindex="0" class="dropdown-content z-[50] menu p-2 shadow-lg bg-base-100 rounded-box w-full border border-base-200 mt-1">
+                        <ul tabindex="0"
+                            class="dropdown-content z-[50] menu p-2 shadow-lg bg-base-100 rounded-box w-full border border-base-200 mt-1">
                             <li>
                                 <a href="/settings" class="text-sm raleway-500 hover:bg-base-200">
                                     <i class="fa-solid fa-user text-xs w-4"></i> Profile Settings
@@ -110,7 +120,9 @@
 
                     <!-- GENERAL -->
                     <div>
-                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">General</p>
+                        <p
+                            class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">
+                            General</p>
                         <div class="flex flex-col gap-0.5">
                             <a href="/"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
@@ -123,7 +135,9 @@
 
                     <!-- SIMULATION -->
                     <div>
-                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">Simulation</p>
+                        <p
+                            class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">
+                            Simulation</p>
                         <div class="flex flex-col gap-0.5">
                             <a href="/simulator"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
@@ -142,7 +156,9 @@
 
                     <!-- MARKET INTELLIGENCE -->
                     <div>
-                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">Market Intelligence</p>
+                        <p
+                            class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">
+                            Market Intelligence</p>
                         <div class="flex flex-col gap-0.5">
                             <a href="/market-overview"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
@@ -174,7 +190,9 @@
                     <!-- ACCOUNT -->
                     {% if user %}
                     <div>
-                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">Account</p>
+                        <p
+                            class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">
+                            Account</p>
                         <div class="flex flex-col gap-0.5">
                             <a href="/settings"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
@@ -193,9 +211,10 @@
 
                 <!-- BOTTOM SECTION (Quote + Auth) -->
                 <div class="px-3 mt-6 shrink-0 flex flex-col gap-3">
-                    
+
                     <!-- Daily Quote Block -->
-                    <div class="w-full p-4 bg-success/10 border border-success/20 rounded-xl flex flex-col items-start gap-3">
+                    <div
+                        class="w-full p-4 bg-success/10 border border-success/20 rounded-xl flex flex-col items-start gap-3">
                         <img src="/static/assets/svg/plant{{ daily_plant|default(1) }}.svg" class="w-6 h-6" alt="Plant">
                         <p class="raleway-500 text-xs text-base-content/80 leading-relaxed text-left">
                             {{ daily_quote|default('Plan. Simulate. Grow your wealth.') }}
@@ -204,9 +223,9 @@
 
                     <!-- Auth Toggle -->
                     {% if not user %}
-                        <a href="/login" class="btn btn-primary w-full rounded-xl text-primary-content shadow-sm mt-2">
-                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Sign Up
-                        </a>
+                    <a href="/login" class="btn btn-primary w-full rounded-xl text-primary-content shadow-sm mt-2">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Sign Up
+                    </a>
                     {% endif %}
 
                 </div>

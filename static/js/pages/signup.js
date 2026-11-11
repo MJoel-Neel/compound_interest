@@ -1,99 +1,48 @@
+// static/js/pages/signup.js
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("signup-form");
+    if (!form) return;
 
-    // Inputs
-    const nameInput = document.getElementById("name");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const confirmInput = document.getElementById("confirm-password");
-    const termsCheck = document.getElementById("terms");
-    const submitBtn = document.getElementById("submit-btn");
-
-    // Toggle Password Visibility (for both password fields)
+    // Toggle passwords
     document.querySelectorAll(".toggle-password").forEach(btn => {
         btn.addEventListener("click", () => {
             const input = btn.previousElementSibling;
             const type = input.getAttribute("type") === "password" ? "text" : "password";
             input.setAttribute("type", type);
-
             const icon = btn.querySelector("i");
-            if (type === "password") {
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
-            } else {
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
-            }
+            icon.className = type === "password" ? "fa-regular fa-eye" : "fa-regular fa-eye-slash";
         });
     });
 
-    // Form Validation & Submit
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-
         let isValid = true;
 
-        // Helper to toggle error states
-        const setError = (input, errorId, show) => {
-            const errorEl = document.getElementById(errorId);
-            if (show) {
-                input.classList.add("border-error", "focus:border-error", "focus:ring-error");
-                errorEl.classList.remove("hidden");
-                isValid = false;
-            } else {
-                input.classList.remove("border-error", "focus:border-error", "focus:ring-error");
-                errorEl.classList.add("hidden");
-            }
+        const name = document.getElementById("name");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+        const confirm = document.getElementById("confirm-password");
+        const terms = document.getElementById("terms");
+
+        const setErr = (el, errId, cond) => {
+            if (cond) { el.classList.add("border-error"); document.getElementById(errId).classList.remove("hidden"); isValid = false; }
+            else { el.classList.remove("border-error"); document.getElementById(errId).classList.add("hidden"); }
         };
 
-        // 1. Name Validation
-        setError(nameInput, "name-error", nameInput.value.trim() === "");
+        setErr(name, "name-error", name.value.trim() === "");
+        setErr(email, "email-error", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()));
+        setErr(password, "password-error", password.value.length < 6);
+        setErr(confirm, "confirm-error", confirm.value !== password.value || confirm.value === "");
+        
+        if (!terms.checked) { document.getElementById("terms-error").classList.remove("hidden"); isValid = false; }
+        else { document.getElementById("terms-error").classList.add("hidden"); }
 
-        // 2. Email Validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        setError(emailInput, "email-error", !emailRegex.test(emailInput.value.trim()));
-
-        // 3. Password Validation (Min 6 chars)
-        setError(passwordInput, "password-error", passwordInput.value.length < 6);
-
-        // 4. Confirm Password Validation
-        setError(confirmInput, "confirm-error", confirmInput.value !== passwordInput.value || confirmInput.value === "");
-
-        // 5. Terms Validation
-        if (!termsCheck.checked) {
-            document.getElementById("terms-error").classList.remove("hidden");
-            isValid = false;
-        } else {
-            document.getElementById("terms-error").classList.add("hidden");
-        }
-
-        // Submit if valid
         if (isValid) {
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Creating...';
-            submitBtn.disabled = true;
-
-            // Simulate network request (replace with actual fetch to FastAPI later)
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 1500);
+            const btn = document.getElementById("submit-btn");
+            btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Creating...';
+            btn.disabled = true;
+            setTimeout(() => window.location.href = "/", 1000); 
         }
     });
-
-    // Clear errors on input
-    const clearErrorOnInput = (input, errorId) => {
-        input.addEventListener("input", () => {
-            input.classList.remove("border-error", "focus:border-error", "focus:ring-error");
-            document.getElementById(errorId).classList.add("hidden");
-        });
-    };
-
-    clearErrorOnInput(nameInput, "name-error");
-    clearErrorOnInput(emailInput, "email-error");
-    clearErrorOnInput(passwordInput, "password-error");
-    clearErrorOnInput(confirmInput, "confirm-error");
-
-    termsCheck.addEventListener("change", () => {
-        if (termsCheck.checked) document.getElementById("terms-error").classList.add("hidden");
-    });
-});
+})
