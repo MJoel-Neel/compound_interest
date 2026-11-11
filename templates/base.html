@@ -53,149 +53,166 @@
         </button>
 
         <!-- 2. SIDEBAR -->
-        <aside id="app-sidebar" class="fixed md:relative inset-y-0 left-0 z-40 w-[280px] max-w-[80%] h-full
-             bg-base-100 border-r-2 border-base-200 pb-6 flex flex-col justify-between transform
-              -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
-            <!-- Header / Logo -->
-            <div class="logo flex gap-2.5 pt-16 md:pt-6 pb-6 pl-4 items-center shrink-0">
-                <img src="/static/assets/svg/growth.svg" class="w-6 h-6" loading="lazy" alt="Logo">
-                <a href="/"
-                    class="raleway-700 text-[1.1rem] text-base-content tracking-tight hover:opacity-80 transition-opacity">
-                    What If I Invest?
-                </a>
-            </div>
+        <aside id="app-sidebar"
+            class="fixed md:relative inset-y-0 left-0 z-40 w-[280px] max-w-[80%] h-full bg-base-100 border-r-2 border-base-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
 
-            <hr class="m-auto w-9/10 border-base-200 mb-4 shrink-0">
+            <!-- Scrollable Container -->
+            <div class="flex-1 overflow-y-auto pb-4 flex flex-col">
+                
+                <!-- Header / Logo -->
+                <div class="logo flex gap-1 pt-16 md:pt-4 pb-2 pl-3 items-center shrink-0">
+                    <img src="/static/assets/svg/growth.svg" class="w-5 h-5" loading="lazy" alt="">
+                    <p><a href="/" class="raleway-600 text-sm capitalize text-base-content">What If I Invest?</a></p>
+                </div>
+                <hr class="m-auto w-9/10 border-base-200 mb-4 shrink-0">
 
-            <!-- USER PROFILE DROPDOWN (Only if logged in) -->
-            {% if user %}
-            <div class="px-3 mb-6 shrink-0">
-                <div class="dropdown dropdown-bottom w-full">
-                    <!-- Trigger Button -->
-                    <div tabindex="0" role="button" class="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-base-200 
-                        transition-colors cursor-pointer">
-                        <!-- Avatar (Image OR Initials) -->
-                        {% if user.avatar %}
-                        <img src="{{ user.avatar }}" alt="Avatar"
-                            class="w-10 h-10 rounded-full object-cover shrink-0 shadow-sm border border-base-300">
-                        {% else %}
-                        <div
-                            class="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center raleway-700 text-sm shrink-0 dark:bg-primary/20 dark:text-primary">
-                            {{ user.initials|default('AN') }}
+                <!-- USER PROFILE DROPDOWN -->
+                {% if user %}
+                <div class="px-3 mb-4 shrink-0">
+                    <div class="dropdown dropdown-bottom w-full">
+                        <div tabindex="0" role="button" class="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-base-200 transition-colors cursor-pointer">
+                            <!-- Avatar -->
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover shadow-sm border border-base-300 shrink-0">
+                            {% else %}
+                                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center raleway-700 text-sm shrink-0 dark:bg-primary/20 dark:text-primary">
+                                    {{ user.initials|default('MJ') }}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Name -->
+                            <div class="flex-1 min-w-0 text-left">
+                                <p class="raleway-600 text-sm text-base-content truncate">{{ user.name }}</p>
+                            </div>
+                            <!-- Chevron Icon -->
+                            <i class="fa-solid fa-chevron-down text-xs text-base-content/40"></i>
                         </div>
-                        {% endif %}
-                        <!-- Name -->
-                        <div class="flex-1 min-w-0 text-left">
-                            <p class="raleway-600 text-sm text-base-content truncate">{{ user.name }}</p>
+                        
+                        <!-- Dropdown Menu -->
+                        <ul tabindex="0" class="dropdown-content z-[50] menu p-2 shadow-lg bg-base-100 rounded-box w-full border border-base-200 mt-1">
+                            <li>
+                                <a href="/settings" class="text-sm raleway-500 hover:bg-base-200">
+                                    <i class="fa-solid fa-user text-xs w-4"></i> Profile Settings
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/api/logout" class="text-sm raleway-500 text-error hover:bg-error/10">
+                                    <i class="fa-solid fa-arrow-right-from-bracket text-xs w-4"></i> Log out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- NAVIGATION TABS (GROUPED) -->
+                <div class="sidebar-tags flex flex-col gap-4 px-3 w-full shrink-0 mt-2">
+
+                    <!-- GENERAL -->
+                    <div>
+                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">General</p>
+                        <div class="flex flex-col gap-0.5">
+                            <a href="/"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-solid fa-house w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Home</span>
+                            </a>
                         </div>
-                        <!-- Chevron Icon -->
-                        <i class="fa-solid fa-chevron-down text-xs text-base-content/40"></i>
                     </div>
 
-                    <!-- Dropdown Menu -->
-                    <ul tabindex="0"
-                        class="dropdown-content z-[50] menu p-2 shadow-lg bg-base-100 rounded-box w-full border border-base-200 mt-1">
-                        <li>
-                            <a href="/settings" class="text-sm raleway-500 hover:bg-base-200">
-                                <i class="fa-solid fa-user text-xs w-4"></i> Profile Settings
+                    <!-- SIMULATION -->
+                    <div>
+                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">Simulation</p>
+                        <div class="flex flex-col gap-0.5">
+                            <a href="/simulator"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/simulator' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-solid fa-calculator w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Simulator</span>
                             </a>
-                        </li>
-                        <li>
-                            <a href="/api/logout" class="text-sm raleway-500 text-error hover:bg-error/10">
-                                <i class="fa-solid fa-arrow-right-from-bracket text-xs w-4"></i> Log out
+                            <a href="/scenarios"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/scenarios' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-regular fa-bookmark w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Saved Scenarios</span>
                             </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
+                        </div>
+                    </div>
 
-            <!-- NAVIGATION TABS -->
-            <div class="sidebar-tags flex flex-col gap-2 px-3 w-full shrink-0 mt-4">
+                    <!-- MARKET INTELLIGENCE -->
+                    <div>
+                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">Market Intelligence</p>
+                        <div class="flex flex-col gap-0.5">
+                            <a href="/market-overview"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/market-overview' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-solid fa-globe w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Market Overview</span>
+                            </a>
+                            <a href="/market-performance"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/market-performance' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-solid fa-chart-line w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Market Performance</span>
+                            </a>
+                            <a href="/insights"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/insights' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-solid fa-lightbulb w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Investment Insights</span>
+                            </a>
+                            <a href="/simulation-ideas"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/simulation-ideas' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-solid fa-flask w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Simulation Ideas</span>
+                            </a>
+                        </div>
+                    </div>
 
-                <!-- Simulator / Home -->
-                <a href="/" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors 
-                        {% if request.url.path == '/' %}
-                            bg-success/10 text-success font-semibold
-                        {% else %}
-                            text-base-content/70 hover:bg-base-200 hover:text-base-content font-medium
-                        {% endif %}">
-                    <i class="fa-solid fa-house w-5 text-center text-lg"></i>
-                    <span>Simulator</span>
-                </a>
+                    <!-- ACCOUNT -->
+                    {% if user %}
+                    <div>
+                        <p class="raleway-700 text-[0.65rem] uppercase tracking-widest text-base-content/40 mb-1.5 pl-3">Account</p>
+                        <div class="flex flex-col gap-0.5">
+                            <a href="/settings"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors 
+                                {% if request.url.path == '/settings' %}bg-success/10 text-success raleway-600{% else %}text-base-content/70 hover:bg-base-200 hover:text-base-content raleway-500{% endif %}">
+                                <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
+                                <span class="text-[0.85rem]">Settings</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
 
-                <!-- Saved Scenarios -->
-                <a href="/scenarios" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors 
-                        {% if request.url.path == '/scenarios' %}
-                            bg-success/10 text-success font-semibold
-                        {% else %}
-                            text-base-content/70 hover:bg-base-200 hover:text-base-content font-medium
-                        {% endif %}">
-                    <i class="fa-regular fa-bookmark w-5 text-center text-lg"></i>
-                    <span>Saved Scenarios</span>
-                </a>
-
-                <!-- Insights -->
-                <a href="/insights" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors 
-                        {% if request.url.path == '/insights' %}
-                            bg-success/10 text-success font-semibold
-                        {% else %}
-                            text-base-content/70 hover:bg-base-200 hover:text-base-content font-medium
-                        {% endif %}">
-                    <i class="fa-solid fa-chart-simple w-5 text-center text-lg"></i>
-                    <span>Insights</span>
-                </a>
-
-                <!-- Settings -->
-                <!-- Settings (ONLY visible if user is logged in) -->
-                {% if user %}
-                <a href="/settings" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors 
-                        {% if request.url.path == '/settings' %}
-                            bg-success/10 text-success font-semibold
-                        {% else %}
-                            text-base-content/70 hover:bg-base-200 hover:text-base-content font-medium
-                        {% endif %}">
-                    <i class="fa-solid fa-gear w-5 text-center text-lg"></i>
-                    <span>Settings</span>
-                </a>
-                {% endif %}
-
-            </div>
-
-            <!-- Spacer to push everything to the bottom -->
-            <div class="flex-1"></div>
-
-            <!-- BOTTOM SECTION (Quote + Auth Button) -->
-            <div class="px-3 mt-auto shrink-0 mb-4 flex flex-col gap-4">
-
-                <!-- Daily Quote Block -->
-                <div
-                    class="w-full p-4 bg-success/10 border border-success/20 rounded-xl flex flex-col items-start gap-3">
-                    <img src="/static/assets/svg/plant{{ daily_plant|default(1) }}.svg" class="w-7 h-7" alt="Plant">
-                    <p class="raleway-500 text-[0.85rem] text-base-content/80 leading-relaxed text-left">
-                        {{ daily_quote|default('Plan. Simulate. Grow your wealth.') }}
-                    </p>
                 </div>
 
-                <!-- Auth Toggle: Log Out or Sign In -->
-                {% if user %}
-                <!-- Log Out Button (Uses text-error and hover:bg-error/10) -->
-                <a href="/api/logout"
-                    class="flex items-center gap-3 px-3 py-2 w-full text-error hover:bg-error/10 rounded-lg transition-colors group">
-                    <i
-                        class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-lg group-hover:-translate-x-1 transition-transform"></i>
-                    <span class="raleway-600 text-sm">Log out</span>
-                </a>
-                {% else %}
-                <!-- Sign In / Sign Up Button (Uses btn-primary) -->
-                <a href="/login" class="btn btn-primary w-full rounded-xl text-primary-content shadow-sm">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Sign Up
-                </a>
-                {% endif %}
+                <!-- Spacer to push bottom elements down -->
+                <div class="flex-1"></div>
 
-            </div>
+                <!-- BOTTOM SECTION (Quote + Auth) -->
+                <div class="px-3 mt-6 shrink-0 flex flex-col gap-3">
+                    
+                    <!-- Daily Quote Block -->
+                    <div class="w-full p-4 bg-success/10 border border-success/20 rounded-xl flex flex-col items-start gap-3">
+                        <img src="/static/assets/svg/plant{{ daily_plant|default(1) }}.svg" class="w-6 h-6" alt="Plant">
+                        <p class="raleway-500 text-xs text-base-content/80 leading-relaxed text-left">
+                            {{ daily_quote|default('Plan. Simulate. Grow your wealth.') }}
+                        </p>
+                    </div>
+
+                    <!-- Auth Toggle -->
+                    {% if not user %}
+                        <a href="/login" class="btn btn-primary w-full rounded-xl text-primary-content shadow-sm mt-2">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Sign Up
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </div> <!-- End of Scrollable Container -->
         </aside>
-
 
         <!-- 3. MAIN CONTENT AREA -->
         <section class="flex-1 h-full overflow-y-auto px-2 md:px-10 relative">
