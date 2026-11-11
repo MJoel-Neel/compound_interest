@@ -3,23 +3,329 @@
 {% block title %}Advanced Simulator - What If I Invest?{% endblock %}
 
 {% block content %}
-<div class="py-6 px-4">
-    <div class="flex items-center gap-2 mb-2">
-        <div class="p-2 bg-primary/10 rounded-lg text-primary">
-            <i class="fa-solid fa-calculator text-xl"></i>
+<div class="py-6 px-4 max-w-[1400px] mx-auto">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div class="flex items-center gap-3">
+            <div class="p-3 bg-primary/10 rounded-xl text-primary">
+                <i class="fa-solid fa-calculator text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="raleway-700 text-2xl text-base-content">Investment Simulator</h1>
+                <p class="raleway-400 text-base-content/60 text-sm mt-1">Plan your investments and see how your wealth could grow over time.</p>
+            </div>
         </div>
-        <h1 class="capitalize raleway-600 text-2xl text-base-content">Advanced Simulator</h1>
+        <!-- Mock "Live Data" Badge -->
+        <div class="flex items-center gap-2 bg-success/10 text-success px-4 py-2 rounded-full border border-success/20 text-xs raleway-500">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
+            </span>
+            Live data &bull; Updated: Today
+        </div>
     </div>
-    <p class="raleway-400 text-base-content/60 ml-11">
-        Build detailed financial models with advanced variables.
-    </p>
+
+    <!-- MAIN GRID: 4 Cols for Inputs, 8 Cols for Results -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- ==========================================
+             LEFT COLUMN: SIMULATION PARAMETERS
+             ========================================== -->
+        <div class="lg:col-span-4 card bg-base-100 shadow-sm border border-base-200">
+            <div class="card-body p-5">
+                <h2 class="card-title raleway-600 text-lg text-base-content mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-primary"></i> Simulation Parameters
+                </h2>
+
+                <form id="advanced-form" class="flex flex-col gap-4">
+                    
+                    <!-- 1. Initial Investment -->
+                    <div class="form-control w-full">
+                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Initial Investment <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="The starting amount you invest."></i></span></label>
+                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary flex items-center gap-2">
+                            <span class="text-base-content/50">$</span>
+                            <input type="number" id="adv-initial" class="grow raleway-400" value="10000" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- 2. Monthly Contribution -->
+                    <div class="form-control w-full">
+                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Monthly Contribution <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="Amount added to the portfolio every month."></i></span></label>
+                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
+                            <span class="text-base-content/50">$</span>
+                            <input type="number" id="adv-monthly" class="grow raleway-400" value="500" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- 3. Expected Annual Return -->
+                    <div class="form-control w-full">
+                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Expected Annual Return <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="The average yearly growth rate."></i></span></label>
+                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
+                            <input type="number" id="adv-rate" class="grow raleway-400" value="8" min="0" max="100" step="0.1" required>
+                            <span class="text-base-content/50">%</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. Investment Duration -->
+                    <div class="form-control w-full">
+                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Investment Duration <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="How many years you plan to invest."></i></span></label>
+                        <div class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
+                            <input type="number" id="adv-years" class="grow raleway-400" value="20" min="1" max="100" required>
+                            <span class="text-base-content/50">years</span>
+                        </div>
+                    </div>
+
+                    <!-- 5. Compounding Frequency -->
+                    <div class="form-control w-full">
+                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Compounding Frequency <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="How often interest is calculated."></i></span></label>
+                        <select id="adv-compounding" class="select select-bordered w-full bg-base-100 border-base-300 raleway-400">
+                            <option value="Monthly" selected>Monthly</option>
+                            <option value="Quarterly">Quarterly</option>
+                            <option value="Annually">Annually</option>
+                            <option value="Daily">Daily (simplified)</option>
+                        </select>
+                    </div>
+
+                    <!-- 6. Inflation Adjustment -->
+                    <div class="form-control w-full">
+                        <div class="flex justify-between items-center">
+                            <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Inflation Adjustment <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="Adjusts final balance to today's purchasing power."></i></span></label>
+                            <input type="checkbox" id="adv-inflation-toggle" class="toggle toggle-success toggle-sm" onchange="document.getElementById('inflation-input-container').classList.toggle('hidden')" />
+                        </div>
+                        <!-- Hidden by default, shown when toggle is ON -->
+                        <div id="inflation-input-container" class="hidden mt-2">
+                            <div class="input input-bordered w-full bg-base-100 border-base-300 flex items-center gap-2 text-sm">
+                                <input type="number" id="adv-inflation-rate" class="grow raleway-400" value="2.5" step="0.1">
+                                <span class="text-base-content/50">% annually</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Taxation -->
+                    <div class="form-control w-full">
+                        <label class="label pt-0 pb-1"><span class="label-text raleway-500 text-base-content flex items-center gap-1">Taxation <i class="fa-solid fa-circle-info text-base-content/40 text-[0.7rem]" title="Tax applied to total gains at the end."></i></span></label>
+                        <select id="adv-tax-select" class="select select-bordered w-full bg-base-100 border-base-300 raleway-400" onchange="document.getElementById('custom-tax-container').classList.toggle('hidden', this.value !== 'custom')">
+                            <option value="0">No Tax</option>
+                            <option value="30" selected>Standard Tax (30%)</option>
+                            <option value="custom">Custom Tax Rate</option>
+                        </select>
+                        <!-- Hidden by default, shown when 'custom' is selected -->
+                        <div id="custom-tax-container" class="hidden mt-2">
+                            <div class="input input-bordered w-full bg-base-100 border-base-300 flex items-center gap-2 text-sm">
+                                <input type="number" id="adv-custom-tax" class="grow raleway-400" value="15" min="0" max="100" step="0.1">
+                                <span class="text-base-content/50">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="flex flex-col gap-2 mt-4 pt-4 border-t border-base-200">
+                        <button type="submit" class="btn btn-success w-full text-white raleway-500 shadow-sm">
+                            <i class="fa-solid fa-play"></i> Run Simulation
+                        </button>
+                        <div class="flex gap-2">
+                            <button type="reset" class="btn btn-outline border-base-300 flex-1 raleway-500">
+                                <i class="fa-solid fa-rotate-left"></i> Reset
+                            </button>
+                            <button type="button" id="adv-save-btn" class="btn btn-outline btn-primary flex-1 raleway-500">
+                                <i class="fa-regular fa-floppy-disk"></i> Save
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             RIGHT COLUMN: RESULTS & VISUALIZATION
+             ========================================== -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+            
+            <!-- 4 KPI CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                <!-- Final Balance -->
+                <div class="card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body p-4">
+                        <div class="flex items-center gap-2 text-base-content/60 mb-1">
+                            <i class="fa-solid fa-sack-dollar text-warning"></i>
+                            <span class="raleway-500 text-xs uppercase tracking-wider">Final Balance</span>
+                        </div>
+                        <p class="raleway-700 text-2xl text-base-content" id="res-final">$0</p>
+                        <p class="raleway-500 text-xs text-success mt-1" id="res-growth-percent">↑ 0%</p>
+                    </div>
+                </div>
+
+                <!-- Total Contributions -->
+                <div class="card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body p-4">
+                        <div class="flex items-center gap-2 text-base-content/60 mb-1">
+                            <i class="fa-solid fa-wallet text-primary"></i>
+                            <span class="raleway-500 text-xs uppercase tracking-wider">Contributions</span>
+                        </div>
+                        <p class="raleway-700 text-2xl text-base-content" id="res-invested">$0</p>
+                    </div>
+                </div>
+
+                <!-- Total Gains -->
+                <div class="card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body p-4">
+                        <div class="flex items-center gap-2 text-base-content/60 mb-1">
+                            <i class="fa-solid fa-arrow-trend-up text-success"></i>
+                            <span class="raleway-500 text-xs uppercase tracking-wider">Total Gains</span>
+                        </div>
+                        <p class="raleway-700 text-2xl text-success" id="res-gains">$0</p>
+                        <p class="raleway-500 text-xs text-success mt-1" id="res-tax-note">After Tax</p>
+                    </div>
+                </div>
+
+                <!-- Annual Growth (CAGR) -->
+                <div class="card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body p-4">
+                        <div class="flex items-center gap-2 text-base-content/60 mb-1">
+                            <i class="fa-solid fa-percent text-purple-500"></i>
+                            <span class="raleway-500 text-xs uppercase tracking-wider">Annual Growth</span>
+                        </div>
+                        <p class="raleway-700 text-2xl text-base-content" id="res-cagr">0.0%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHART -->
+            <div class="card bg-base-100 shadow-sm border border-base-200">
+                <div class="card-body p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="card-title raleway-600 text-lg text-base-content">
+                            <i class="fa-solid fa-chart-line text-primary"></i> Growth Over Time
+                        </h2>
+                        <div class="flex gap-4 text-xs raleway-400">
+                            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success"></span> Portfolio Value</div>
+                            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span> Contributions</div>
+                        </div>
+                    </div>
+                    <div class="w-full h-72 relative">
+                        <canvas id="advanced-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YEARLY BREAKDOWN & INSIGHTS GRID -->
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                
+                <!-- Table (Left side) -->
+                <div class="xl:col-span-8 card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="card-title raleway-600 text-base text-base-content">
+                                <i class="fa-solid fa-table text-primary"></i> Yearly Breakdown
+                            </h2>
+                        </div>
+                        <!-- Scrollable Table Container -->
+                        <div class="overflow-x-auto h-64 overflow-y-auto rounded-lg border border-base-200">
+                            <table class="table table-sm table-pin-rows w-full text-sm">
+                                <thead class="bg-base-200 text-base-content/70 raleway-600">
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Portfolio Value</th>
+                                        <th>Contributions</th>
+                                        <th>Gains</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adv-table-body" class="raleway-400">
+                                    <!-- JS will populate this -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Insights (Right side) -->
+                <div class="xl:col-span-4 card bg-success/5 border border-success/20 shadow-sm">
+                    <div class="card-body p-5">
+                        <h2 class="card-title raleway-600 text-base text-success mb-4">
+                            <i class="fa-regular fa-lightbulb"></i> Key Insights
+                        </h2>
+                        <div class="flex flex-col gap-4 text-sm raleway-400 text-base-content/80">
+                            <p id="insight-1">Your investment could grow significantly over time.</p>
+                            <p id="insight-2">Compounding interest is your best friend.</p>
+                            <p id="insight-3">Inflation reduces your actual purchasing power.</p>
+                        </div>
+                        
+                        <!-- DISCLAIMER -->
+                        <div class="mt-6 pt-4 border-t border-success/20 text-[0.7rem] text-base-content/50 raleway-500 leading-relaxed">
+                            <i class="fa-solid fa-triangle-exclamation text-warning mr-1"></i>
+                            <strong>Hypothetical projections.</strong> These are not guaranteed returns. Actual investment results may vary and are subject to market risks.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </div>
 
-<!-- The new advanced simulator form will go here -->
-<div class="card bg-base-100 shadow-sm border border-base-200 mx-4 mt-6">
-    <div class="card-body items-center justify-center py-20">
-        <i class="fa-solid fa-person-digging text-5xl text-base-content/20 mb-4"></i>
-        <h2 class="text-xl font-bold text-base-content/50">Advanced Simulator Coming Soon</h2>
+
+<!-- SAVE SCENARIO MODAL -->
+<dialog id="save_scenario_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box p-6 bg-base-100 text-base-content">
+        <h3 class="font-bold text-xl text-primary flex items-center gap-2 mb-6">
+            <i class="fa-solid fa-floppy-disk"></i> Save Scenario
+        </h3>
+
+        <form id="save-scenario-form" class="flex flex-col gap-6">
+            <!-- Name -->
+            <div class="flex flex-col gap-2">
+                <label for="scenario-name-input" class="text-sm font-semibold text-base-content/80 raleway-500">Scenario Name</label>
+                <input type="text" id="scenario-name-input" placeholder="e.g., My Advanced Retirement Plan"
+                    class="input input-bordered w-full raleway-400 focus:outline-primary bg-base-100" required />
+                <span class="text-sm text-error hidden raleway-500 mt-1" id="name-error">
+                    <i class="fa-solid fa-circle-exclamation"></i> Please enter a name.
+                </span>
+            </div>
+
+            <!-- Icon Selector -->
+            <div class="flex flex-col gap-3">
+                <label class="text-sm font-semibold text-base-content/80 raleway-500">Choose an Icon</label>
+                <div class="grid grid-cols-6 gap-2" id="icon-selector">
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-primary bg-primary/10 text-primary cursor-pointer transition-all" data-value="fa-arrow-trend-up"><i class="fa-solid fa-arrow-trend-up text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-shield-halved"><i class="fa-solid fa-shield-halved text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-briefcase"><i class="fa-solid fa-briefcase text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-star"><i class="fa-solid fa-star text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-rocket"><i class="fa-solid fa-rocket text-xl pointer-events-none"></i></div>
+                    <div class="icon-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 text-base-content/60 hover:bg-base-200 cursor-pointer transition-all" data-value="fa-piggy-bank"><i class="fa-solid fa-piggy-bank text-xl pointer-events-none"></i></div>
+                </div>
+                <input type="hidden" name="scenario_icon" id="selected-icon" value="fa-arrow-trend-up">
+            </div>
+
+            <!-- Color Selector -->
+            <div class="flex flex-col gap-3">
+                <label class="text-sm font-semibold text-base-content/80 raleway-500">Choose a Theme Color</label>
+                <div class="grid grid-cols-5 gap-3" id="color-selector">
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-success bg-success/10 cursor-pointer transition-all" data-value="success"><span class="w-6 h-6 rounded-full bg-success shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="primary"><span class="w-6 h-6 rounded-full bg-primary shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="purple-500"><span class="w-6 h-6 rounded-full bg-purple-500 shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="warning"><span class="w-6 h-6 rounded-full bg-warning shadow-sm pointer-events-none"></span></div>
+                    <div class="color-option flex items-center justify-center p-3 rounded-lg border-2 border-base-200 hover:bg-base-200 cursor-pointer transition-all" data-value="error"><span class="w-6 h-6 rounded-full bg-error shadow-sm pointer-events-none"></span></div>
+                </div>
+                <input type="hidden" name="scenario_color" id="selected-color" value="success">
+            </div>
+
+            <!-- Actions -->
+            <div class="modal-action mt-4">
+                <button type="button" class="btn btn-ghost raleway-500" onclick="document.getElementById('save_scenario_modal').close()">Cancel</button>
+                <button type="submit" id="confirm-save-btn" class="btn btn-primary text-white raleway-500 px-8">Save Scenario</button>
+            </div>
+        </form>
     </div>
-</div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<!-- 1. Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- 2. Page Specific Script -->
+<script src="/static/js/pages/simulator.js" defer></script>
 {% endblock %}

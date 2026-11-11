@@ -290,8 +290,7 @@
             <i class="fa-solid fa-user-pen"></i> Account Settings
         </h3>
 
-        <form id="edit-profile-form" class="flex flex-col gap-5">
-            
+        <form id="edit-profile-form" enctype="multipart/form-data" class="flex flex-col gap-5">
             <!-- AVATAR UPLOAD -->
             <div class="flex flex-col items-center justify-center gap-2 mb-2">
                 <label for="avatar-upload" class="cursor-pointer relative group">
@@ -360,5 +359,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/pages/settings.js" defer></script>
+<script src="/static/js/pages/settings.js?v=1" defer></script>
 {% endblock %}

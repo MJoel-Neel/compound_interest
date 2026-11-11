@@ -1,5 +1,3 @@
-// static/js/pages/settings.js
-
 document.addEventListener("DOMContentLoaded", () => {
     syncThemeUI();
     loadPreferences();
@@ -10,9 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- 1. THEME UI ---
 function changeTheme(theme) {
     localStorage.setItem('app-theme', theme);
-    applyTheme(theme); // Global function
+    if (typeof applyTheme === 'function') applyTheme(theme);
     syncThemeUI();
-    API.saveSetting('theme', theme);
+    updateSetting('theme', theme);
 }
 
 function syncThemeUI() {
@@ -27,13 +25,11 @@ function syncThemeUI() {
         const icon = label.querySelector('i:first-child');
         const span = label.querySelector('span');
 
-        // Reset
         label.className = 'cursor-pointer border border-base-200 hover:border-base-300 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 relative transition-all';
         check.classList.add('hidden');
         icon.className = 'text-base-content/60 text-lg transition-colors fa-solid ' + (t === 'light' ? 'fa-sun' : t === 'dark' ? 'fa-moon' : 'fa-desktop');
         span.className = 'raleway-500 text-xs text-base-content/60 transition-colors';
 
-        // Active
         if (t === active) {
             label.className = 'cursor-pointer border border-success bg-success/5 rounded-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 relative transition-all shadow-sm';
             check.classList.remove('hidden');
@@ -43,7 +39,7 @@ function syncThemeUI() {
     });
 }
 
-// --- 2. PREFERENCES ---
+// --- 2. PREFERENCES & TOGGLES ---
 function loadPreferences() {
     const savedCurrency = localStorage.getItem('pref-currency') || 'EUR';
     const currencySelect = document.getElementById('pref-currency');
@@ -60,11 +56,22 @@ function loadPreferences() {
 }
 
 async function updateSetting(setting, value) {
+    // Save locally first
     localStorage.setItem(`pref-${setting.replace('_', '-')}`, value);
-    await API.saveSetting(setting, value);
+    
+    // Send to backend
+    try {
+        const res = await API.saveSetting(setting, value);
+        if (res.ok) {
+            console.log(`Saved: ${setting} = ${value}`);
+            if (typeof showToast === 'function') showToast("Preference saved!");
+        }
+    } catch (error) {
+        console.error("Failed to save setting", error);
+    }
 }
 
-// --- 3. EDIT PROFILE ---
+// --- 3. EDIT PROFILE (AVATAR + EMAIL VALIDATION) ---
 function initEditProfile() {
     const modal = document.getElementById('edit_profile_modal');
     const form = document.getElementById('edit-profile-form');
@@ -75,13 +82,19 @@ function initEditProfile() {
         document.getElementById('current-password').value = '';
         document.getElementById('new-password').value = '';
         document.getElementById('confirm-password').value = '';
+        document.getElementById('edit-email-error').classList.add('hidden');
         modal.showModal();
     });
 
-    // Avatar Preview Logic
+    // Avatar Preview & Size Limit
     document.getElementById('avatar-upload').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                if (typeof showToast === 'function') showToast("Image must be less than 2MB", "error");
+                this.value = ''; 
+                return;
+            }
             const reader = new FileReader();
             reader.onload = (ev) => {
                 document.getElementById('avatar-preview').src = ev.target.result;
@@ -94,14 +107,38 @@ function initEditProfile() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        const emailInput = document.getElementById('edit-email');
+        const emailError = document.getElementById('edit-email-error');
+        
+        // STRICTER EMAIL VALIDATION
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        
+        if (!emailRegex.test(emailInput.value.trim())) {
+            console.log("Invalid email caught by JS:", emailInput.value);
+            emailInput.classList.add('input-error');
+            emailError.classList.remove('hidden');
+            if (typeof showToast === 'function') showToast("Please enter a valid email address", "error");
+            return;
+        } else {
+            emailInput.classList.remove('input-error');
+            emailError.classList.add('hidden');
+        }
+
         saveBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
         
         const formData = new FormData(form);
-        // Only append password if typed
+        
         if (!document.getElementById('new-password').value) {
             formData.delete('current_password');
             formData.delete('new_password');
             formData.delete('confirm_password');
+        }
+
+        const fileInput = document.getElementById('avatar-upload');
+        if (fileInput.files.length > 0) {
+            formData.append('avatar', fileInput.files[0]);
+            console.log("Appending avatar:", fileInput.files[0].name);
         }
 
         try {
@@ -110,18 +147,19 @@ function initEditProfile() {
             
             if (res.ok) {
                 modal.close();
-                showToast("Profile updated!");
+                if (typeof showToast === 'function') showToast("Profile updated!");
                 setTimeout(() => window.location.reload(), 800);
             } else {
-                showToast(data.message, "error");
+                if (typeof showToast === 'function') showToast(data.message || "Failed to update", "error");
             }
         } catch {
-            showToast("Network Error", "error");
+            if (typeof showToast === 'function') showToast("Network Error", "error");
         } finally {
             saveBtn.innerHTML = 'Save Changes';
         }
     });
 }
+
 
 // --- 4. DELETE ACCOUNT ---
 function initDeleteAccount() {
@@ -142,7 +180,12 @@ function initDeleteAccount() {
 
     btn.addEventListener('click', async () => {
         btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
-        const res = await API.deleteAccount();
-        if (res.ok) window.location.href = "/";
+        try {
+            const res = await API.deleteAccount();
+            if (res.ok) window.location.href = "/";
+        } catch {
+            if (typeof showToast === 'function') showToast("Failed to delete account", "error");
+            btn.innerHTML = 'Permanently Delete';
+        }
     });
 }

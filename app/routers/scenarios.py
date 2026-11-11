@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import copy
 import app.core.constants as constants
 from app.services.calculations import calculate_compound_interest
+from typing import Optional
 
 router = APIRouter()
 
@@ -14,32 +15,40 @@ class ScenarioCreate(BaseModel):
     monthly: float
     annual_rate: float
     years: int
+    # Add advanced fields (default to 0 if coming from Home page)
+    compounding_frequency: Optional[str] = "Monthly"
+    inflation_rate: Optional[float] = 0.0
+    tax_rate: Optional[float] = 0.0
 
 @router.post("/api/scenarios")
 async def create_scenario(scenario: ScenarioCreate):
     new_id = max([s["id"] for s in constants.MOCK_DB], default=0) + 1
     
-    # 1. RUN THE REAL MATH ENGINE
     math_results = calculate_compound_interest(
         initial=scenario.initial,
         monthly=scenario.monthly,
         annual_rate=scenario.annual_rate,
-        years=scenario.years
+        years=scenario.years,
+        compounding_frequency=scenario.compounding_frequency,
+        inflation_rate=scenario.inflation_rate,
+        tax_rate=scenario.tax_rate
     )
     kpis = math_results["kpis"]
 
-    # 2. FORMAT THE REAL NUMBERS
-    gain_str = f"+€{kpis['gross_gains']:,.0f}"
-    # Calculate percentage based on initial investment
-    percent_val = (kpis['gross_gains'] / scenario.initial * 100) if scenario.initial > 0 else 0
+    gain_str = f"+€{kpis['net_balance'] - kpis['total_invested']:,.0f}" # Show net gains
+    percent_val = ((kpis['net_balance'] - kpis['total_invested']) / scenario.initial * 100) if scenario.initial > 0 else 0
     percent_str = f"(+{percent_val:.1f}%)"
-    final_val_str = f"€{kpis['gross_balance']:,.0f}"
+    final_val_str = f"€{kpis['net_balance']:,.0f}"
 
-    # 3. SAVE TO DB
     new_scenario = {
         "id": new_id, "name": scenario.name, "icon": scenario.icon, "theme": scenario.theme,
         "initial": scenario.initial, "monthly": scenario.monthly, "annual_rate": scenario.annual_rate,
-        "years": scenario.years, "created": "Nov 08, 2026", "status": "Active",
+        "years": scenario.years, 
+        # SAVE THE ADVANCED PARAMETERS
+        "compounding_frequency": scenario.compounding_frequency,
+        "inflation_rate": scenario.inflation_rate,
+        "tax_rate": scenario.tax_rate,
+        "created": "Nov 08, 2026", "status": "Active",
         "gain": gain_str, "percent": percent_str, "final_value": final_val_str,
         "chart_path": "M0,40 L20,35 L40,30 L60,25 L80,20 L100,15"
     }

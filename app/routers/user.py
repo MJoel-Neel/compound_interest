@@ -1,8 +1,8 @@
 # app/routers/user.py
-from fastapi import APIRouter, Request, File, UploadFile, Form, HTTPException
+from fastapi import APIRouter, File, UploadFile, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from typing import Literal, Optional
+from typing import Literal
 import datetime
 import shutil
 import app.core.constants as constants
@@ -58,15 +58,27 @@ async def update_profile(
         
     constants.GLOBAL_MOCK_USER["name"] = name
     constants.GLOBAL_MOCK_USER["email"] = email
-    name_parts = name.split()
-    constants.GLOBAL_MOCK_USER["initials"] = "".join([n[0] for n in name_parts[:2]]).upper() if name_parts else "U"
     
+    name_parts = name.split()
+    if name_parts:
+        constants.GLOBAL_MOCK_USER["initials"] = "".join([n[0] for n in name_parts[:2]]).upper()
+    
+    # --- AVATAR UPLOAD DEBUGGING ---
+    print(f"Avatar received: {avatar}")
     if avatar and avatar.filename:
+        print(f"Filename: {avatar.filename}")
+        allowed_types = ["image/jpeg", "image/png", "image/webp"]
+        if avatar.content_type not in allowed_types:
+            return {"status": "error", "message": "Only JPG, PNG, and WEBP are allowed."}
+            
         file_extension = avatar.filename.split(".")[-1]
         filename = f"avatar_{constants.GLOBAL_MOCK_USER['initials']}_{int(datetime.datetime.now().timestamp())}.{file_extension}"
         filepath = f"static/uploads/{filename}"
+        
         with open(filepath, "wb") as buffer:
             shutil.copyfileobj(avatar.file, buffer)
+            
         constants.GLOBAL_MOCK_USER["avatar"] = f"/{filepath}"
+        print(f"Saved avatar to: {filepath}")
 
     return {"status": "success", "message": "Profile updated successfully"}

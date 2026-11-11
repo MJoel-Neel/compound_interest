@@ -29,8 +29,6 @@ async def simulate_investment(data: SimulationInput):
     )
 
 
-
-
 @router.get("/api/scenarios/{scenario_id}/details")
 async def get_scenario_details(scenario_id: int):
     scenario = next((s for s in constants.MOCK_DB if s["id"] == scenario_id), None)
@@ -41,7 +39,10 @@ async def get_scenario_details(scenario_id: int):
         initial=float(scenario["initial"]), 
         monthly=float(scenario["monthly"]), 
         annual_rate=float(scenario["annual_rate"]), 
-        years=int(scenario["years"])
+        years=int(scenario["years"]),
+        compounding_frequency=scenario.get("compounding_frequency", "Monthly"),
+        inflation_rate=scenario.get("inflation_rate", 0.0),
+        tax_rate=scenario.get("tax_rate", 0.0)
     )
     
     kpis = math_results["kpis"]

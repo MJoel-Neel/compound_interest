@@ -5,6 +5,9 @@ from starlette.middleware.sessions import SessionMiddleware
 # Import all your routers
 from app.routers import pages, scenarios, simulator_api, user, export_api
 
+import os
+os.makedirs("static/uploads", exist_ok=True)
+
 app = FastAPI()
 
 app.add_middleware(SessionMiddleware, secret_key="super-secret-school-project-key")
