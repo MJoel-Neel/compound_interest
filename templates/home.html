@@ -81,30 +81,37 @@
 </form>
 
 <!-- Bilan -->
-<div
-    class="content_bilan max-w-[1000px] rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 py-5 w-full m-auto mt-10 shadow-sm border-2 border-base-200 bg-base-100 px-4">
-    <div class="flex items-center gap-3 md:border-r border-base-200 last:border-0 px-2">
-        <div class="rounded-full p-2 bg-success/10"><i class="fa-solid fa-coins text-success"></i></div>
-        <div>
-            <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider">Final balance</p>
-            <p class="raleway-700 text-success text-xl truncate" id="final-balance-val">€0</p>
+<div class="content_bilan max-w-[1000px] rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 py-5 w-full m-auto mt-10 shadow-sm border-2 border-base-200 bg-base-100 px-4">
+    
+    <!-- Final Balance -->
+    <div class="flex items-center gap-3 md:border-r border-base-200 last:border-0 px-2 min-w-0">
+        <div class="rounded-full p-2 bg-success/10 shrink-0"><i class="fa-solid fa-coins text-success"></i></div>
+        <div class="flex-1 min-w-0">
+            <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider truncate">Final balance</p>
+            <p class="raleway-700 text-success text-xl truncate" id="final-balance-val" title="Final Balance">€0</p>
         </div>
     </div>
-    <div class="flex items-center gap-3 md:border-r border-base-200 last:border-0 px-2">
-        <div class="rounded-full p-2 bg-primary/10"><i class="fa-solid fa-layer-group text-primary"></i></div>
-        <div>
-            <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider">Total invested</p>
-            <p class="raleway-700 text-primary text-xl truncate" id="total-invested-val">€0</p>
+
+    <!-- Total Invested -->
+    <div class="flex items-center gap-3 md:border-r border-base-200 last:border-0 px-2 min-w-0">
+        <div class="rounded-full p-2 bg-primary/10 shrink-0"><i class="fa-solid fa-layer-group text-primary"></i></div>
+        <div class="flex-1 min-w-0">
+            <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider truncate">Total invested</p>
+            <p class="raleway-700 text-primary text-xl truncate" id="total-invested-val" title="Total Invested">€0</p>
         </div>
     </div>
-    <div class="flex items-center gap-3 px-2">
-        <div class="rounded-full p-2 bg-success/10"><i class="fa-solid fa-arrow-trend-up text-success"></i></div>
-        <div>
-            <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider">Gains</p>
-            <p class="raleway-700 text-success text-xl truncate" id="gains-val">€0</p>
+
+    <!-- Gains -->
+    <div class="flex items-center gap-3 px-2 min-w-0">
+        <div class="rounded-full p-2 bg-success/10 shrink-0"><i class="fa-solid fa-arrow-trend-up text-success"></i></div>
+        <div class="flex-1 min-w-0">
+            <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider truncate">Gains</p>
+            <p class="raleway-700 text-success text-xl truncate" id="gains-val" title="Gains">€0</p>
         </div>
     </div>
+    
 </div>
+
 
 <!-- Chart & Scenarios -->
 <div class="content_chart max-w-[1100px] m-auto px-4 rounded-xl py-4 border-2 border-base-200 mt-10 bg-base-100">

@@ -46,12 +46,25 @@ function applyTheme(theme) {
 // THE ONE AND ONLY CURRENCY FORMATTER
 function formatCurrency(num) {
     if (num === null || num === undefined) return "€0";
-    if (num >= 1e15) return "€" + (num / 1e15).toFixed(2) + "Q"; // Quadrillion
-    if (num >= 1e12) return "€" + (num / 1e12).toFixed(2) + "T"; // Trillion
-    if (num >= 1e9) return "€" + (num / 1e9).toFixed(2) + "B"; // Billion
-    if (num >= 1e6) return "€" + (num / 1e6).toFixed(2) + "M"; // Million
-    if (num >= 1e3) return "€" + (num / 1e3).toFixed(2) + "k"; // Thousand
-    return "€" + Math.round(num).toLocaleString('en-US');
+    
+    const isNegative = num < 0;
+    const absNum = Math.abs(num);
+    const prefix = isNegative ? "-€" : "€";
+    let formatted = "";
+
+    if (absNum >= 1e15) formatted = (absNum / 1e15).toFixed(2) + "Q";
+    else if (absNum >= 1e12) formatted = (absNum / 1e12).toFixed(2) + "T";
+    else if (absNum >= 1e9) formatted = (absNum / 1e9).toFixed(2) + "B";
+    else if (absNum >= 1e6) formatted = (absNum / 1e6).toFixed(2) + "M";
+    else if (absNum >= 1e3) formatted = (absNum / 1e3).toFixed(2) + "k";
+    else formatted = Math.round(absNum).toLocaleString('en-US');
+
+    // Fallback for exceptionally huge numbers
+    if (formatted.length > 10) {
+        return prefix + absNum.toExponential(2);
+    }
+    
+    return prefix + formatted;
 }
 
 // THE ONE AND ONLY CHART AXIS FORMATTER

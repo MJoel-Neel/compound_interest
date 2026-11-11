@@ -116,12 +116,16 @@ def calculate_compound_interest(
 
 
 
-
 def format_compact_currency(num: float) -> str:
     if num is None: return "€0"
-    if num >= 1e15: return f"€{num / 1e15:.2f}Q"
-    if num >= 1e12: return f"€{num / 1e12:.2f}T"
-    if num >= 1e9: return f"€{num / 1e9:.2f}B"
-    if num >= 1e6: return f"€{num / 1e6:.2f}M"
-    if num >= 1e3: return f"€{num / 1e3:.2f}k"
-    return f"€{num:,.0f}"
+    
+    is_negative = num < 0
+    abs_num = abs(num)
+    prefix = "-€" if is_negative else "€"
+    
+    if abs_num >= 1e15: return f"{prefix}{abs_num / 1e15:.2f}Q"
+    if abs_num >= 1e12: return f"{prefix}{abs_num / 1e12:.2f}T"
+    if abs_num >= 1e9: return f"{prefix}{abs_num / 1e9:.2f}B"
+    if abs_num >= 1e6: return f"{prefix}{abs_num / 1e6:.2f}M"
+    if abs_num >= 1e3: return f"{prefix}{abs_num / 1e3:.2f}k"
+    return f"{prefix}{abs_num:,.0f}"

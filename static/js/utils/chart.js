@@ -52,14 +52,7 @@ const Charts = {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function (val) {
-                                if (val >= 1e15) return '€' + (val / 1e15).toFixed(1) + 'Q';
-                                if (val >= 1e12) return '€' + (val / 1e12).toFixed(1) + 'T';
-                                if (val >= 1e9) return '€' + (val / 1e9).toFixed(1) + 'B';
-                                if (val >= 1e6) return '€' + (val / 1e6).toFixed(1) + 'M';
-                                if (val >= 1e3) return '€' + (val / 1e3).toFixed(1) + 'k';
-                                return '€' + val;
-                            }
+                            callback: formatChartAxis
                         }
                     },
                     x: { ticks: { maxTicksLimit: 10 } }
