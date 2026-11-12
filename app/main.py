@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-
-# Import all your routers
 from app.routers import export, pages, scenarios, simulator, user
-
+from app import models
 import os
+
+# Create the database tables
+models.Base.metadata.create_all(bind=engine)
+
 os.makedirs("static/uploads", exist_ok=True)
 
 app = FastAPI()
