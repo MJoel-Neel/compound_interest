@@ -1,21 +1,30 @@
+# app/main.py
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-from app.routers import export, pages, scenarios, simulator, user
-from app import models
 import os
+from dotenv import load_dotenv
 
-# Create the database tables
-models.Base.metadata.create_all(bind=engine)
+# --- NEW LINES FOR DATABASE ---
+from app.core.database import engine, Base
+from app import models # Import models so SQLAlchemy knows they exist
+# ------------------------------
 
-os.makedirs("static/uploads", exist_ok=True)
+# Import all your routers
+from app.routers import pages, scenarios, simulator, user, export
+
+load_dotenv() # Load .env
 
 app = FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key="super-secret-school-project-key")
+# --- CREATE TABLES IN MYSQL ---
+models.Base.metadata.create_all(bind=engine)
+# ------------------------------
+
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Include the routers to connect them to the app
+# Include the routers
 app.include_router(pages.router)
 app.include_router(scenarios.router)
 app.include_router(simulator.router)

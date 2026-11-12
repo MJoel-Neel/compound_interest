@@ -5,6 +5,6 @@ python-multipart
 sqlalchemy
 python-dotenv
 itsdangerous
-passlib[bcrypt]
+bcrypt
 cryptography
 pymysql
