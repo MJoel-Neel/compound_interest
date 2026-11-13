@@ -1,13 +1,12 @@
-# app/main.py
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os
 from dotenv import load_dotenv
 
-# --- NEW LINES FOR DATABASE ---
+# --- DATABASE ---
 from app.core.database import engine, Base
-from app import models # Import models so SQLAlchemy knows they exist
+from app import models 
 # ------------------------------
 
 # Import all your routers
@@ -17,9 +16,8 @@ load_dotenv() # Load .env
 
 app = FastAPI()
 
-# --- CREATE TABLES IN MYSQL ---
+# CREATE TABLES IN MYSQL 
 models.Base.metadata.create_all(bind=engine)
-# ------------------------------
 
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 app.mount("/static", StaticFiles(directory="static"), name="static")
