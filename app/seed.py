@@ -1,4 +1,3 @@
-# app/seed.py
 from app.core.database import SessionLocal, engine, Base
 from app import models
 from app.services.auth_service import get_password_hash
