@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boo
 from sqlalchemy.orm import relationship
 import datetime
 from app.core.database import Base
+from app.services.calculations import calculate_compound_interest, format_compact_currency
+
 
 class User(Base):
     __tablename__ = "users"
@@ -68,3 +70,47 @@ class Scenario(Base):
 
     # Relationship to user
     owner = relationship("User", back_populates="scenarios")
+
+    @property
+    def math_results(self):
+        # Calculate math on the fly based on the DB values
+        return calculate_compound_interest(
+            initial=self.initial, monthly=self.monthly, annual_rate=self.annual_rate, years=self.years,
+            compounding_frequency=self.compounding_frequency, inflation_rate=self.inflation_rate, tax_rate=self.tax_rate
+        )
+
+    @property
+    def gain(self):
+        kpis = self.math_results["kpis"]
+        return f"+{format_compact_currency(kpis['net_balance'] - kpis['total_invested'])}"
+
+    @property
+    def percent(self):
+        kpis = self.math_results["kpis"]
+        net_gains = kpis['net_balance'] - kpis['total_invested']
+        percent_val = (net_gains / self.initial * 100) if self.initial > 0 else 0
+        if percent_val > 99999:
+            return "(+>99999%)"
+        return f"(+{percent_val:.1f}%)"
+
+    @property
+    def final_value(self):
+        return format_compact_currency(self.math_results["kpis"]["net_balance"])
+
+    @property
+    def chart_path(self):
+        balances = self.math_results["chart"]["balance_data"]
+        if not balances or len(balances) < 2:
+            return "M0,50 L100,50" # Flat line
+
+        max_val = max(balances)
+        min_val = min(balances)
+        range_val = max_val - min_val if max_val != min_val else 1
+
+        points = []
+        for i, val in enumerate(balances):
+            x = (i / (len(balances) - 1)) * 100 # X from 0 to 100
+            y = 45 - ((val - min_val) / range_val) * 40 # Y from 5 to 45
+            points.append(f"{x:.1f},{y:.1f}")
+
+        return "M" + " L".join(points)
