@@ -31,24 +31,22 @@
 </div>
 
 <!-- Filter Tabs -->
+<!-- Filter Tabs (Only show if there are scenarios) -->
+{% if scenarios|length > 0 %}
 <div class="flex flex-wrap gap-2 px-4 mb-6" id="filter-container">
-    <button data-filter="all"
-        class="filter-btn btn btn-sm btn-soft btn-success raleway-500 rounded-full px-4 transition-all">
+    <button data-filter="all" class="filter-btn btn btn-sm btn-soft btn-success raleway-500 rounded-full px-4 transition-all">
         All Scenarios ({{ scenarios|length }})
     </button>
-
-    <button data-filter="active"
-        class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
+    <button data-filter="active" class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
         <span class="w-2 h-2 rounded-full bg-success mr-1"></span>
         Active ({{ scenarios|selectattr('status', 'equalto', 'Active')|list|length }})
     </button>
-
-    <button data-filter="archived"
-        class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
+    <button data-filter="archived" class="filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all">
         <span class="w-2 h-2 rounded-full bg-base-content/30 mr-1"></span>
         Archived ({{ scenarios|selectattr('status', 'equalto', 'Archived')|list|length }})
     </button>
 </div>
+{% endif %}
 
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 px-4 pb-10" id="scenarios-grid">
 
@@ -157,8 +155,22 @@
     </div>
     {% endfor %}
 
-    <!-- Empty State -->
-    <div id="empty-state" class="hidden col-span-1 xl:col-span-2 text-center py-12 text-base-content/50 raleway-400">
+   <!-- 1. GLOBAL EMPTY STATE (Shows when DB is empty) -->
+    <div id="global-empty-state" class="{% if scenarios|length > 0 %}hidden{% endif %} col-span-1 xl:col-span-2 text-center py-16 bg-base-100 border border-base-200 rounded-xl raleway-400">
+        <div class="w-20 h-20 mx-auto bg-base-200 rounded-full flex items-center justify-center mb-4">
+            <i class="fa-regular fa-folder-open text-4xl text-base-content/40"></i>
+        </div>
+        <h3 class="text-xl font-bold text-base-content mb-2 raleway-600">No scenarios yet</h3>
+        <p class="text-base-content/60 mb-6 max-w-md mx-auto">
+            You haven't saved any investment scenarios. Run a simulation and save it to start tracking your financial future.
+        </p>
+        <a href="/simulator" class="btn btn-success text-white raleway-500 shadow-sm">
+            <i class="fa-solid fa-plus"></i> Create Your First Scenario
+        </a>
+    </div>
+
+    <!-- 2. FILTER EMPTY STATE (Shows when a filter returns 0 results) -->
+    <div id="filter-empty-state" class="hidden col-span-1 xl:col-span-2 text-center py-12 text-base-content/50 raleway-400">
         <i class="fa-regular fa-folder-open text-5xl mb-3 text-base-content/30"></i>
         <p class="text-lg">No scenarios found for this filter.</p>
     </div>

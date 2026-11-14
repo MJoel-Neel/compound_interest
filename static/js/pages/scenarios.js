@@ -10,16 +10,19 @@ document.addEventListener("DOMContentLoaded", () => {
 function initFilters() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const cards = document.querySelectorAll('.scenario-card');
-    const emptyState = document.getElementById('empty-state');
+    const filterEmptyState = document.getElementById('filter-empty-state'); // <-- Target the filter empty state
 
     if (filterBtns.length === 0) return;
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const filter = btn.dataset.filter;
+            
+            // Update Button Styles
             filterBtns.forEach(b => b.className = 'filter-btn btn btn-sm btn-ghost bg-base-200/50 hover:bg-base-200 text-base-content/70 raleway-500 rounded-full px-4 transition-all');
             btn.className = 'filter-btn btn btn-sm btn-soft btn-success raleway-500 rounded-full px-4 transition-all';
 
+            // Filter Cards
             let visible = 0;
             cards.forEach(card => {
                 if (filter === 'all' || filter === card.dataset.status) {
@@ -29,7 +32,15 @@ function initFilters() {
                     card.classList.add('hidden');
                 }
             });
-            if (emptyState) emptyState.classList.toggle('hidden', visible > 0);
+
+            // Show/Hide the Filter Empty State
+            if (filterEmptyState) {
+                if (visible === 0) {
+                    filterEmptyState.classList.remove('hidden');
+                } else {
+                    filterEmptyState.classList.add('hidden');
+                }
+            }
         });
     });
 }
