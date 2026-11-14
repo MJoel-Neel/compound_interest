@@ -51,14 +51,19 @@ async def login(
     request: Request, 
     email: str = Form(...), 
     password: str = Form(...), 
+    remember_me: str = Form(None),
     db: Session = Depends(get_db)
 ):
+    # 1. Find user
     user = db.query(models.User).filter(models.User.email == email).first()
-    
+
+    # 2. Verify Password
     if not user or not verify_password(password, user.hashed_password):
         return {"status": "error", "message": "Invalid email or password"}
 
+    # 3. Set session cookie
     request.session["user_id"] = user.id
+
     return {"status": "success"}
 
 @router.get("/api/logout")
