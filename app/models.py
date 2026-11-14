@@ -16,6 +16,16 @@ class User(Base):
     scenarios = relationship("Scenario", back_populates="owner")
     settings = relationship("UserSettings", back_populates="user", uselist=False) 
 
+     # --- THE FIX: Dynamic Initials Property ---
+    @property
+    def initials(self):
+        if not self.name:
+            return "$$"
+        parts = self.name.split()
+        if len(parts) >= 2:
+            return (parts[0][0] + parts[1][0]).upper()
+        return parts[0][:2].upper()
+
 
 class UserSettings(Base):
     __tablename__ = "user_settings"
