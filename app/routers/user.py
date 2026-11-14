@@ -3,8 +3,11 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Literal
+
+import os
 import shutil
-import datetime
+import uuid
+from PIL import Image, UnidentifiedImageError
 
 from app.core.database import get_db
 from app import models
@@ -95,6 +98,8 @@ async def delete_account(request: Request, db: Session = Depends(get_db), curren
         request.session.clear()
     return {"status": "success"}
 
+
+
 @router.post("/api/update-profile")
 async def update_profile(
     name: str = Form(...), 
@@ -116,19 +121,59 @@ async def update_profile(
             return {"status": "error", "message": "Incorrect current password."}
         current_user.hashed_password = get_password_hash(new_password)
 
-    # RESTORED AVATAR LOGIC using shutil and datetime
     if avatar and avatar.filename:
-        allowed_types = ["image/jpeg", "image/png", "image/webp"]
-        if avatar.content_type not in allowed_types:
+        # 1. FIX FILE SIZE LIMIT (Max 2MB)
+        MAX_FILE_SIZE = 2 * 1024 * 1024
+        avatar.file.seek(0, os.SEEK_END)
+        file_size = avatar.file.tell()
+        avatar.file.seek(0) # Reset pointer back to start
+        
+        if file_size > MAX_FILE_SIZE:
+            return {"status": "error", "message": "File size exceeds 2MB limit."}
+
+        # 2. FIX MAGIC BYTES / CONTENT-TYPE SPOOFING
+        # We open the file in memory to verify it's actually a valid image
+        try:
+            image = Image.open(avatar.file)
+            image.verify() # Verifies headers without decoding the whole image
+        except (UnidentifiedImageError, Exception):
+            return {"status": "error", "message": "Invalid image file."}
+        
+        avatar.file.seek(0) # Reset pointer again for saving
+
+        # 3. FIX UNSAFE EXTENSIONS
+        # We map the verified Pillow format to a safe extension
+        format_to_ext = {
+            "JPEG": ".jpg",
+            "PNG": ".png",
+            "WEBP": ".webp"
+        }
+        safe_extension = format_to_ext.get(image.format)
+        
+        if not safe_extension:
             return {"status": "error", "message": "Only JPG, PNG, and WEBP are allowed."}
-            
-        file_extension = avatar.filename.split(".")[-1]
-        filename = f"avatar_{current_user.id}_{int(datetime.datetime.now().timestamp())}.{file_extension}"
-        filepath = f"static/uploads/{filename}"
+
+        # 4. FIX ORPHANED FILES (Delete old avatar)
+        if current_user.avatar:
+            old_avatar_path = current_user.avatar.lstrip("/")
+            if os.path.exists(old_avatar_path):
+                try:
+                    os.remove(old_avatar_path)
+                except Exception as e:
+                    print(f"Failed to delete old avatar: {e}")
+
+        # 5. SAVE THE FILE SECURELY
+        # Use a random UUID for the filename to prevent path traversal and overwrite attacks
+        random_filename = f"avatar_{current_user.id}_{uuid.uuid4().hex[:8]}{safe_extension}"
+        filepath = f"static/uploads/{random_filename}"
+        
+        # Ensure the directory exists
+        os.makedirs("static/uploads", exist_ok=True)
         
         with open(filepath, "wb") as buffer:
             shutil.copyfileobj(avatar.file, buffer)
             
+        # Update the user in the database
         current_user.avatar = f"/{filepath}"
 
     db.commit()
