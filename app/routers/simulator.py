@@ -21,7 +21,7 @@ class SimulationInput(BaseModel):
 
 @router.post("/api/simulate")
 async def simulate_investment(data: SimulationInput):
-    # This endpoint doesn't touch the database, it just runs math
+    # Pure math, no database needed
     return calculate_compound_interest(
         initial=data.initial,
         monthly=data.monthly,
@@ -41,7 +41,7 @@ async def get_scenario_details(
     if not user:
         raise HTTPException(status_code=401, detail="Not logged in")
 
-    # 1. Find the scenario in MySQL, ensuring it belongs to the logged-in user
+    # Fetch from MySQL (secure: ensures it belongs to the logged-in user)
     scenario = db.query(models.Scenario).filter(
         models.Scenario.id == scenario_id,
         models.Scenario.user_id == user.id
@@ -50,7 +50,6 @@ async def get_scenario_details(
     if not scenario:
         return {"status": "error", "message": "Not found"}
 
-    # 2. Run the math engine
     math_results = calculate_compound_interest(
         initial=float(scenario.initial), 
         monthly=float(scenario.monthly), 
@@ -64,7 +63,6 @@ async def get_scenario_details(
     kpis = math_results["kpis"]
     total_monthly = kpis["total_invested"] - float(scenario.initial)
     
-    # 3. Return the data (using the same structure your frontend expects)
     return {
         "scenario_name": scenario.name,
         "theme": scenario.theme,
