@@ -53,14 +53,14 @@ function initActions() {
             try {
                 const res = await API.duplicateScenario(btn.dataset.id);
                 if (res.ok) {
-                    showToast("Duplicated!");
+                    if (typeof showToast === 'function') showToast("Duplicated!");
                     setTimeout(() => window.location.reload(), 800);
                 } else {
-                    showToast("Failed to duplicate", "error");
+                    if (typeof showToast === 'function') showToast("Failed to duplicate", "error");
                     btn.innerHTML = '<i class="fa-regular fa-copy"></i> Duplicate';
                 }
             } catch {
-                showToast("Network error", "error");
+                if (typeof showToast === 'function') showToast("Network error", "error");
                 btn.innerHTML = '<i class="fa-regular fa-copy"></i> Duplicate';
             }
         });
@@ -72,11 +72,11 @@ function initActions() {
             try {
                 const res = isArchived ? await API.restoreScenario(btn.dataset.id) : await API.archiveScenario(btn.dataset.id);
                 if (res.ok) {
-                    showToast(isArchived ? "Restored!" : "Archived!");
+                    if (typeof showToast === 'function') showToast(isArchived ? "Restored!" : "Archived!");
                     setTimeout(() => window.location.reload(), 800);
                 }
             } catch {
-                showToast("Network error", "error");
+                if (typeof showToast === 'function') showToast("Network error", "error");
             }
         });
     });
@@ -87,11 +87,11 @@ function initActions() {
             try {
                 const res = await API.restoreScenario(btn.dataset.id);
                 if (res.ok) {
-                    showToast("Restored!");
+                    if (typeof showToast === 'function') showToast("Restored!");
                     setTimeout(() => window.location.reload(), 800);
                 }
             } catch {
-                showToast("Network error", "error");
+                if (typeof showToast === 'function') showToast("Network error", "error");
             }
         });
     });
@@ -122,7 +122,7 @@ function initRenameModal() {
         const res = await API.renameScenario(id, input.value.trim());
         if (res.ok) {
             modal.close();
-            showToast("Renamed!");
+            if (typeof showToast === 'function') showToast("Renamed!");
             setTimeout(() => window.location.reload(), 800);
         }
     });
@@ -143,7 +143,7 @@ function initDetailsModal() {
 
                 if (!data || data.status === 'error' || !data.breakdown) {
                     console.error("Backend failed to return data. Response:", data);
-                    showToast("Scenario no longer exists. Refreshing...", "error");
+                    if (typeof showToast === 'function') showToast("Scenario no longer exists. Refreshing...", "error");
                     setTimeout(() => window.location.reload(), 1500);
                     return;
                 }
@@ -174,7 +174,7 @@ function initDetailsModal() {
 
             } catch (err) {
                 console.error("Network fetch error:", err);
-                showToast("Network error loading details.", "error");
+                if (typeof showToast === 'function') showToast("Network error loading details.", "error");
                 modal.close();
             }
         });
@@ -199,14 +199,14 @@ function initDeleteModal() {
             const res = await API.deleteScenario(id);
             if (res.ok) {
                 modal.close();
-                showToast("Deleted!");
+                if (typeof showToast === 'function') showToast("Deleted!");
                 setTimeout(() => window.location.reload(), 800);
             } else {
-                showToast("Failed to delete", "error");
+                if (typeof showToast === 'function') showToast("Failed to delete", "error");
                 btn.innerHTML = 'Yes, Delete';
             }
         } catch {
-            showToast("Network error", "error");
+            if (typeof showToast === 'function') showToast("Network error", "error");
             btn.innerHTML = 'Yes, Delete';
         }
     });
