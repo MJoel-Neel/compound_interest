@@ -1,84 +1,135 @@
-# app/routers/user.py
-from fastapi import APIRouter, File, UploadFile, Form, HTTPException
+from fastapi import APIRouter, Request, Form, Depends, HTTPException, File, UploadFile
 from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Literal
-import datetime
 import shutil
-import app.core.constants as constants
+import datetime
+
+from app.core.database import get_db
+from app import models
+from app.services.auth_service import get_password_hash, verify_password
+from app.routers.deps import get_current_user
 
 router = APIRouter()
+
+# --- AUTHENTICATION ---
+
+@router.post("/api/signup")
+async def signup(
+    request: Request, 
+    name: str = Form(...), 
+    email: str = Form(...), 
+    password: str = Form(...), 
+    db: Session = Depends(get_db)
+):
+    existing_user = db.query(models.User).filter(models.User.email == email).first()
+    if existing_user:
+        return {"status": "error", "message": "Email already registered"}
+
+    new_user = models.User(
+        name=name,
+        email=email,
+        hashed_password=get_password_hash(password)
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    new_settings = models.UserSettings(user_id=new_user.id)
+    db.add(new_settings)
+    db.commit()
+
+    request.session["user_id"] = new_user.id
+    return {"status": "success"}
+
+@router.post("/api/login")
+async def login(
+    request: Request, 
+    email: str = Form(...), 
+    password: str = Form(...), 
+    db: Session = Depends(get_db)
+):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    
+    if not user or not verify_password(password, user.hashed_password):
+        return {"status": "error", "message": "Invalid email or password"}
+
+    request.session["user_id"] = user.id
+    return {"status": "success"}
+
+@router.get("/api/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/", status_code=303)
+
+# --- SETTINGS & PROFILE ---
 
 class UserSettingsUpdate(BaseModel):
     setting: Literal['currency', 'time_range', 'theme', 'portfolio_alerts', 'market_updates', 'product_updates']
     value: str | bool 
 
 @router.post("/api/settings")
-async def save_setting(data: UserSettingsUpdate):
-    if data.setting == 'currency' and data.value not in ['EUR', 'USD', 'GBP']:
-        raise HTTPException(status_code=400, detail="Invalid currency code.")
-    return {"status": "success"}
+async def save_setting(
+    data: UserSettingsUpdate, 
+    db: Session = Depends(get_db), 
+    current_user: models.User = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not logged in")
+        
+    settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == current_user.id).first()
+    if not settings:
+        settings = models.UserSettings(user_id=current_user.id)
+        db.add(settings)
 
-@router.get("/api/logout")
-async def logout():
-    constants.GLOBAL_MOCK_USER = None
-    return RedirectResponse(url="/", status_code=303)
+    setattr(settings, data.setting, data.value)
+    db.commit()
+    return {"status": "success"}
 
 @router.delete("/api/delete-account")
-async def delete_account():
-    constants.GLOBAL_MOCK_USER = None
+async def delete_account(request: Request, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    if current_user:
+        db.delete(current_user)
+        db.commit()
+        request.session.clear()
     return {"status": "success"}
-
-@router.post("/api/forgot-password")
-async def forgot_password(email: str = Form(...)):
-    # In a real app, you would check if the email exists in the database
-    # and generate a secure token to send via email.
-    
-    print(f"Password reset requested for: {email}")
-    
-    # We always return success for security reasons 
-    # (so hackers can't guess which emails are registered)
-    return {"status": "success", "message": "If an account exists, a reset link has been sent."}
-
-
 
 @router.post("/api/update-profile")
 async def update_profile(
-    name: str = Form(...), email: str = Form(...),
-    current_password: str = Form(None), new_password: str = Form(None),
-    avatar: UploadFile = File(None)
+    name: str = Form(...), 
+    email: str = Form(...),
+    current_password: str = Form(None), 
+    new_password: str = Form(None),
+    avatar: UploadFile = File(None),
+    db: Session = Depends(get_db), 
+    current_user: models.User = Depends(get_current_user)
 ):
-    if constants.GLOBAL_MOCK_USER is None:
+    if not current_user:
         return {"status": "error", "message": "Not logged in"}
-        
+
+    current_user.name = name
+    current_user.email = email
+    
     if new_password:
-        if current_password != constants.GLOBAL_MOCK_USER.get("password"):
+        if not verify_password(current_password, current_user.hashed_password):
             return {"status": "error", "message": "Incorrect current password."}
-        constants.GLOBAL_MOCK_USER["password"] = new_password
-        
-    constants.GLOBAL_MOCK_USER["name"] = name
-    constants.GLOBAL_MOCK_USER["email"] = email
-    
-    name_parts = name.split()
-    if name_parts:
-        constants.GLOBAL_MOCK_USER["initials"] = "".join([n[0] for n in name_parts[:2]]).upper()
-    
-    # --- AVATAR UPLOAD DEBUGGING ---
-    print(f"Avatar received: {avatar}")
+        current_user.hashed_password = get_password_hash(new_password)
+
+    # RESTORED AVATAR LOGIC using shutil and datetime
     if avatar and avatar.filename:
-        print(f"Filename: {avatar.filename}")
         allowed_types = ["image/jpeg", "image/png", "image/webp"]
         if avatar.content_type not in allowed_types:
             return {"status": "error", "message": "Only JPG, PNG, and WEBP are allowed."}
             
         file_extension = avatar.filename.split(".")[-1]
-        filename = f"avatar_{constants.GLOBAL_MOCK_USER['initials']}_{int(datetime.datetime.now().timestamp())}.{file_extension}"
+        filename = f"avatar_{current_user.id}_{int(datetime.datetime.now().timestamp())}.{file_extension}"
         filepath = f"static/uploads/{filename}"
         
         with open(filepath, "wb") as buffer:
             shutil.copyfileobj(avatar.file, buffer)
             
-        constants.GLOBAL_MOCK_USER["avatar"] = f"/{filepath}"
-        print(f"Saved avatar to: {filepath}")
+        current_user.avatar = f"/{filepath}"
 
+    db.commit()
     return {"status": "success", "message": "Profile updated successfully"}
