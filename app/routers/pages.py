@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from app.core.templates import templates
-import app.core.constants as constants # <-- Import the module, NOT the variables
+import app.core.constants as constants 
 
 router = APIRouter()
 
@@ -11,7 +11,6 @@ async def home_page(request: Request):
     daily_quote, daily_plant = constants.get_daily_sidebar_data()
     return templates.TemplateResponse(
         request=request, name="home.html",
-        # Use constants.MOCK_DB instead of MOCK_DB
         context={"scenarios": constants.MOCK_DB, "daily_quote": daily_quote, "daily_plant": daily_plant, "user": constants.GLOBAL_MOCK_USER}
     )
 

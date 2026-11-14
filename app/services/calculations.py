@@ -1,5 +1,3 @@
-# app/services/calculations.py
-
 def calculate_compound_interest(
     initial: float, 
     monthly: float, 
@@ -54,7 +52,6 @@ def calculate_compound_interest(
                 current_balance += interest_earned
                 year_interest += interest_earned
 
-        # --- End of Year Calculations ---
         
         # Calculate Real (Inflation-Adjusted) Balance for this specific year
         # Formula: Real = Nominal / (1 + inflation)^year

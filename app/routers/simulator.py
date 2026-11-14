@@ -50,7 +50,7 @@ async def get_scenario_details(scenario_id: int):
     return {
         "scenario_name": scenario["name"],
         "theme": scenario["theme"],
-        # --- NEW ADVANCED DATA ---
+
         "advanced": {
             "compounding": scenario.get("compounding_frequency", "Monthly"),
             "inflation": scenario.get("inflation_rate", 0.0),
