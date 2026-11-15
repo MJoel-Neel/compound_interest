@@ -20,7 +20,7 @@ function syncThemeUI() {
         const label = document.getElementById(`label-theme-${t}`);
         const check = document.getElementById(`check-theme-${t}`);
         if (!label || !check) return;
-        
+
         const icon = label.querySelector('i:first-child');
         const span = label.querySelector('span');
 
@@ -69,13 +69,13 @@ async function updateSetting(setting, value) {
     try {
         const res = await API.saveSetting(setting, value);
         if (!res.ok) throw new Error("Failed to save");
-        
+
         // --- 3. HANDLE SPECIFIC UPDATES ---
         if (setting === 'theme') {
-            localStorage.setItem('app-theme', value); 
-            if (typeof applyTheme === 'function') applyTheme(value); 
+            localStorage.setItem('app-theme', value);
+            if (typeof applyTheme === 'function') applyTheme(value);
             if (typeof showToast === 'function') showToast("Theme updated!");
-        } 
+        }
         else if (setting === 'currency') {
             const symbols = { "EUR": "€", "USD": "$", "GBP": "£" };
             window.CURRENCY_SYMBOL = symbols[value] || "€";
@@ -92,7 +92,7 @@ async function updateSetting(setting, value) {
     } catch (error) {
         console.error(error);
         if (typeof showToast === 'function') showToast("Failed to save setting", "error");
-        
+
         // Revert the UI if it was a toggle
         if (typeof value === 'boolean') {
             const toggle = document.getElementById(`toggle-${setting.replace('_', '-')}`);
@@ -109,6 +109,7 @@ function initEditProfile() {
     const saveBtn = document.getElementById('save-profile-btn');
     if (!modal || !form) return;
 
+    // Open Modal & Reset Errors
     document.getElementById('open-edit-profile-btn').addEventListener('click', () => {
         document.getElementById('current-password').value = '';
         document.getElementById('new-password').value = '';
@@ -118,12 +119,12 @@ function initEditProfile() {
     });
 
     // Avatar Preview & Size Limit
-    document.getElementById('avatar-upload').addEventListener('change', function(e) {
+    document.getElementById('avatar-upload').addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (file) {
             if (file.size > 2 * 1024 * 1024) {
                 if (typeof showToast === 'function') showToast("Image must be less than 2MB", "error");
-                this.value = ''; 
+                this.value = '';
                 return;
             }
             const reader = new FileReader();
@@ -138,17 +139,26 @@ function initEditProfile() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const emailInput = document.getElementById('edit-email');
+        const currentPassword = document.getElementById('current-password').value;
+
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        const passwordError = document.getElementById('password-error');
+        const passwordErrorText = document.getElementById('password-error-text');
         const emailError = document.getElementById('edit-email-error');
-        
-        // STRICTER EMAIL VALIDATION
+
+        let isValid = true;
+
+        // 1. Validate Email
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        
+
         if (!emailRegex.test(emailInput.value.trim())) {
-            console.log("Invalid email caught by JS:", emailInput.value);
             emailInput.classList.add('input-error');
             emailError.classList.remove('hidden');
+            isValid = false;
             if (typeof showToast === 'function') showToast("Please enter a valid email address", "error");
             return;
         } else {
@@ -156,11 +166,35 @@ function initEditProfile() {
             emailError.classList.add('hidden');
         }
 
+
+        // 2. Validate Password (Only if they are trying to change it)
+        passwordError.classList.add('hidden'); // Reset error
+
+        if (newPassword || currentPassword) {
+            if (!currentPassword) {
+                passwordErrorText.textContent = "Please enter your current password to make changes.";
+                passwordError.classList.remove('hidden');
+                isValid = false;
+            } else if (newPassword.length < 6) {
+                passwordErrorText.textContent = "New password must be at least 6 characters.";
+                passwordError.classList.remove('hidden');
+                isValid = false;
+            } else if (newPassword !== confirmPassword) {
+                passwordErrorText.textContent = "New passwords do not match.";
+                passwordError.classList.remove('hidden');
+                isValid = false;
+            }
+        }
+
+        if (!isValid) return;
+
+        // 3. Send to Backend
         saveBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
-        
+        saveBtn.disabled = true;
+
         const formData = new FormData(form);
-        
-        if (!document.getElementById('new-password').value) {
+
+        if (!newPassword) {
             formData.delete('current_password');
             formData.delete('new_password');
             formData.delete('confirm_password');
@@ -169,24 +203,30 @@ function initEditProfile() {
         const fileInput = document.getElementById('avatar-upload');
         if (fileInput.files.length > 0) {
             formData.append('avatar', fileInput.files[0]);
-            console.log("Appending avatar:", fileInput.files[0].name);
         }
 
         try {
             const res = await API.updateProfile(formData);
             const data = await res.json();
-            
+
             if (res.ok) {
                 modal.close();
                 if (typeof showToast === 'function') showToast("Profile updated!");
                 setTimeout(() => window.location.reload(), 800);
             } else {
-                if (typeof showToast === 'function') showToast(data.message || "Failed to update", "error");
+                // Show the specific error from FastAPI
+                if (data.message && data.message.includes("password")) {
+                    passwordErrorText.textContent = data.message;
+                    passwordError.classList.remove('hidden');
+                } else {
+                    if (typeof showToast === 'function') showToast(data.message || "Failed to update", "error");
+                }
             }
         } catch {
             if (typeof showToast === 'function') showToast("Network Error", "error");
         } finally {
             saveBtn.innerHTML = 'Save Changes';
+            saveBtn.disabled = false;
         }
     });
 }
@@ -197,7 +237,7 @@ function initDeleteAccount() {
     const modal = document.getElementById('delete_account_modal');
     const input = document.getElementById('delete-confirm-input');
     const btn = document.getElementById('confirm-delete-account-btn');
-    
+
     if (!modal) return;
 
     // Open Modal

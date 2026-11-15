@@ -162,8 +162,8 @@
                 </div>
             </div>
             <input type="checkbox" id="toggle-portfolio-alerts"
-                onchange="updateSetting('portfolio_alerts', this.checked)" class="toggle toggle-success shrink-0"
-                {% if user.settings and user.settings.portfolio_alerts %}checked{% endif %} />
+                onchange="updateSetting('portfolio_alerts', this.checked)" class="toggle toggle-success shrink-0" {% if
+                user.settings and user.settings.portfolio_alerts %}checked{% endif %} />
         </div>
 
         <hr class="border-base-200 border-dashed">
@@ -179,7 +179,8 @@
                 </div>
             </div>
             <input type="checkbox" id="toggle-market-updates" onchange="updateSetting('market_updates', this.checked)"
-                class="toggle toggle-success shrink-0" {% if user.settings and user.settings.market_updates %}checked{% endif %}  />
+                class="toggle toggle-success shrink-0" {% if user.settings and user.settings.market_updates %}checked{%
+                endif %} />
         </div>
 
         <hr class="border-base-200 border-dashed">
@@ -194,7 +195,8 @@
                 </div>
             </div>
             <input type="checkbox" id="toggle-product-updates" onchange="updateSetting('product_updates', this.checked)"
-                class="toggle toggle-success shrink-0" {% if user.settings and user.settings.product_updates %}checked{% endif %} />
+                class="toggle toggle-success shrink-0" {% if user.settings and user.settings.product_updates %}checked{%
+                endif %} />
         </div>
     </div>
 
@@ -351,8 +353,10 @@
                         class="input input-bordered w-full raleway-400 bg-base-100" placeholder="Repeat new password">
                 </div>
             </div>
-            <p class="text-xs text-error hidden" id="password-error"><i class="fa-solid fa-circle-exclamation"></i>
-                Passwords do not match or are too short.</p>
+            <p class="text-xs text-error hidden mt-2 font-semibold" id="password-error">
+                <i class="fa-solid fa-circle-exclamation"></i> <span id="password-error-text">Passwords do not
+                    match.</span>
+            </p>
 
             <!-- ACTIONS -->
             <div class="modal-action mt-4">

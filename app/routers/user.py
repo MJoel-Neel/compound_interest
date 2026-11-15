@@ -136,6 +136,10 @@ async def update_profile(
     current_user.email = email
     
     if new_password:
+        #Backend validation (Security check)
+        if len(new_password) < 6:
+            return {"status": "error", "message": "New password must be at least 6 characters."}
+        
         if not verify_password(current_password, current_user.hashed_password):
             return {"status": "error", "message": "Incorrect current password."}
         current_user.hashed_password = get_password_hash(new_password)
