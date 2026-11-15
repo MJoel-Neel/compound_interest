@@ -6,6 +6,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+     <!-- Standard SEO -->
+    <meta name="description" content="{% block meta_description %}Plan, simulate, and grow your wealth with advanced investment scenarios. Explore compound interest and market trends.{% endblock %}">
+    <meta name="keywords" content="investing, compound interest, financial simulator, wealth management, portfolio">
+    <meta name="author" content="Marie-Joel ALLOHAN">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph (Facebook, LinkedIn, Discord) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}What If I Invest?{% endblock %}">
+    <meta property="og:description" content="Plan, simulate, and grow your wealth with advanced investment scenarios.">
+    <meta property="og:image" content="/favicon.svg"> <!-- Use a nice 1200x630 image here if you have one -->
+    <meta property="og:url" content="https://whatifinvest.app">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="What If I Invest?">
+    <meta name="twitter:description" content="Plan, simulate, and grow your wealth with advanced investment scenarios.">
+    <meta name="twitter:image" content="/favicon.svg">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +36,9 @@
     <link rel="stylesheet" href="/static/css/font.css">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/base.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
     <!-- Tailwind & DaisyUI -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>

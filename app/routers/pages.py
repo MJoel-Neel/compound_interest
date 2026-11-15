@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response
 from sqlalchemy.orm import Session
 
 from app.core.templates import templates
@@ -107,3 +107,25 @@ async def signup_page(request: Request, user: models.User = Depends(get_current_
     if user:
         return RedirectResponse(url="/", status_code=303)
     return templates.TemplateResponse(request=request, name="signup.html")
+
+# SEO 
+@router.get("/robots.txt", response_class=PlainTextResponse)
+async def robots_txt():
+    return """
+User-agent: *
+Allow: /
+Disallow: /settings
+Disallow: /scenarios
+Sitemap: http://127.0.0.1:8000/sitemap.xml
+"""
+
+@router.get("/sitemap.xml")
+async def sitemap_xml():
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>http://127.0.0.1:8000/</loc><priority>1.0</priority></url>
+    <url><loc>http://127.0.0.1:8000/login</loc><priority>0.8</priority></url>
+    <url><loc>http://127.0.0.1:8000/signup</loc><priority>0.8</priority></url>
+    <url><loc>http://127.0.0.1:8000/market-overview</loc><priority>0.9</priority></url>
+</urlset>"""
+    return Response(content=xml_content, media_type="application/xml")
