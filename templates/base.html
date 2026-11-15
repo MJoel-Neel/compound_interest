@@ -1,6 +1,7 @@
 <!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
 
     <!-- Your Custom CSS -->
     <link rel="stylesheet" href="/static/css/font.css">
@@ -36,14 +39,22 @@
 
     <title>{% block title %}What If I Invest?{% endblock %}</title>
 
-    <!-- INLINE THEME SCRIPT (PREVENTS THE BLINK) -->
     <script>
+        // 1. Inject DB values from Jinja2
+        window.DB_THEME = "{{ user.settings.theme if user and user.settings else 'dark' }}";
+        window.CURRENCY_SYMBOL = "{{ user.settings.currency_symbol if user and user.settings else '€' }}";
+
+        // 2. Sync DB Theme -> localStorage & Apply instantly (Prevents FOUC)
         (function () {
-            const savedTheme = localStorage.getItem('app-theme') || 'light';
-            let activeTheme = savedTheme;
-            if (savedTheme === 'system') {
-                activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const savedTheme = localStorage.getItem('app-theme');
+
+            // If the user is logged in and the DB theme is different from the cache, update the cache
+            if (window.DB_THEME && savedTheme !== window.DB_THEME) {
+                localStorage.setItem('app-theme', window.DB_THEME);
             }
+
+            // Apply the active theme
+            const activeTheme = window.DB_THEME || savedTheme || 'dark';
             document.documentElement.setAttribute('data-theme', activeTheme);
         })();
     </script>

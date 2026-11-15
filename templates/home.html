@@ -26,7 +26,7 @@
                 <input type="number" name="initial" id="initial" placeholder="1000"
                     class="raleway-400 w-full bg-transparent" value="{{ request.query_params.get('initial', '1000') }}"
                     required min="0" step="any">
-                <span class="text-base-content/50">€</span>
+                <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€' }}</span>
             </div>
             <p class="error-msg text-error text-xs hidden">Must be 0 or greater.</p>
         </div>
@@ -37,7 +37,7 @@
                 <input type="number" name="monthly" id="monthly" placeholder="200"
                     class="raleway-400 w-full bg-transparent" value="{{ request.query_params.get('monthly', '200') }}"
                     required min="0" step="any">
-                <span class="text-base-content/50">€</span>
+                <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€' }}</span>
             </div>
             <p class="error-msg text-error text-xs hidden">Must be 0 or greater.</p>
         </div>
@@ -60,7 +60,7 @@
             <label for="years" class="raleway-500 capitalize text-base-content">Years</label>
             <div class="input w-full validator bg-base-100 border-base-300">
                 <input type="number" name="years" id="years" placeholder="20" class="raleway-400 w-full bg-transparent"
-                    value="{{ request.query_params.get('years', '20') }}" required min="1" max="100" step="any">
+                    value="{{ user.settings.time_range if user and user.settings else '20' }}" required min="1" max="100" step="any">
                 <span class="text-base-content/50"><i class="fa-regular fa-calendar"></i></span>
             </div>
             <p class="error-msg text-error text-xs hidden">Must be between 1 and 100.</p>

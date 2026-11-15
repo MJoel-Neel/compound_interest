@@ -18,7 +18,7 @@ class User(Base):
     scenarios = relationship("Scenario", back_populates="owner", cascade="all, delete-orphan")
     settings = relationship("UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan") 
 
-     # --- THE FIX: Dynamic Initials Property ---
+    # Dynamic Initials Property 
     @property
     def initials(self):
         if not self.name:
@@ -45,6 +45,12 @@ class UserSettings(Base):
 
     # Relationship back to user
     user = relationship("User", back_populates="settings")
+
+    @property
+    def currency_symbol(self):
+        symbols = {"EUR": "€", "USD": "$", "GBP": "£"}
+        return symbols.get(self.currency, "€") # Default to Euro
+
 
 class Scenario(Base):
     __tablename__ = "scenarios"

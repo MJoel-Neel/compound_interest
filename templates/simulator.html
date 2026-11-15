@@ -50,7 +50,7 @@
                                     title="The starting amount you invest."></i></span></label>
                         <div
                             class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary flex items-center gap-2">
-                            <span class="text-base-content/50">€</span>
+                            <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€' }}</span>
                             <input type="number" id="adv-initial" class="grow raleway-400" value="10000" min="0"
                                 step="any" required>
                         </div>
@@ -64,7 +64,7 @@
                                     title="Amount added to the portfolio every month."></i></span></label>
                         <div
                             class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
-                            <span class="text-base-content/50">€</span>
+                            <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€' }}</span>
                             <input type="number" id="adv-monthly" class="grow raleway-400" value="500" min="0"
                                 step="any" required>
                         </div>
@@ -92,7 +92,7 @@
                                     title="How many years you plan to invest."></i></span></label>
                         <div
                             class="input input-bordered w-full bg-base-100 border-base-300 focus-within:border-primary flex items-center gap-2">
-                            <input type="number" id="adv-years" class="grow raleway-400" value="20" min="1" max="100"
+                            <input type="number" id="adv-years" class="grow raleway-400" value="{{ user.settings.time_range if user and user.settings else '20' }}" min="1" max="100"
                                 step="any" required>
                             <span class="text-base-content/50">years</span>
                         </div>

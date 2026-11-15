@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
     syncThemeUI();
-    loadPreferences();
     initEditProfile();
     initDeleteAccount();
 });
@@ -40,36 +39,68 @@ function syncThemeUI() {
 }
 
 // --- 2. PREFERENCES & TOGGLES ---
-function loadPreferences() {
-    const savedCurrency = localStorage.getItem('pref-currency') || 'EUR';
-    const currencySelect = document.getElementById('pref-currency');
-    if (currencySelect) currencySelect.value = savedCurrency;
-
-    const savedRange = localStorage.getItem('pref-time-range') || '20';
-    const rangeSelect = document.getElementById('pref-time-range');
-    if (rangeSelect) rangeSelect.value = savedRange;
-
-    ['portfolio-alerts', 'market-updates', 'product-updates'].forEach(key => {
-        const el = document.getElementById(`toggle-${key}`);
-        if (el) el.checked = localStorage.getItem(`pref-${key}`) !== 'false';
-    });
-}
-
 async function updateSetting(setting, value) {
-    // Save locally first
-    localStorage.setItem(`pref-${setting.replace('_', '-')}`, value);
-    
-    // Send to backend
+    // --- 1. CLIENT-SIDE VALIDATION ---
+    const validOptions = {
+        'theme': ['light', 'dark', 'system'],
+        'currency': ['EUR', 'USD', 'GBP'],
+        'time_range': ['10', '20', '30'],
+        'portfolio_alerts': [true, false],
+        'market_updates': [true, false],
+        'product_updates': [true, false]
+    };
+
+    // Check if the setting name is valid
+    if (!validOptions[setting]) {
+        console.error("Invalid setting name:", setting);
+        if (typeof showToast === 'function') showToast("Invalid setting.", "error");
+        return; // Stop execution
+    }
+
+    // Check if the value is valid for this setting
+    // (We convert to string for the time_range check since HTML dropdowns return strings)
+    if (!validOptions[setting].includes(value) && !validOptions[setting].includes(String(value))) {
+        console.error("Invalid value for setting:", setting, value);
+        if (typeof showToast === 'function') showToast("Invalid value selected.", "error");
+        return; // Stop execution
+    }
+
+    // --- 2. SAVE TO BACKEND ---
     try {
         const res = await API.saveSetting(setting, value);
-        if (res.ok) {
-            console.log(`Saved: ${setting} = ${value}`);
+        if (!res.ok) throw new Error("Failed to save");
+        
+        // --- 3. HANDLE SPECIFIC UPDATES ---
+        if (setting === 'theme') {
+            localStorage.setItem('app-theme', value); 
+            if (typeof applyTheme === 'function') applyTheme(value); 
+            if (typeof showToast === 'function') showToast("Theme updated!");
+        } 
+        else if (setting === 'currency') {
+            const symbols = { "EUR": "€", "USD": "$", "GBP": "£" };
+            window.CURRENCY_SYMBOL = symbols[value] || "€";
+            if (typeof showToast === 'function') showToast("Currency updated!");
+        }
+        else if (setting === 'time_range') {
+            if (typeof showToast === 'function') showToast(`Default time range set to ${value} years!`);
+        }
+        else {
+            // Toggles
             if (typeof showToast === 'function') showToast("Preference saved!");
         }
+
     } catch (error) {
-        console.error("Failed to save setting", error);
+        console.error(error);
+        if (typeof showToast === 'function') showToast("Failed to save setting", "error");
+        
+        // Revert the UI if it was a toggle
+        if (typeof value === 'boolean') {
+            const toggle = document.getElementById(`toggle-${setting.replace('_', '-')}`);
+            if (toggle) toggle.checked = !value;
+        }
     }
 }
+
 
 // --- 3. EDIT PROFILE (AVATAR + EMAIL VALIDATION) ---
 function initEditProfile() {

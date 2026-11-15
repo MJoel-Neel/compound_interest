@@ -15,7 +15,7 @@ function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `alert alert-${type} shadow-lg mb-2 raleway-500`;
     let icon = type === 'error' ? '<i class="fa-solid fa-circle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
-    
+
     toast.innerHTML = `<div class="flex items-center gap-2">${icon}<span>${message}</span></div>`;
     container.appendChild(toast);
 
@@ -45,32 +45,34 @@ function applyTheme(theme) {
 
 // THE ONE AND ONLY CURRENCY FORMATTER
 function formatCurrency(num) {
-    if (num === null || num === undefined) return "€0";
-    
+    if (num === null || num === undefined) return (window.CURRENCY_SYMBOL || "€") + "0";
+
+    const symbol = window.CURRENCY_SYMBOL || "€";
     const isNegative = num < 0;
     const absNum = Math.abs(num);
-    const prefix = isNegative ? "-€" : "€";
-    
+    const prefix = isNegative ? "-" + symbol : symbol;
+
     // If it exceeds Quadrillions, fallback to clean scientific notation
     if (absNum >= 1e15) {
-        let expStr = absNum.toExponential(2); // e.g., 1.23e+58
-        return prefix + expStr.replace('e+', 'e'); // e.g., €1.23e58
+        let expStr = absNum.toExponential(2).replace('+', '');
+        return prefix + expStr;
     }
-    
+
     if (absNum >= 1e12) return `${prefix}${(absNum / 1e12).toFixed(2)}T`;
     if (absNum >= 1e9) return `${prefix}${(absNum / 1e9).toFixed(2)}B`;
     if (absNum >= 1e6) return `${prefix}${(absNum / 1e6).toFixed(2)}M`;
     if (absNum >= 1e3) return `${prefix}${(absNum / 1e3).toFixed(2)}k`;
-    
+
     return `${prefix}${Math.round(absNum).toLocaleString('en-US')}`;
 }
 
 function formatChartAxis(val) {
-    if (val === 0) return '€0';
-    if (val >= 1e15) return '€' + val.toExponential(1).replace('+', '');
-    if (val >= 1e12) return '€' + (val / 1e12).toFixed(1) + 'T';
-    if (val >= 1e9) return '€' + (val / 1e9).toFixed(1) + 'B';
-    if (val >= 1e6) return '€' + (val / 1e6).toFixed(1) + 'M';
-    if (val >= 1e3) return '€' + (val / 1e3).toFixed(1) + 'k';
-    return '€' + val;
+    const symbol = window.CURRENCY_SYMBOL || "€";
+    if (val === 0) return symbol + '0';
+    if (val >= 1e15) return symbol + val.toExponential(1).replace('+', '');
+    if (val >= 1e12) return symbol + (val / 1e12).toFixed(1) + 'T';
+    if (val >= 1e9) return symbol + (val / 1e9).toFixed(1) + 'B';
+    if (val >= 1e6) return symbol + (val / 1e6).toFixed(1) + 'M';
+    if (val >= 1e3) return symbol + (val / 1e3).toFixed(1) + 'k';
+    return symbol + val;
 }

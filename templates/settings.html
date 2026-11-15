@@ -91,9 +91,9 @@
                             class="label-text raleway-500 text-base-content">Currency</span></label>
                     <select id="pref-currency" onchange="updateSetting('currency', this.value)"
                         class="select select-bordered w-full raleway-400 bg-base-100 text-base-content border-base-300 focus:border-primary focus:ring-1 focus:ring-primary">
-                        <option value="EUR">EUR (€)</option>
-                        <option value="USD">USD ($)</option>
-                        <option value="GBP">GBP (£)</option>
+                        <option value="EUR" {% if user.settings.currency=='EUR' %}selected{% endif %}>EUR (€)</option>
+                        <option value="USD" {% if user.settings.currency=='USD' %}selected{% endif %}>USD ($)</option>
+                        <option value="GBP" {% if user.settings.currency=='GBP' %}selected{% endif %}>GBP (£)</option>
                     </select>
                 </div>
 
@@ -104,9 +104,9 @@
                             Range</span></label>
                     <select id="pref-time-range" onchange="updateSetting('time_range', this.value)"
                         class="select select-bordered w-full raleway-400 bg-base-100 text-base-content border-base-300">
-                        <option value="10">10 years</option>
-                        <option value="20">20 years</option>
-                        <option value="30">30 years</option>
+                        <option value="10" {% if user.settings.time_range=='10' %}selected{% endif %}>10 years</option>
+                        <option value="20" {% if user.settings.time_range=='20' %}selected{% endif %}>20 years</option>
+                        <option value="30" {% if user.settings.time_range=='30' %}selected{% endif %}>30 years</option>
                     </select>
                 </div>
 
@@ -163,7 +163,7 @@
             </div>
             <input type="checkbox" id="toggle-portfolio-alerts"
                 onchange="updateSetting('portfolio_alerts', this.checked)" class="toggle toggle-success shrink-0"
-                checked />
+                {% if user.settings and user.settings.portfolio_alerts %}checked{% endif %} />
         </div>
 
         <hr class="border-base-200 border-dashed">
@@ -179,7 +179,7 @@
                 </div>
             </div>
             <input type="checkbox" id="toggle-market-updates" onchange="updateSetting('market_updates', this.checked)"
-                class="toggle toggle-success shrink-0" checked />
+                class="toggle toggle-success shrink-0" {% if user.settings and user.settings.market_updates %}checked{% endif %}  />
         </div>
 
         <hr class="border-base-200 border-dashed">
@@ -194,7 +194,7 @@
                 </div>
             </div>
             <input type="checkbox" id="toggle-product-updates" onchange="updateSetting('product_updates', this.checked)"
-                class="toggle toggle-success shrink-0" checked />
+                class="toggle toggle-success shrink-0" {% if user.settings and user.settings.product_updates %}checked{% endif %} />
         </div>
     </div>
 
@@ -254,7 +254,8 @@
         </h3>
         <p class="py-2 raleway-400 text-base-content/80">
             Are you absolutely sure you want to delete your account?
-            This action <strong>cannot</strong> be undone. All your saved scenarios and preferences will be permanently erased.
+            This action <strong>cannot</strong> be undone. All your saved scenarios and preferences will be permanently
+            erased.
         </p>
 
         <div class="flex flex-col gap-2 mt-4">
@@ -282,7 +283,7 @@
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
         </form>
-        
+
         <h3 class="font-bold text-xl text-primary flex items-center gap-2 mb-6">
             <i class="fa-solid fa-user-pen"></i> Account Settings
         </h3>
@@ -292,16 +293,19 @@
             <div class="flex flex-col items-center justify-center gap-2 mb-2">
                 <label for="avatar-upload" class="cursor-pointer relative group">
                     <!-- Preview Container -->
-                    <div class="w-20 h-20 rounded-full bg-primary/20 text-primary flex items-center justify-center raleway-700 text-2xl overflow-hidden border-2 border-transparent group-hover:border-primary transition-all">
+                    <div
+                        class="w-20 h-20 rounded-full bg-primary/20 text-primary flex items-center justify-center raleway-700 text-2xl overflow-hidden border-2 border-transparent group-hover:border-primary transition-all">
                         <img id="avatar-preview"
                             src="{% if user.avatar and user.avatar != 'None' %}{{ user.avatar }}{% endif %}"
                             class="w-full h-full object-cover {% if not user.avatar or user.avatar == 'None' %}hidden{% endif %}">
-                        
-                        
-                        <span id="avatar-initials" class="{% if user.avatar %}hidden{% endif %}">{{ user.initials }}</span>
+
+
+                        <span id="avatar-initials" class="{% if user.avatar %}hidden{% endif %}">{{ user.initials
+                            }}</span>
                     </div>
                     <!-- Overlay Icon -->
-                    <div class="absolute bottom-0 right-0 bg-base-100 p-1.5 rounded-full shadow-md border border-base-300 text-xs text-base-content/70 group-hover:text-primary">
+                    <div
+                        class="absolute bottom-0 right-0 bg-base-100 p-1.5 rounded-full shadow-md border border-base-300 text-xs text-base-content/70 group-hover:text-primary">
                         <i class="fa-solid fa-camera"></i>
                     </div>
                 </label>
@@ -312,14 +316,18 @@
             <!-- BASIC INFO -->
             <div class="flex flex-col gap-1.5">
                 <label class="text-sm font-semibold text-base-content">Full Name</label>
-                <input type="text" id="edit-name" name="name" class="input input-bordered w-full raleway-400 bg-base-100" value="{{ user.name }}" required>
-                <p class="text-xs text-error hidden mt-1" id="edit-name-error"><i class="fa-solid fa-circle-exclamation"></i> Name cannot be empty.</p>
+                <input type="text" id="edit-name" name="name"
+                    class="input input-bordered w-full raleway-400 bg-base-100" value="{{ user.name }}" required>
+                <p class="text-xs text-error hidden mt-1" id="edit-name-error"><i
+                        class="fa-solid fa-circle-exclamation"></i> Name cannot be empty.</p>
             </div>
 
             <div class="flex flex-col gap-1.5">
                 <label class="text-sm font-semibold text-base-content">Email Address</label>
-                <input type="email" id="edit-email" name="email" class="input input-bordered w-full raleway-400 bg-base-100" value="{{ user.email }}" required>
-                <p class="text-xs text-error hidden mt-1" id="edit-email-error"><i class="fa-solid fa-circle-exclamation"></i> Please enter a valid email.</p>
+                <input type="email" id="edit-email" name="email"
+                    class="input input-bordered w-full raleway-400 bg-base-100" value="{{ user.email }}" required>
+                <p class="text-xs text-error hidden mt-1" id="edit-email-error"><i
+                        class="fa-solid fa-circle-exclamation"></i> Please enter a valid email.</p>
             </div>
 
             <div class="divider text-xs text-base-content/50 my-1">Change Password (Optional)</div>
@@ -327,24 +335,29 @@
             <!-- PASSWORD CHANGE -->
             <div class="flex flex-col gap-1.5">
                 <label class="text-sm font-semibold text-base-content">Current Password</label>
-                <input type="password" id="current-password" name="current_password" class="input input-bordered w-full raleway-400 bg-base-100" placeholder="Enter current password">
+                <input type="password" id="current-password" name="current_password"
+                    class="input input-bordered w-full raleway-400 bg-base-100" placeholder="Enter current password">
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm font-semibold text-base-content">New Password</label>
-                    <input type="password" id="new-password" name="new_password" class="input input-bordered w-full raleway-400 bg-base-100" placeholder="Min. 6 characters">
+                    <input type="password" id="new-password" name="new_password"
+                        class="input input-bordered w-full raleway-400 bg-base-100" placeholder="Min. 6 characters">
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm font-semibold text-base-content">Confirm New Password</label>
-                    <input type="password" id="confirm-password" name="confirm_password" class="input input-bordered w-full raleway-400 bg-base-100" placeholder="Repeat new password">
+                    <input type="password" id="confirm-password" name="confirm_password"
+                        class="input input-bordered w-full raleway-400 bg-base-100" placeholder="Repeat new password">
                 </div>
             </div>
-            <p class="text-xs text-error hidden" id="password-error"><i class="fa-solid fa-circle-exclamation"></i> Passwords do not match or are too short.</p>
+            <p class="text-xs text-error hidden" id="password-error"><i class="fa-solid fa-circle-exclamation"></i>
+                Passwords do not match or are too short.</p>
 
             <!-- ACTIONS -->
             <div class="modal-action mt-4">
-                <button type="button" class="btn btn-ghost raleway-500" onclick="document.getElementById('edit_profile_modal').close()">Cancel</button>
+                <button type="button" class="btn btn-ghost raleway-500"
+                    onclick="document.getElementById('edit_profile_modal').close()">Cancel</button>
                 <button type="submit" id="save-profile-btn" class="btn btn-primary text-white raleway-500 px-8">
                     Save Changes
                 </button>
