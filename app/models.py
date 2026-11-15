@@ -15,8 +15,8 @@ class User(Base):
     avatar = Column(String(255), nullable=True)
 
     # Relationships
-    scenarios = relationship("Scenario", back_populates="owner")
-    settings = relationship("UserSettings", back_populates="user", uselist=False) 
+    scenarios = relationship("Scenario", back_populates="owner", cascade="all, delete-orphan")
+    settings = relationship("UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan") 
 
      # --- THE FIX: Dynamic Initials Property ---
     @property
