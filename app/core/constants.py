@@ -18,6 +18,6 @@ def get_daily_sidebar_data():
     quote = FINANCIAL_QUOTES[quote_index]
     
     # Pick a plant image (1 to 4) based on the day
-    plant_index = (today % 4) + 1
+    plant_index = (today % 5) + 1
     
     return quote, plant_index

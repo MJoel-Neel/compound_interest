@@ -45,7 +45,7 @@ function initLoginForm() {
         passwordError.classList.add("hidden");
 
         // Validate Email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(emailInput.value.trim())) {
             isValid = false;
             emailInput.classList.add("border-error");
@@ -114,7 +114,7 @@ function initForgotPassword() {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(emailInput.value.trim())) {
             emailInput.classList.add("border-error");
             error.classList.remove("hidden");
