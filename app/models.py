@@ -86,9 +86,18 @@ class Scenario(Base):
         )
 
     @property
+    def currency_symbol(self):
+        # Safely get the symbol from the owner's settings, fallback to €
+        if self.owner and self.owner.settings:
+            return self.owner.settings.currency_symbol
+        return "€"
+
+    @property
     def gain(self):
         kpis = self.math_results["kpis"]
-        return f"+{format_compact_currency(kpis['net_balance'] - kpis['total_invested'])}"
+        net_gains = kpis['net_balance'] - kpis['total_invested']
+        # Pass the symbol to the formatter
+        return f"+{format_compact_currency(net_gains, self.currency_symbol)}"
 
     @property
     def percent(self):
@@ -101,8 +110,9 @@ class Scenario(Base):
 
     @property
     def final_value(self):
-        return format_compact_currency(self.math_results["kpis"]["net_balance"])
+        return format_compact_currency(self.math_results["kpis"]["net_balance"], self.currency_symbol)
 
+    
     @property
     def chart_path(self):
         balances = self.math_results["chart"]["balance_data"]
