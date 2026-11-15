@@ -96,12 +96,26 @@ async def save_setting(
     return {"status": "success"}
 
 @router.delete("/api/delete-account")
-async def delete_account(request: Request, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    if current_user:
-        db.delete(current_user)
-        db.commit()
-        request.session.clear()
-    return {"status": "success"}
+async def delete_account(
+    request: Request, 
+    db: Session = Depends(get_db), 
+    current_user: models.User = Depends(get_current_user)):
+
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not logged in")
+
+     # 1. Delete the user from MySQL. 
+    # Thanks to the ORM cascade, this automatically deletes:
+    # - Their UserSettings
+    # - All their Scenarios
+    db.delete(current_user)
+    db.commit()
+
+    # 2. Clear the session cookie so they are logged out
+
+    request.session.clear()
+    
+    return {"status": "success", "message": "Account deleted successfully"}
 
 
 

@@ -166,26 +166,48 @@ function initDeleteAccount() {
     const modal = document.getElementById('delete_account_modal');
     const input = document.getElementById('delete-confirm-input');
     const btn = document.getElementById('confirm-delete-account-btn');
+    
     if (!modal) return;
 
+    // Open Modal
     document.getElementById('delete-account-btn').addEventListener('click', () => {
         input.value = '';
         btn.disabled = true;
+        btn.classList.add('btn-disabled');
         modal.showModal();
     });
 
+    // Enable button ONLY if the user types "DELETE"
     input.addEventListener('input', () => {
-        btn.disabled = input.value !== 'DELETE';
+        if (input.value === 'DELETE') {
+            btn.disabled = false;
+            btn.classList.remove('btn-disabled');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('btn-disabled');
+        }
     });
 
+    // Confirm Deletion
     btn.addEventListener('click', async () => {
-        btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
+        btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Deleting...';
+        btn.disabled = true;
+
         try {
             const res = await API.deleteAccount();
-            if (res.ok) window.location.href = "/";
-        } catch {
-            if (typeof showToast === 'function') showToast("Failed to delete account", "error");
+            if (res.ok) {
+                // Success! Redirect to Home page (which will now show the logged-out state)
+                window.location.href = "/";
+            } else {
+                if (typeof showToast === 'function') showToast("Failed to delete account.", "error");
+                btn.innerHTML = 'Permanently Delete';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error(err);
+            if (typeof showToast === 'function') showToast("Network error.", "error");
             btn.innerHTML = 'Permanently Delete';
+            btn.disabled = false;
         }
     });
 }
