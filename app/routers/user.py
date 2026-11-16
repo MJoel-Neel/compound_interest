@@ -7,6 +7,7 @@ from typing import Literal
 import os
 import shutil
 import uuid
+import re
 from PIL import Image, UnidentifiedImageError
 
 from app.core.database import get_db
@@ -26,6 +27,11 @@ async def signup(
     password: str = Form(...), 
     db: Session = Depends(get_db)
 ):
+        # --- PASSWORD VALIDATION ---
+    password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{12,}$"
+    if not re.match(password_regex, password):
+        return {"status": "error", "message": "Password must be 12+ characters and include uppercase, lowercase, numbers, and special characters."}
+
     existing_user = db.query(models.User).filter(models.User.email == email).first()
     if existing_user:
         return {"status": "error", "message": "Email already registered"}
@@ -137,9 +143,12 @@ async def update_profile(
     
     if new_password:
         #Backend validation (Security check)
-        if len(new_password) < 6:
-            return {"status": "error", "message": "New password must be at least 6 characters."}
-        
+
+        # --- PASSWORD VALIDATION ---
+        password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{12,}$"
+        if not re.match(password_regex, new_password):
+            return {"status": "error", "message": "Password must be 12+ characters and include uppercase, lowercase, numbers, and special characters."}
+            
         if not verify_password(current_password, current_user.hashed_password):
             return {"status": "error", "message": "Incorrect current password."}
         current_user.hashed_password = get_password_hash(new_password)
@@ -201,3 +210,5 @@ async def update_profile(
 
     db.commit()
     return {"status": "success", "message": "Profile updated successfully"}
+
+

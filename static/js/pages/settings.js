@@ -169,14 +169,15 @@ function initEditProfile() {
 
         // 2. Validate Password (Only if they are trying to change it)
         passwordError.classList.add('hidden'); // Reset error
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{12,}$/;
 
         if (newPassword || currentPassword) {
             if (!currentPassword) {
                 passwordErrorText.textContent = "Please enter your current password to make changes.";
                 passwordError.classList.remove('hidden');
                 isValid = false;
-            } else if (newPassword.length < 6) {
-                passwordErrorText.textContent = "New password must be at least 6 characters.";
+            } else if (!passwordRegex.test(newPassword)) {
+                passwordErrorText.textContent = "Min. 12 chars (A-Z, a-z, 0-9, !@#)";
                 passwordError.classList.remove('hidden');
                 isValid = false;
             } else if (newPassword !== confirmPassword) {

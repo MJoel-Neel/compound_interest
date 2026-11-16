@@ -44,10 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{12,}$/;
+
         // Validate all fields
         setErr(name, "name-error", name.value.trim() === "");
         setErr(email, "email-error", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()));
-        setErr(password, "password-error", password.value.length < 6);
+        setErr(password, "password-error", !passwordRegex.test(password.value));
         setErr(confirm, "confirm-error", confirm.value !== password.value || confirm.value === "");
         
         // Validate Terms Checkbox

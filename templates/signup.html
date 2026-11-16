@@ -116,13 +116,16 @@
                     <label class="text-sm font-semibold text-base-content">Password</label>
                     <div class="relative">
                         <i class="fa-solid fa-lock absolute left-3 top-3.5 text-base-content/40"></i>
-                        <input type="password" id="password" name="password" placeholder="Create a password" 
+                        <input type="password" id="password" name="password" placeholder="Min. 12 chars (A-Z, a-z, 0-9, !@#)" 
                             class="w-full pl-10 pr-10 py-3 rounded-lg border border-base-300 bg-base-100 text-base-content focus:outline-none focus:border-success focus:ring-1 focus:ring-success transition-all text-sm" required>
                         <button type="button" class="toggle-password absolute right-3 top-3.5 text-base-content/40 hover:text-base-content focus:outline-none">
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
-                    <p class="text-xs text-error hidden mt-1" id="password-error"><i class="fa-solid fa-circle-exclamation"></i> Password must be at least 6 characters.</p>
+                    <p class="text-xs text-error hidden mt-1" id="password-error">
+                        <i class="fa-solid fa-circle-exclamation"></i> 
+                        Must be 12+ characters with uppercase, lowercase, number, and special character.
+                    </p>
                 </div>
 
                 <!-- Confirm Password -->

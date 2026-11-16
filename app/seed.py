@@ -19,7 +19,7 @@ def seed_database():
         demo_user = models.User(
             name="Demo User",
             email="demo@whatifinvest.com",
-            hashed_password=get_password_hash("password123"),
+            hashed_password=get_password_hash("Password123!"),
             avatar=None
         )
         db.add(demo_user)
