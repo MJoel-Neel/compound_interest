@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.routers.deps import get_current_user
 from app import models
 import app.core.constants as constants 
+import datetime
 
 router = APIRouter()
 
@@ -18,11 +19,11 @@ async def home_page(request: Request, db: Session = Depends(get_db), user: model
     # Fetch the user's scenarios from MySQL (only if logged in)
     scenarios = []
     if user:
-        scenarios = db.query(models.Scenario).filter(models.Scenario.user_id == user.id).all()
+        scenarios = db.query(models.Scenario).filter(models.Scenario.user_id == user.id).order_by(models.Scenario.created_at.desc()).all()
         
     return templates.TemplateResponse(
         request=request, name="home.html",
-        context={"scenarios": scenarios, "daily_quote": daily_quote, "daily_plant": daily_plant, "user": user}
+        context={"scenarios": scenarios, "daily_quote": daily_quote, "daily_plant": daily_plant, "user": user, "now": datetime.datetime.now(datetime.timezone.utc)}
     )
 
 # --- SIMULATION ---
@@ -41,11 +42,11 @@ async def scenarios_page(request: Request, db: Session = Depends(get_db), user: 
     # Fetch the user's scenarios from MySQL
     scenarios = []
     if user:
-        scenarios = db.query(models.Scenario).filter(models.Scenario.user_id == user.id).all()
+        scenarios = db.query(models.Scenario).filter(models.Scenario.user_id == user.id).order_by(models.Scenario.created_at.desc()).all()
         
     return templates.TemplateResponse(
         request=request, name="scenarios.html", 
-        context={"scenarios": scenarios, "daily_quote": daily_quote, "daily_plant": daily_plant, "user": user}
+        context={"scenarios": scenarios, "daily_quote": daily_quote, "daily_plant": daily_plant, "user": user, "now": datetime.datetime.now(datetime.timezone.utc)}
     )
 
 # --- MARKET INTELLIGENCE ---

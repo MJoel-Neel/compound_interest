@@ -30,7 +30,6 @@
     </div>
 </div>
 
-<!-- Filter Tabs -->
 <!-- Filter Tabs (Only show if there are scenarios) -->
 {% if scenarios|length > 0 %}
 <div class="flex flex-wrap gap-2 px-4 mb-6" id="filter-container">
@@ -51,7 +50,8 @@
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 px-4 pb-10" id="scenarios-grid">
 
     {% for scenario in scenarios %}
-    <div class="scenario-card card bg-base-100 shadow-sm border border-base-200 {% if scenario.status == 'Archived' %}opacity-90{% endif %}"
+    <div class="scenario-card card bg-base-100 shadow-sm border transition-all border-base-200
+    {% if scenario.status == 'Archived' %}opacity-90{% endif %}"
         data-status="{{ scenario.status|lower }}">
 
         <div class="card-body p-5">
@@ -64,8 +64,12 @@
                     </div>
                     <div>
                         <h3 class="raleway-600 text-base-content">{{ scenario.name }}</h3>
+                        <!-- NEW BADGE -->
+                        {% if scenario.is_new %}
+                            <span class="badge badge-primary badge-sm text-white raleway-600 animate-pulse">New</span>
+                        {% endif %}
                         <p class="raleway-400 text-xs text-base-content/60">
-                            Created on {{ scenario.created }} &bull;
+                            Created on {{ scenario.created_at.strftime('%b %d, %Y') }};
                             {% if scenario.status == 'Active' %}
                             <span class="text-success font-bold">Active</span>
                             {% else %}

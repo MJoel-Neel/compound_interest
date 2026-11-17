@@ -21,23 +21,27 @@
     <!-- INITIAL & MONTHLY -->
     <div class="flex items-start justify-center gap-2">
         <div class="input_field grid gap-1 w-full">
-            <label for="initial" class="raleway-500 capitalize text-base-content">Initial ({{ user.settings.currency_symbol if user and user.settings else '€' }})</label>
+            <label for="initial" class="raleway-500 capitalize text-base-content">Initial ({{
+                user.settings.currency_symbol if user and user.settings else '€' }})</label>
             <div class="input w-full validator bg-base-100 border-base-300">
                 <input type="number" name="initial" id="initial" placeholder="1000"
                     class="raleway-400 w-full bg-transparent" value="{{ request.query_params.get('initial', '1000') }}"
                     required min="0" step="any">
-                <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€' }}</span>
+                <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€'
+                    }}</span>
             </div>
             <p class="error-msg text-error text-xs hidden">Must be 0 or greater.</p>
         </div>
 
         <div class="input_field grid gap-1 w-full">
-            <label for="monthly" class="raleway-500 capitalize text-base-content">Monthly ({{ user.settings.currency_symbol if user and user.settings else '€' }})</label>
+            <label for="monthly" class="raleway-500 capitalize text-base-content">Monthly ({{
+                user.settings.currency_symbol if user and user.settings else '€' }})</label>
             <div class="input w-full validator bg-base-100 border-base-300">
                 <input type="number" name="monthly" id="monthly" placeholder="200"
                     class="raleway-400 w-full bg-transparent" value="{{ request.query_params.get('monthly', '200') }}"
                     required min="0" step="any">
-                <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€' }}</span>
+                <span class="text-base-content/50">{{ user.settings.currency_symbol if user and user.settings else '€'
+                    }}</span>
             </div>
             <p class="error-msg text-error text-xs hidden">Must be 0 or greater.</p>
         </div>
@@ -60,7 +64,8 @@
             <label for="years" class="raleway-500 capitalize text-base-content">Years</label>
             <div class="input w-full validator bg-base-100 border-base-300">
                 <input type="number" name="years" id="years" placeholder="20" class="raleway-400 w-full bg-transparent"
-                    value="{{ user.settings.time_range if user and user.settings else '20' }}" required min="1" max="100" step="any">
+                    value="{{ user.settings.time_range if user and user.settings else '20' }}" required min="1"
+                    max="100" step="any">
                 <span class="text-base-content/50"><i class="fa-regular fa-calendar"></i></span>
             </div>
             <p class="error-msg text-error text-xs hidden">Must be between 1 and 100.</p>
@@ -89,7 +94,8 @@
         <div class="rounded-full p-2 bg-success/10 shrink-0"><i class="fa-solid fa-coins text-success"></i></div>
         <div class="flex-1 min-w-0">
             <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider truncate">Final balance</p>
-            <p class="raleway-700 text-success text-xl truncate" id="final-balance-val" title="Final Balance">{{ user.settings.currency_symbol if user and user.settings else '€' }}0</p>
+            <p class="raleway-700 text-success text-xl truncate" id="final-balance-val" title="Final Balance">{{
+                user.settings.currency_symbol if user and user.settings else '€' }}0</p>
         </div>
     </div>
 
@@ -98,7 +104,8 @@
         <div class="rounded-full p-2 bg-primary/10 shrink-0"><i class="fa-solid fa-layer-group text-primary"></i></div>
         <div class="flex-1 min-w-0">
             <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider truncate">Total invested</p>
-            <p class="raleway-700 text-primary text-xl truncate" id="total-invested-val" title="Total Invested">{{ user.settings.currency_symbol if user and user.settings else '€' }}0</p>
+            <p class="raleway-700 text-primary text-xl truncate" id="total-invested-val" title="Total Invested">{{
+                user.settings.currency_symbol if user and user.settings else '€' }}0</p>
         </div>
     </div>
 
@@ -108,7 +115,8 @@
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-base-content/60 raleway-400 text-xs uppercase tracking-wider truncate">Gains</p>
-            <p class="raleway-700 text-success text-xl truncate" id="gains-val" title="Gains">{{ user.settings.currency_symbol if user and user.settings else '€' }}0</p>
+            <p class="raleway-700 text-success text-xl truncate" id="gains-val" title="Gains">{{
+                user.settings.currency_symbol if user and user.settings else '€' }}0</p>
         </div>
     </div>
 
@@ -151,8 +159,8 @@
 
         {% if scenarios %}
         {% for scenario in scenarios[:5] %}
-        <div id="scenario-row-{{ scenario.id }}"
-            class="scenario-row flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-base-200 last:border-0">
+        <div id="scenario-row-{{ scenario.id }}" class="scenario-row flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-base-200 last:border-0
+            {% if scenario.is_new %} bg-primary/5 -mx-4 px-4 rounded-lg {% endif %}">
 
             <!-- Name & Icon -->
             <div class="flex gap-3 items-center w-full md:w-1/3">
@@ -161,14 +169,20 @@
                     <i class="fa-solid {{ scenario.icon }} text-sm"></i>
                 </div>
                 <p class="capitalize raleway-600 text-sm truncate text-base-content">{{ scenario.name }}</p>
+                {% if scenario.is_new %} <span class="badge badge-primary badge-xs text-white">New</span>
+                {% endif %}
             </div>
 
             <!-- Metrics -->
             <div {{ user.settings.currency_symbol if user and user.settings else '€' }}
                 class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-base-content/60 raleway-400 w-full md:w-1/2 min-w-0">
-                <span class="truncate">Initial: <strong class="text-base-content">{{ scenario.initial | compact_currency(user.settings.currency_symbol if user and user.settings else '€') }}</strong></span>
+                <span class="truncate">Initial: <strong class="text-base-content">{{ scenario.initial |
+                        compact_currency(user.settings.currency_symbol if user and user.settings else '€')
+                        }}</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
-                <span class="truncate">Monthly: <strong class="text-base-content">{{ scenario.monthly | compact_currency(user.settings.currency_symbol if user and user.settings else '€') }}</strong></span>
+                <span class="truncate">Monthly: <strong class="text-base-content">{{ scenario.monthly |
+                        compact_currency(user.settings.currency_symbol if user and user.settings else '€')
+                        }}</strong></span>
                 <span class="hidden sm:inline">&bull;</span>
                 <span>Rate: <strong class="text-base-content">{{ scenario.annual_rate }}%</strong></span>
                 <span class="hidden sm:inline">&bull;</span>

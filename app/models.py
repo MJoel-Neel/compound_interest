@@ -130,3 +130,16 @@ class Scenario(Base):
             points.append(f"{x:.1f},{y:.1f}")
 
         return "M" + " L".join(points)
+
+    @property
+    def is_new(self):
+        if not self.created_at:
+            return False
+            
+        now = datetime.datetime.now(datetime.timezone.utc)
+        created = self.created_at
+        
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=datetime.timezone.utc)
+            
+        return (now - created).seconds < 7000 
