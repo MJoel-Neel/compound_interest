@@ -249,6 +249,7 @@ function initAdvancedSaveModal() {
                 if (typeof showToast === 'function') showToast("Advanced scenario saved!");
                 setTimeout(() => window.location.href = "/scenarios", 1000);
             } else {
+                if(res.status == 401) setTimeout(() => window.location.href = "/login", 300);
                 if (typeof showToast === 'function') showToast("Failed to save", "error");
             }
         } catch {

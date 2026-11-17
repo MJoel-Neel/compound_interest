@@ -44,7 +44,7 @@ async function runSimulation() {
         Charts.renderLineChart('simulator-chart', data.chart.labels, data.chart.balance_data, data.chart.invested_data);
     } catch (err) {
         console.error(err);
-        showToast("Failed to run simulation", "error");
+        if (typeof showToast === 'function') showToast("Failed to run simulation", "error");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -63,7 +63,7 @@ function validateForm() {
             wrapper.classList.remove('input-error');
         }
     });
-    if (!isValid) showToast("Please fill out all fields correctly.", "error");
+    if (!isValid) if (typeof showToast === 'function') showToast("Please fill out all fields correctly.", "error");
     return isValid;
 }
 
@@ -129,13 +129,14 @@ function initSaveModal() {
             const res = await API.createScenario(payload);
             if (res.ok) {
                 modal.close();
-                showToast("Scenario saved!");
+                if (typeof showToast === 'function') showToast("Scenario saved!");
                 setTimeout(() => window.location.reload(), 1000);
             } else {
-                showToast("Failed to save", "error");
+                if(res.status == 401) setTimeout(() => window.location.href = "/login", 300);
+                if (typeof showToast === 'function') showToast("Failed to save", "error");
             }
         } catch {
-            showToast("Network error", "error");
+            if (typeof showToast === 'function') showToast("Network error", "error");
         } finally {
             confirmBtn.innerHTML = 'Save Scenario';
             confirmBtn.disabled = false;
@@ -168,7 +169,7 @@ function initHomeDeleteModal() {
             if (res.ok) {
                 modal.close();
                 document.getElementById(`scenario-row-${deleteId}`).remove();
-                showToast("Scenario deleted!");
+                if (typeof showToast === 'function') showToast("Scenario deleted!");
 
                 // Update badge count
                 const rows = document.querySelectorAll('.scenario-row').length;
@@ -187,7 +188,7 @@ function initHomeDeleteModal() {
                 }
             }
         } catch {
-            showToast("Failed to delete", "error");
+            if (typeof showToast === 'function') showToast("Failed to delete", "error");
         } finally {
             confirmBtn.innerHTML = 'Yes, Delete';
             deleteId = null;
