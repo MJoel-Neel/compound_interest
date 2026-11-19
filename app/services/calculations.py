@@ -84,9 +84,9 @@ def calculate_compound_interest(
     # Calculate CAGR (Compound Annual Growth Rate)
     # Formula: (Ending Value / Beginning Value) ^ (1 / Years) - 1
     if total_invested > 0 and years > 0:
-        cagr = (((gross_balance / total_invested) ** (1 / years)) - 1) * 100
+        portfolio_growth_rate = (((gross_balance / total_invested) ** (1 / years)) - 1) * 100
     else:
-        cagr = 0.0
+        portfolio_growth_rate = 0.0
 
     # Calculate Real Value of the final Net Balance
     final_inflation_multiplier = (1 + (inflation_rate / 100)) ** years
@@ -101,7 +101,7 @@ def calculate_compound_interest(
             "tax_owed": round(tax_owed),
             "net_balance": round(net_balance),
             "real_net_balance": round(real_net_balance),
-            "cagr": round(cagr, 2)
+            "portfolio_growth_rate": round(portfolio_growth_rate)
         },
         "chart": {
             "labels": chart_labels,

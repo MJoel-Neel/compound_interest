@@ -114,12 +114,12 @@ function updateKPIs(kpis, payload) {
     document.getElementById('res-invested').textContent = formatCurrency(kpis.total_invested);
     document.getElementById('res-gains').textContent = formatCurrency(kpis.gross_gains);
 
-    // 1. Handle Annual Growth (CAGR) Safely
+    // 1. Handle Portfolio Growth Rate Safely
     let growthDisplay = "> 99999%";
-    if (kpis.cagr < 99999) {
-        growthDisplay = `${kpis.cagr}%`;
+    if (kpis.portfolio_growth_rate < 99999) {
+        growthDisplay = `${kpis.portfolio_growth_rate}%`;
     }
-    document.getElementById('res-cagr').textContent = growthDisplay;
+    document.getElementById('res-portfolio-growth').textContent = growthDisplay;
 
     // 2. Handle Total Return Percentage Safely
     let growthPercent = 0;
@@ -174,7 +174,7 @@ function updateInsights(kpis, payload) {
 
     insight1.innerHTML = `Your investment could grow to <strong>${formatCurrency(kpis.net_balance)}</strong> over ${payload.years} years, assuming a ${payload.annual_rate}% annual return.`;
 
-    insight2.innerHTML = `That's a total gain of <strong>${formatCurrency(kpis.gross_gains)}</strong>.`;
+    insight2.innerHTML = `That's a total gain of <strong>${formatCurrency(kpis.gross_gains)}</strong>. Your total capital grew at an average of <strong>${kpis.cagr}% per year</strong>.`;
 
     if (payload.inflation_rate > 0) {
         insight3.innerHTML = `After adjusting for <strong>${payload.inflation_rate}% inflation</strong>, your final balance has the purchasing power of <strong>${formatCurrency(kpis.real_net_balance)}</strong> in today's money.`;

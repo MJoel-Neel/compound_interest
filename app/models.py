@@ -142,4 +142,4 @@ class Scenario(Base):
         if created.tzinfo is None:
             created = created.replace(tzinfo=datetime.timezone.utc)
             
-        return (now - created).seconds < 7000 
+        return (now - created).days < 2 

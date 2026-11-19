@@ -1,4 +1,8 @@
-// static/js/utils/ui.js
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Initialize Theme
+    initTheme();
+})
+
 
 // ==========================================
 // 1. TOAST NOTIFICATIONS

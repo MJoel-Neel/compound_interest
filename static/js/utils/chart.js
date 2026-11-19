@@ -13,7 +13,6 @@ const Charts = {
         parent.appendChild(newCanvas);
 
         const ctx = newCanvas.getContext('2d');
-
         new Chart(ctx, {
             type: 'line',
             data: {
